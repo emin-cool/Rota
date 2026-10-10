@@ -8,7 +8,11 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rota.app"
+      "bundleIdentifier": "com.rota.app",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Rota, yakınındaki rotaları göstermek ve başlangıç noktanı belirlemek için konumunu kullanır."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +27,19 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-router", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-apple-authentication",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Rota, yakınındaki rotaları göstermek ve başlangıç noktanı belirlemek için konumunu kullanır."
+        }
+      ]
+    ],
     "scheme": "rota",
     "experiments": {
       "typedRoutes": true

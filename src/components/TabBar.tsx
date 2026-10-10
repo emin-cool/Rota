@@ -19,7 +19,7 @@ const icons: Record<TabKey, keyof typeof MaterialIcons.glyphMap> = {
 
 /** Route adı → i18n anahtarı. Dosya adları app/(tabs)/ altındaki ekranlarla aynı. */
 const routeToKey: Record<string, TabKey> = {
-  map: 'map',
+  index: 'map',
   explore: 'explore',
   record: 'record',
   feed: 'feed',

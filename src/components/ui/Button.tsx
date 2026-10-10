@@ -13,6 +13,8 @@ export type ButtonProps = Omit<PressableProps, 'children'> & {
   /** Başa eklenecek ikon vb. */
   leading?: React.ReactNode;
   className?: string;
+  /** Etiket rengini değiştirmek için (varsayılan: varyanta göre). Koyu zeminde `text-white`. */
+  labelClassName?: string;
 };
 
 const containerClass: Record<ButtonVariant, string> = {
@@ -35,6 +37,7 @@ export function Button({
   disabled,
   leading,
   className = '',
+  labelClassName,
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled || loading;
@@ -55,7 +58,7 @@ export function Button({
       ) : (
         <>
           {leading ? <View>{leading}</View> : null}
-          <Text variant="body-lg" className={`font-bold ${labelClass[variant]}`}>
+          <Text variant="body-lg" className={`font-bold ${labelClassName ?? labelClass[variant]}`}>
             {title}
           </Text>
         </>

@@ -6,7 +6,7 @@ import { tr } from '@/i18n/tr';
 export default function TabsLayout() {
   return (
     <Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="map" options={{ title: tr.tabs.map }} />
+      <Tabs.Screen name="index" options={{ title: tr.tabs.map }} />
       <Tabs.Screen name="explore" options={{ title: tr.tabs.explore }} />
       <Tabs.Screen name="record" options={{ title: tr.tabs.record }} />
       <Tabs.Screen name="feed" options={{ title: tr.tabs.feed }} />

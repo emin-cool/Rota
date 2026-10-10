@@ -10,7 +10,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 
 ## Faz 0 — İskelet
 - [x] P0.1 Proje kurulumu, sekmeler, tema token'ları
-- [ ] P0.2 Supabase, migration'lar, auth, onboarding
+- [x] P0.2 Supabase, migration'lar, auth, onboarding (kod hazır; migration push + uçtan uca test Supabase projesi bağlanınca — docs/06-supabase-kurulum.md)
 
 ## Faz 1 — MVP
 - [ ] P1.1 Ana harita
