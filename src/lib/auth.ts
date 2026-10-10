@@ -18,9 +18,10 @@ export function authErrorMessage(error: unknown): string {
   if (/email not confirmed/i.test(raw)) return e.emailNotConfirmed;
   if (/already registered|already been registered/i.test(raw)) return e.alreadyRegistered;
   if (/password should be at least|weak password/i.test(raw)) return e.weakPassword;
-  if (/rate limit|too many/i.test(raw)) return e.rateLimited;
+  if (/rate limit|too many|only request this after/i.test(raw)) return e.rateLimited;
   if (/network|fetch failed/i.test(raw)) return e.network;
-  return e.generic;
+  // Geliştirme modunda gerçek nedeni göster (üretimde sadece genel mesaj).
+  return __DEV__ && raw ? `${e.generic} (${raw})` : e.generic;
 }
 
 function assertConfigured() {
