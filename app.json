@@ -22,7 +22,11 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.rota.app"
+      "package": "com.rota.app",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -38,11 +42,19 @@
         {
           "locationWhenInUsePermission": "Rota, yakınındaki rotaları göstermek ve başlangıç noktanı belirlemek için konumunu kullanır."
         }
-      ]
+      ],
+      "@rnmapbox/maps"
     ],
     "scheme": "rota",
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e5748426-f7fd-467e-bb20-0b731f3a301e"
+      }
+    },
+    "owner": "emin06"
   }
 }

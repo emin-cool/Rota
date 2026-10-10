@@ -70,6 +70,17 @@ const brandColors = {
   },
   canvas: '#F7F8F6', // sıcak kırık beyaz zemin
   hairline: '#E5E7EB', // ince ayırıcı / kart kenarlığı
+  // Aktivite renkleri: yürüyüş = marka yeşili, koşu = turuncu, bisiklet = mavi (Stitch route4Grad).
+  activity: {
+    walk: '#0E7C66',
+    run: '#FF6B35',
+    bike: '#0284C7',
+  },
+  'activity-soft': {
+    walk: '#E6F4F1',
+    run: '#FFF0EB',
+    bike: '#E0F2FE',
+  },
   ink: {
     DEFAULT: '#111827', // birincil metin
     secondary: '#4B5563',

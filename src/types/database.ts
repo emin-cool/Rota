@@ -129,7 +129,13 @@ export type NearbyRoute = Pick<
   | 'rating_count'
   | 'completion_count'
   | 'is_featured'
-> & { start_lng: number; start_lat: number; distance_to_start_m: number };
+> & {
+  start_lng: number;
+  start_lat: number;
+  distance_to_start_m: number;
+  /** Sadeleştirilmiş rota çizgisi (GeoJSON LineString). */
+  geojson: { type: 'LineString'; coordinates: [number, number][] } | null;
+};
 
 export type ProfileUpdate = Partial<
   Pick<
