@@ -1,5 +1,6 @@
 import '../global.css';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -13,6 +14,10 @@ import { useSessionStore } from '@/stores/sessionStore';
 import { fontAssets } from '@/theme/fonts';
 
 void SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
+});
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(fontAssets);
@@ -47,16 +52,20 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false }}>
-          {/* Giriş yapılmamış ya da onboarding bitmemiş → (auth) grubu */}
-          <Stack.Protected guard={signedOut || !onboarded}>
-            <Stack.Screen name="(auth)" />
-          </Stack.Protected>
-          <Stack.Protected guard={!signedOut && onboarded}>
-            <Stack.Screen name="(tabs)" />
-          </Stack.Protected>
-        </Stack>
+        <QueryClientProvider client={queryClient}>
+          <StatusBar style="dark" />
+          <Stack screenOptions={{ headerShown: false }}>
+            {/* Giriş yapılmamış ya da onboarding bitmemiş → (auth) grubu */}
+            <Stack.Protected guard={signedOut || !onboarded}>
+              <Stack.Screen name="(auth)" />
+            </Stack.Protected>
+            <Stack.Protected guard={!signedOut && onboarded}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="route/[id]/index" />
+              <Stack.Screen name="route-wizard/step-1" />
+            </Stack.Protected>
+          </Stack>
+        </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

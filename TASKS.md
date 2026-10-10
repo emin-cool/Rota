@@ -13,7 +13,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [x] P0.2 Supabase, migration'lar, auth, onboarding (kod hazır; migration push + uçtan uca test Supabase projesi bağlanınca — docs/06-supabase-kurulum.md)
 
 ## Faz 1 — MVP
-- [ ] P1.1 Ana harita
+- [x] P1.1 Ana harita (tablette development build ile doğrulandı; örnek rotalar supabase/seed.sql)
 - [ ] P1.2 `generate-routes` Edge Function
 - [ ] P1.3 Rota sihirbazı + sonuç ekranı
 - [ ] P1.4 Canlı aktivite takibi

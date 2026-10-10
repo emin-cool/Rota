@@ -3,11 +3,14 @@ import GorhomBottomSheet, {
   type BottomSheetBackdropProps,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
-import { forwardRef, useCallback, useMemo } from 'react';
+import { forwardRef, useCallback } from 'react';
+import type { SharedValue } from 'react-native-reanimated';
 
 import { colors, sheetSnapPoints } from '@/theme/tokens';
 
 export type BottomSheetRef = GorhomBottomSheet;
+
+const DEFAULT_SNAP_POINTS = [sheetSnapPoints.peek, sheetSnapPoints.half, sheetSnapPoints.full];
 
 export type BottomSheetProps = {
   children: React.ReactNode;
@@ -18,6 +21,8 @@ export type BottomSheetProps = {
   /** Arkaya karartma koyup dışarı dokununca kapat (modal kullanım). Harita sheet'i için kapalı bırak. */
   modal?: boolean;
   onClose?: () => void;
+  /** Sheet'in üst kenarının konumu (px); sheet'e bağlı yüzen butonlar için. */
+  animatedPosition?: SharedValue<number>;
 };
 
 /**
@@ -28,15 +33,14 @@ export type BottomSheetProps = {
 export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(function BottomSheet(
   {
     children,
-    snapPoints = [sheetSnapPoints.peek, sheetSnapPoints.half, sheetSnapPoints.full],
+    snapPoints = DEFAULT_SNAP_POINTS,
     initialIndex = 0,
     modal = false,
     onClose,
+    animatedPosition,
   },
   ref,
 ) {
-  const points = useMemo(() => snapPoints, [snapPoints]);
-
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.35} />
@@ -48,7 +52,8 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(function
     <GorhomBottomSheet
       ref={ref}
       index={initialIndex}
-      snapPoints={points}
+      snapPoints={snapPoints}
+      animatedPosition={animatedPosition}
       enablePanDownToClose={modal}
       backdropComponent={modal ? renderBackdrop : undefined}
       onClose={onClose}
