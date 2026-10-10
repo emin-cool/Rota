@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html lang="tr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary": "#ffffff", "inverse-on-surface": "#edf0ff", "background": "#f9f9ff", "on-tertiary-container": "#b9ffe8", "tertiary-fixed": "#85f7d7", "on-error": "#ffffff", "surface-variant": "#dce2f7", "on-primary-fixed": "#002019", "surface-container-low": "#f1f3ff", "inverse-primary": "#7bd7bd", "on-error-container": "#93000a", "surface-bright": "#f9f9ff", "surface-container": "#e9edff", "secondary-fixed": "#ffdbd0", "surface-container-highest": "#dce2f7", "secondary": "#ab3500", "outline-variant": "#bdc9c4", "on-secondary-fixed-variant": "#832600", "on-tertiary-fixed": "#002019", "error-container": "#ffdad6", "error": "#ba1a1a", "primary-fixed": "#97f4d9", "surface-container-lowest": "#ffffff", "on-primary-container": "#bcffe9", "surface-dim": "#d3daef", "on-secondary-container": "#5d1900", "secondary-fixed-dim": "#ffb59d", "inverse-surface": "#293040", "on-secondary-fixed": "#390c00", "primary-container": "#0e7c66", "tertiary-container": "#007c65", "surface-tint": "#006b57", "primary-fixed-dim": "#7bd7bd", "on-secondary": "#ffffff", "tertiary-fixed-dim": "#68dabc", "outline": "#6e7a75", "on-tertiary-fixed-variant": "#005141", "on-primary": "#ffffff", "primary": "#00614f", "surface": "#f9f9ff", "surface-container-high": "#e1e8fd", "on-background": "#141b2b", "on-primary-fixed-variant": "#005141", "on-surface-variant": "#3e4945", "tertiary": "#00614f", "secondary-container": "#fe6a34", "on-surface": "#141b2b" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xl": "2rem", "margin": "1rem", "gutter": "1rem", "space-xs": "0.25rem" }, fontFamily: { "body-lg": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "metric-numeral": ["Plus Jakarta Sans"], "body-md-medium": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"] }, fontSize: { "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "400" }], "headline-lg": ["30px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700" }], "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }], "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "500" }], "label-caps": ["11px", { lineHeight: "14px", letterSpacing: "0.06em", fontWeight: "700" }], "headline-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.015em", fontWeight: "700" }], "metric-numeral": ["34px", { lineHeight: "38px", letterSpacing: "-0.025em", fontWeight: "800" }], "body-md-medium": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "500" }], "headline-sm": ["18px", { lineHeight: "24px", letterSpacing: "-0.01em", fontWeight: "600" }], "display-hero": ["40px", { lineHeight: "48px", letterSpacing: "-0.03em", fontWeight: "800" }] } } } }</script></head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[20px]">explore</span></div><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Akış</h1></div><div class="flex items-center gap-space-sm"><button aria-label="Bildirimler" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface active:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-14 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Feed Notification Banner / Filter Tabs -->
+<section class="px-margin pt-space-sm pb-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar py-1">
+<button class="px-4 py-2 rounded-full bg-primary text-on-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1.5 active:scale-95 transition-transform shrink-0">
+<span class="material-symbols-outlined text-[16px]">groups</span>
+<span>Tüm Topluluk</span>
+</button>
+<button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1.5 active:scale-95 transition-transform shrink-0 hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-[16px]">directions_run</span>
+<span>Koşu</span>
+</button>
+<button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1.5 active:scale-95 transition-transform shrink-0 hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-[16px]">pedal_bike</span>
+<span>Bisiklet</span>
+</button>
+<button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1.5 active:scale-95 transition-transform shrink-0 hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-[16px]">hiking</span>
+<span>Yürüyüş</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Community Events Rail (Moments of Delight: Horizontal Swipe) -->
+<section class="mt-space-sm">
+<div class="px-margin flex items-center justify-between mb-space-xs">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Topluluk Etkinlikleri</h2>
+</div>
+<button class="text-primary font-label-sm text-label-sm flex items-center gap-0.5 active:opacity-70">
+        Tümü <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+<div class="flex gap-3 overflow-x-auto px-margin pb-2 pt-1 no-scrollbar snap-x snap-mandatory">
+<!-- Card 1: Caddebostan -->
+<article class="snap-start shrink-0 w-[270px] bg-surface-container-lowest rounded-xl p-3.5 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-secondary-fixed/30 rounded-full blur-xl pointer-events-none"></div>
+<div>
+<div class="flex items-center justify-between mb-2.5">
+<span class="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary font-label-caps text-label-caps">YAKLAŞAN</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">calendar_today</span>
+              Cumartesi 08:00
+            </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface leading-snug line-clamp-1">Caddebostan Sahil Koşusu</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+            Caddebostan Sahil Parkı
+          </p>
+</div>
+<div class="mt-3.5 pt-2.5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full object-cover shadow-xs" data-alt="Portrait of an energetic male running coach in outdoor sportswear with Istanbul coastal background, morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKaNpa0KbMFGGauWQ-mvXKaCbRRerygxkqK0F9yisazcCAfMqEbKQQDX062G8wqFcnFj4FKgpEfeIKOLdOFXF0eQIIqin9n5WmXRWm2HFl7Xoq-wv9gvwOYPkksVOx19ewPjPQgZw3XU-sdkYaZcWfLCesnzugTJKysirnpOsAhACbCBT3EXZXZPBb5qeuoP7E0m4sPe9DrDmG7Vsb4xUb19FbOLTLKbI2zqVqnkIBHL2W8xzJR9SQvQ"/>
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-label-caps text-[9px] shadow-xs">+17</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">18 kişi katılıyor</span>
+</div>
+<button aria-label="Katıl" class="w-8 h-8 rounded-full bg-surface-container text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</article>
+<!-- Card 2: Belgrad Ormanı -->
+<article class="snap-start shrink-0 w-[270px] bg-surface-container-lowest rounded-xl p-3.5 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary-fixed/20 rounded-full blur-xl pointer-events-none"></div>
+<div>
+<div class="flex items-center justify-between mb-2.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps">TOPLULUK</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">calendar_today</span>
+              Pazar 09:30
+            </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface leading-snug line-clamp-1">Belgrad Ormanı Doğa Yürüyüşü</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">forest</span>
+            Neşet Suyu Parkuru
+          </p>
+</div>
+<div class="mt-3.5 pt-2.5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full object-cover shadow-xs" data-alt="Close up face portrait of a friendly female hiking leader with ponytail and trekking jacket in natural forest lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzgy2DzyX0CajdX9MfRHJGAmLFdJPsD_kUxNhKb0KOIWZVx0p7UGRKT60pUSAQ3LpGn39er-ztf9qBhjBYMfTTW8Vc0tW0Y_LVghdq0zSEFf8DCSIjAEVSez7ytxQRgA040vVEoMS3wcVED5McPx2UboZLZCc10JxiF_ETkgp8zhqnKtpy_zzEWgn5YVOoAn4tVWtmWvGFPQ8kIr0PK13IF0rV-b6Tr3DPXSolcrFN9FiW3ThQ-LLa2g"/>
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-label-caps text-[9px] shadow-xs">+23</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">24 kişi katılıyor</span>
+</div>
+<button aria-label="Katıl" class="w-8 h-8 rounded-full bg-surface-container text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</article>
+<!-- Card 3: Boğaz Gece Bisikleti -->
+<article class="snap-start shrink-0 w-[270px] bg-surface-container-lowest rounded-xl p-3.5 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)] flex flex-col justify-between relative overflow-hidden group">
+<div>
+<div class="flex items-center justify-between mb-2.5">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps">GECE TURU</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">nightlight</span>
+              Salı 19:30
+            </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface leading-snug line-clamp-1">Boğaz Işıkları Gece Bisikleti</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">explore</span>
+            Beşiktaş Meydan Başlangıç
+          </p>
+</div>
+<div class="mt-3.5 pt-2.5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-label-caps text-[10px]">🚴</div>
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-label-caps text-[9px] shadow-xs">+11</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">12 kişi</span>
+</div>
+<button aria-label="Katıl" class="w-8 h-8 rounded-full bg-surface-container text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</article>
+</div>
+</section>
+<!-- Feed Header Divider -->
+<div class="px-margin pt-space-md pb-space-xs flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Son Aktiviteler</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+      Filtrele
+    </span>
+</div>
+<!-- Social Activity Cards Stream -->
+<section class="px-margin flex flex-col gap-4 pb-space-lg">
+<!-- ACTIVITY CARD 1: Ahmet Yılmaz (Koşu) -->
+<article class="w-full bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+<!-- Card User Header -->
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0">
+<img class="w-11 h-11 rounded-full object-cover shadow-xs" data-alt="Athletic Turkish male runner portrait with morning sunlight, warm smile, wearing athletic moisture-wicking green shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDs1WYsuqix_HFdNwv_sBAlXdfviSY6r1ms3UAfc0bCu01NI5htLouZEuLj51HSVIj9xGNpGHLVbLjvFzO28A0hcxATL0z38fP15jk4qWji5fZOToliH69j8qTgfZr4JvKJctPUpAVAGXZm94ii_lgnk-zsFEeoJ1uGJ4gDpTu7FnoFf8bMZv4ZGDjVp6VLo5Qsy1ORJCGdiytXjRH1YZTnHpkduvwdRSNUjm8zzCa26uypDx4HFSy_cA"/>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[11px] shadow-xs">🏃</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface truncate">Ahmet Yılmaz</h3>
+<span class="material-symbols-outlined text-primary text-[16px]" title="Doğrulanmış Sporcu">verified</span>
+</div>
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant">
+<span>2 saat önce</span>
+<span>•</span>
+<span class="text-primary font-medium">Moda, Kadıköy</span>
+</div>
+</div>
+</div>
+<button aria-label="Seçenekler" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface active:bg-surface-container">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<!-- Activity Title & Description -->
+<div class="px-4 pb-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Sabah Moda Sahili Koşusu</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Lodos dinmiş, deniz sakin. İskeleden Fenerbahçe fenerine ferahlatıcı bir sabah temposu! 🌊🏃‍♂️</p>
+</div>
+<!-- Route Visual: Topographic Coastal Track & Photo Mosaic -->
+<div class="px-4 py-1">
+<div class="grid grid-cols-2 gap-2 rounded-xl overflow-hidden">
+<!-- Route Map Polyline Card -->
+<div class="relative h-44 bg-surface-container-low rounded-lg overflow-hidden flex flex-col justify-between p-2.5 group">
+<div class="absolute inset-0 w-full h-full bg-cover bg-center opacity-85 group-hover:scale-105 transition-transform duration-500" data-location="Moda Sahili Kadıköy İstanbul" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwiH8T_I7GAYPAYIUsElQ2wK7nQxdaO50jMnIrTQzrPXv3jTAiWHg7wY3sC3gZZizQ3jNaJUxEzJapv5mCEolG65f95hnZqB9uPSFyF3vRRiSJ0lHvhKIp8niIu7rZeLMeV9YufomHpWJtCb5yxuUYScrC5d_-A7ls0VCHI3Dm7sLA1llDRCgJHX3HpBXVI5RywLUwha1p-_cf7Qz6aMZKZmyiN0vaXHIyg5gklWotG4sJGxdPn7jgEw')"></div>
+<!-- Teal Polyline Overlay (Simulated GPS trace along Bosphorus) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none drop-shadow-md" fill="none" viewbox="0 0 200 160">
+<path d="M 18,140 C 45,120 70,110 95,85 C 120,60 145,55 175,25" stroke="#0E7C66" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.5"></path>
+<circle cx="18" cy="140" fill="#00614f" r="5" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="175" cy="25" fill="#fe6a34" r="5" stroke="#ffffff" stroke-width="2"></circle>
+</svg>
+<div class="relative z-10 flex justify-between items-start">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-primary font-label-caps text-label-caps shadow-xs">GPS İZİ</span>
+<span class="w-6 h-6 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-primary shadow-xs">
+<span class="material-symbols-outlined text-[14px]">map</span>
+</span>
+</div>
+<div class="relative z-10">
+<span class="px-2 py-1 rounded-md bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm backdrop-blur-xs">Moda Koyu ➔ Fener</span>
+</div>
+</div>
+<!-- Scenic Photo Thumbnail -->
+<div class="relative h-44 rounded-lg overflow-hidden group">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Breathtaking morning view of Moda coastline Istanbul with historic ferry pier, gentle turquoise sea ripples, and clear pale blue sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdohYHw9AQ1uD9K7K7nYh5bWmm0E75Fjt3ibdORsfC2azJElNQBrsehT8bITg4Ry2P1BesUrnAU1AXD2-JRzI8XqZsSzF9BBOpQMSOAC1KfRlWwK_-JYCAYECYbj6-mqorwXr4noD3FmcP4WnvjOeAkvoK28USFNvOAfPAO_MjdMH5nsr2dUilhUIe4uVmCx2UU7ITM-Q1EnqRc5BsFxs05AdJQdiHReM2On_0VwXzbE2KcS7cSysh9w"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-2 left-2 right-2 text-on-primary flex items-center justify-between">
+<span class="font-label-caps text-label-caps drop-shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">photo_camera</span> 07:14
+              </span>
+<span class="text-[10px] font-label-caps bg-surface-container-lowest/30 backdrop-blur-md px-1.5 py-0.5 rounded text-on-primary">Fenerbahçe</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Key Metrics Strip (iOS Bento Style) -->
+<div class="px-4 py-3">
+<div class="grid grid-cols-4 gap-2 bg-surface-container-low p-2.5 rounded-xl text-center">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">MESAFE</span>
+<span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold mt-0.5">6,2 <span class="text-[11px] font-normal">km</span></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">SÜRE</span>
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-extrabold mt-0.5">34:10</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TEMPO</span>
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-extrabold mt-0.5">5:30 <span class="text-[11px] font-normal">/km</span></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">YÜKSELİŞ</span>
+<span class="font-headline-sm text-headline-sm text-secondary tracking-tight font-extrabold mt-0.5">+24 <span class="text-[11px] font-normal">m</span></span>
+</div>
+</div>
+</div>
+<!-- Social Interactions Bar -->
+<div class="px-4 pt-1 pb-3 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<!-- Kudos Interactive Button -->
+<button class="kudos-btn px-3 py-1.5 rounded-full bg-secondary-fixed/40 text-on-secondary-container hover:bg-secondary-fixed active:scale-95 transition-all flex items-center gap-1.5 font-label-sm text-label-sm font-semibold" data-active="false">
+<span class="text-[16px] transform transition-transform group-active:scale-125">👏</span>
+<span class="kudos-count">42</span>
+<span>Alkış</span>
+</button>
+<!-- Comment Trigger -->
+<button class="px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface active:scale-95 transition-all flex items-center gap-1.5 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[17px]">chat_bubble_outline</span>
+<span>8 Yorum</span>
+</button>
+</div>
+<button aria-label="Paylaş" class="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</button>
+</div>
+<!-- Comment Preview Snippet -->
+<div class="mx-4 mb-4 p-2.5 rounded-lg bg-surface-container-low flex items-start gap-2">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-label-caps text-[10px] shrink-0 font-bold">MK</div>
+<div class="text-label-sm min-w-0">
+<span class="font-bold text-on-surface">Mert K.</span>
+<span class="text-on-surface-variant ml-1 font-body-md text-[13px]">Harika tempo Ahmet, yarın sabah aynı saatte ben de katılayım! 🔥</span>
+</div>
+</div>
+</article>
+<!-- ACTIVITY CARD 2: Zeynep Kaya (Bisiklet) -->
+<article class="w-full bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+<!-- Card User Header -->
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0">
+<img class="w-11 h-11 rounded-full object-cover shadow-xs" data-alt="Portrait of a smiling young Turkish woman cyclist with helmet on, outdoor Bosphorus background with morning sun reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXU-fIkilrupdm3eG45B8FP5XrON-MSdreWKrsZO294Lj5ZJwbgMf0BjOAEDMk8Zc2M2afFYmQ_B0ke4TuyiW59szBimJgGuIWqPp3HWKbuRXPyv4E3YJoyNIky7UEatQOBXdeMQmTA0IQCwLrzezi7cffsCev-EQuRttPpSM3RifwdRljMGUe_7fDk8DcnYkmA9WG4mk8FL-B2pSHVN_q-P59TqFR6duH9XwEMq0JBs5Q9UeZ_HW_Wg"/>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-secondary-container text-on-secondary flex items-center justify-center text-[11px] shadow-xs">🚴</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface truncate">Zeynep Kaya</h3>
+<span class="px-1.5 py-0.2 rounded bg-primary-fixed/50 text-on-primary-fixed font-label-caps text-[10px]">PRO</span>
+</div>
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant">
+<span>5 saat önce</span>
+<span>•</span>
+<span class="text-primary font-medium">Sarıyer Sahil Hattı</span>
+</div>
+</div>
+</div>
+<button aria-label="Seçenekler" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface active:bg-surface-container">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<!-- Activity Title & Description -->
+<div class="px-4 pb-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Yeniköy - Rumeli Hisarı Sahil Turu</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Trafik başlamadan boğazın serinliğinde akıcı bir sürüş. Gün doğumu Hisar önünde büyüleyiciydi.</p>
+</div>
+<!-- Visual Content: Full Panoramic Sunrise Photo with Mini GPS Float -->
+<div class="px-4 py-1 relative">
+<div class="relative h-48 rounded-xl overflow-hidden group">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Golden hour sunrise illuminating the Bosphorus strait with Rumeli Fortress stones, dramatic orange and deep teal morning water gradient" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX4kgQVZIcMVGhporgZRNgBulgDDIcs_bqiWZjTI8VD1L3ZjPr12CXaHfb4fse03qmK1-0bYfWkqsU4IjXmlsaLB-hmvq1JUfXvejrg6jRcOtbriFqTpo3q8Kbrb-zqoq8PCbr3CeTyE-TUnKJ6xapdkTpN1gNeHGTaC1CgLqP9d3O5VQ5fDfUNqV4_4Fap_CedahJVx3wmfvpUFf-UW0QklvxagQrbyKSkzzUPqlVOtCy9QvQEqwduw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/70 via-transparent to-transparent"></div>
+<!-- Floating Mini Route Polyline Map in Corner -->
+<div class="absolute top-3 right-3 w-24 h-24 bg-surface-container-lowest/90 backdrop-blur-md rounded-lg p-1.5 shadow-md flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-[9px] text-primary font-bold">ROTA</span>
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+</div>
+<svg class="w-full h-12" fill="none" viewbox="0 0 100 50">
+<path d="M 10,40 Q 30,10 60,30 T 90,15" fill="none" stroke="#0E7C66" stroke-linecap="round" stroke-width="3"></path>
+<circle cx="10" cy="40" fill="#00614f" r="3"></circle>
+<circle cx="90" cy="15" fill="#fe6a34" r="3"></circle>
+</svg>
+<span class="text-[9px] text-on-surface-variant text-center font-label-caps">14.5 KM</span>
+</div>
+<!-- Bottom Photo Title -->
+<div class="absolute bottom-3 left-3 text-on-primary">
+<span class="font-label-caps text-label-caps bg-secondary-container/90 px-2 py-0.5 rounded text-on-secondary shadow-xs">KİŞİSEL REKOR (PR)</span>
+<p class="font-headline-sm text-[15px] text-white mt-1 drop-shadow-sm font-semibold">Rumeli Hisarı Tırmanışı: 03:42</p>
+</div>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="px-4 py-3">
+<div class="grid grid-cols-3 gap-2 bg-surface-container-low p-2.5 rounded-xl text-center">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">MESAFE</span>
+<span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold mt-0.5">14,5 <span class="text-[11px] font-normal">km</span></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">SÜRE</span>
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-extrabold mt-0.5">48:15</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">ORT. HIZ</span>
+<span class="font-headline-sm text-headline-sm text-secondary tracking-tight font-extrabold mt-0.5">18,0 <span class="text-[11px] font-normal">km/s</span></span>
+</div>
+</div>
+</div>
+<!-- Social Row -->
+<div class="px-4 pt-1 pb-4 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button class="kudos-btn px-3 py-1.5 rounded-full bg-secondary-fixed/40 text-on-secondary-container hover:bg-secondary-fixed active:scale-95 transition-all flex items-center gap-1.5 font-label-sm text-label-sm font-semibold" data-active="false">
+<span class="text-[16px]">👏</span>
+<span class="kudos-count">67</span>
+<span>Alkış</span>
+</button>
+<button class="px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface active:scale-95 transition-all flex items-center gap-1.5 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[17px]">chat_bubble_outline</span>
+<span>14 Yorum</span>
+</button>
+</div>
+<button aria-label="Paylaş" class="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</button>
+</div>
+</article>
+<!-- ACTIVITY CARD 3: Can Demir (Yürüyüş) -->
+<article class="w-full bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col">
+<!-- Card User Header -->
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<div class="relative shrink-0">
+<img class="w-11 h-11 rounded-full object-cover shadow-xs" data-alt="Portrait of a mature Turkish man wearing trekking cap and casual jacket, smiling warmly in Gülhane park setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVHXcPqB7BBVgjpq_-g-1i_uWa_DRFI0XHzmHiqM8hf4dPzEvpKzVdOfI5G46tfW8pkqEX4ocxyVG5PZDrhFq5K-voKlm1ULHQL5RnaFFnIgdDebAde9XJcppceMrm3r1x9zw7mPHvWAD76CHAVlMyFiZN5n8X5p5VrvJe0ddsVPhXJWulmwD8Vaqxvhf-JhgTIXH5Zp0H2vwcn3EcbVHEgMzmfIuUItxnXWs2nPM4l57E_ejqRyxTCw"/>
+<span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center text-[11px] shadow-xs">🚶</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface truncate">Can Demir</h3>
+</div>
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant">
+<span>Dün</span>
+<span>•</span>
+<span class="text-primary font-medium">Sultanahmet &amp; Gülhane</span>
+</div>
+</div>
+</div>
+<button aria-label="Seçenekler" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface active:bg-surface-container">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<!-- Activity Info & Condensed Metrics -->
+<div class="px-4 pb-3">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Gülhane &amp; Tarihi Yarımada Yürüyüşü</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Asırlık çınarların altında sonbahar havası. Adım adım tarihin kalbinde sakin bir rota.</p>
+<div class="mt-3 flex items-center gap-4 bg-surface-container-low px-3 py-2 rounded-lg">
+<div class="flex items-center gap-1.5 text-on-surface font-headline-sm text-[15px] font-bold">
+<span class="material-symbols-outlined text-primary text-[18px]">straighten</span>
+<span>5,1 km</span>
+</div>
+<span class="text-outline-variant text-[14px]">|</span>
+<div class="flex items-center gap-1.5 text-on-surface font-headline-sm text-[15px] font-bold">
+<span class="material-symbols-outlined text-secondary text-[18px]">schedule</span>
+<span>1 sa 12 dk</span>
+</div>
+<span class="text-outline-variant text-[14px]">|</span>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">altitude</span>
+<span>+42 m</span>
+</div>
+</div>
+</div>
+<!-- Social Action Bar -->
+<div class="px-4 pt-1 pb-3 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button class="kudos-btn px-3 py-1.5 rounded-full bg-secondary-fixed/40 text-on-secondary-container hover:bg-secondary-fixed active:scale-95 transition-all flex items-center gap-1.5 font-label-sm text-label-sm font-semibold" data-active="false">
+<span class="text-[16px]">👏</span>
+<span class="kudos-count">29</span>
+<span>Alkış</span>
+</button>
+<button class="px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface active:scale-95 transition-all flex items-center gap-1.5 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[17px]">chat_bubble_outline</span>
+<span>3 Yorum</span>
+</button>
+</div>
+<button aria-label="Paylaş" class="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</button>
+</div>
+</article>
+</section>
+<!-- Interactive Feed Micro-Interactions Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Dynamic Kudos interaction with bouncy scale and sound effect simulation
+      document.querySelectorAll('.kudos-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const countSpan = btn.querySelector('.kudos-count');
+          const isLiked = btn.getAttribute('data-active') === 'true';
+          let count = parseInt(countSpan.textContent, 10);
+
+          if (!isLiked) {
+            countSpan.textContent = count + 1;
+            btn.setAttribute('data-active', 'true');
+            btn.classList.add('bg-secondary-container', 'text-on-secondary');
+            btn.classList.remove('bg-secondary-fixed/40', 'text-on-secondary-container');
+            
+            // Visual pulse
+            btn.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+              btn.style.transform = 'scale(1)';
+            }, 180);
+          } else {
+            countSpan.textContent = count - 1;
+            btn.setAttribute('data-active', 'false');
+            btn.classList.remove('bg-secondary-container', 'text-on-secondary');
+            btn.classList.add('bg-secondary-fixed/40', 'text-on-secondary-container');
+          }
+        });
+      });
+
+      // Synchronize bottom tab active state with the current screen (Akış)
+      const feedTab = document.querySelector('nav a[data-path="akis"]');
+      if (feedTab) {
+        document.querySelectorAll('nav a').forEach(a => {
+          a.classList.remove('text-primary', 'font-bold');
+          a.classList.add('text-on-surface-variant');
+        });
+        feedTab.classList.add('text-primary', 'font-bold');
+        feedTab.classList.remove('text-on-surface-variant');
+        const icon = feedTab.querySelector('.material-symbols-outlined');
+        if (icon) {
+          icon.style.fontVariationSettings = "'FILL' 1";
+        }
+      }
+    });
+  </script>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.06)]" data-active-classes="text-primary font-bold"><div class="h-16 px-space-xs flex items-center justify-around relative"><a class="flex-1 flex flex-col items-center justify-center py-space-xs text-on-surface-variant hover:text-primary transition-all min-w-[44px] min-h-[44px]" data-path="harita" href="#"><span class="material-symbols-outlined text-[24px]">map</span><span class="font-label-sm text-label-sm mt-0.5">Harita</span></a><a class="flex-1 flex flex-col items-center justify-center py-space-xs text-on-surface-variant hover:text-primary transition-all min-w-[44px] min-h-[44px]" data-path="kesfet" href="#"><span class="material-symbols-outlined text-[24px]">explore</span><span class="font-label-sm text-label-sm mt-0.5">Keşfet</span></a><div class="flex-1 flex items-center justify-center relative"><a aria-label="Kaydet" class="-top-5 absolute flex flex-col items-center justify-center w-14 h-14 rounded-full bg-secondary-container text-on-secondary shadow-[0_8px_20px_rgba(254,106,52,0.35)] active:scale-95 transition-transform min-w-[44px] min-h-[44px]" data-path="kaydet" href="#"><span class="material-symbols-outlined text-[28px] font-bold">add</span></a><span class="font-label-sm text-label-sm text-on-surface-variant mt-7 text-center">Kaydet</span></div><a class="flex-1 flex flex-col items-center justify-center py-space-xs text-on-surface-variant hover:text-primary transition-all min-w-[44px] min-h-[44px]" data-path="akis" href="#"><span class="material-symbols-outlined text-[24px]">dynamic_feed</span><span class="font-label-sm text-label-sm mt-0.5">Akış</span></a><a class="flex-1 flex flex-col items-center justify-center py-space-xs text-on-surface-variant hover:text-primary transition-all min-w-[44px] min-h-[44px]" data-path="profil" href="#"><span class="material-symbols-outlined text-[24px]">person</span><span class="font-label-sm text-label-sm mt-0.5">Profil</span></a></div></nav></body></html>

@@ -1,0 +1,8 @@
+node_modules
+.expo
+dist
+design
+docs
+prompts
+package-lock.json
+*.md

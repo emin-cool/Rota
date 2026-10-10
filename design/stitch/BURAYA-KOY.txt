@@ -1,0 +1,1 @@
+Stitch'ten dışa aktardığın HTML dosyalarını ve DESIGN.md'yi bu klasöre koy.

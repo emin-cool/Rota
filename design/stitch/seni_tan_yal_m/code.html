@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="tr"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-container-high": "#e1e8fd", "surface-variant": "#dce2f7", "surface": "#f9f9ff", "surface-container-lowest": "#ffffff", "secondary": "#ab3500", "on-primary": "#ffffff", "tertiary-fixed": "#85f7d7", "surface-container": "#e9edff", "secondary-fixed-dim": "#ffb59d", "inverse-primary": "#7bd7bd", "on-primary-fixed-variant": "#005141", "error": "#ba1a1a", "on-primary-fixed": "#002019", "on-tertiary-fixed": "#002019", "secondary-fixed": "#ffdbd0", "tertiary-fixed-dim": "#68dabc", "on-secondary-fixed-variant": "#832600", "tertiary-container": "#007c65", "outline-variant": "#bdc9c4", "on-secondary-fixed": "#390c00", "surface-bright": "#f9f9ff", "outline": "#6e7a75", "inverse-on-surface": "#edf0ff", "on-tertiary": "#ffffff", "inverse-surface": "#293040", "on-surface-variant": "#3e4945", "surface-tint": "#006b57", "on-tertiary-container": "#b9ffe8", "on-tertiary-fixed-variant": "#005141", "error-container": "#ffdad6", "surface-container-low": "#f1f3ff", "background": "#f9f9ff", "on-error": "#ffffff", "on-background": "#141b2b", "on-primary-container": "#bcffe9", "primary-fixed-dim": "#7bd7bd", "primary-container": "#0e7c66", "on-secondary": "#ffffff", "primary-fixed": "#97f4d9", "surface-dim": "#d3daef", "surface-container-highest": "#dce2f7", "secondary-container": "#fe6a34", "on-secondary-container": "#5d1900", "primary": "#00614f", "on-error-container": "#93000a", "tertiary": "#00614f", "on-surface": "#141b2b" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "space-sm": "0.5rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "space-xl": "2rem", "margin": "1rem" }, "fontFamily": { "metric-numeral": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "body-md-medium": [ "Plus Jakarta Sans" ], "label-sm": [ "Plus Jakarta Sans" ], "label-caps": [ "Plus Jakarta Sans" ], "body-md": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ], "display-hero": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ] }, "fontSize": { "metric-numeral": [ "34px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "800" } ], "headline-sm": [ "18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "body-md-medium": [ "14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" } ], "label-sm": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" } ], "label-caps": [ "11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" } ], "body-md": [ "14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-lg": [ "30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "display-hero": [ "40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800" } ], "headline-md": [ "22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "700" } ], "body-lg": [ "16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" } ] } } } };</script><style>@layer base{html,body{margin:0;padding:0;min-height:100%;}body{background-color:#f9f9ff;font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;}::selection{background-color:#97f4d9;color:#002019;}.pb-safe{padding-bottom:max(env(safe-area-inset-bottom,0px),1rem);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface flex flex-col items-center justify-start min-h-screen"><div class="w-full max-w-[390px] min-h-screen flex flex-col relative bg-surface"><header class="fixed top-0 w-full max-w-[390px] z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-14 px-margin flex items-center justify-between"><button aria-label="Geri Dön" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[22px]">arrow_back_ios_new</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface text-center flex-1 truncate px-space-xs">Seni Taniyalim</h1><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="flex-1 flex flex-col relative w-full pt-14 pb-safe bg-surface px-margin"><div class="flex flex-col w-full pb-8">
+<!-- Step Progress Indicator -->
+<div class="flex items-center justify-between pt-2 pb-4">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps">
+        ADIM 1 / 2
+      </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Profil Kurulumu</span>
+</div>
+<div class="flex items-center gap-1.5 w-24">
+<div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div class="h-1.5 flex-1 rounded-full bg-surface-container-high"></div>
+</div>
+</div>
+<!-- Header Title & Subtitle -->
+<div class="mb-5">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight mb-1">
+      Seni tanıyalım
+    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+      Sana en uygun Boğaz rotalarını önerebilmemiz için tercihlerini belirle.
+    </p>
+</div>
+<!-- Atmospheric Context Banner -->
+<div class="relative w-full h-24 rounded-xl overflow-hidden mb-6 bg-surface-container-low shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Scenic Istanbul Bosphorus coastline at golden morning light with distant silhouettes of early runners, calm turquoise sea, iconic waterfront path, clean minimalist urban outdoors vibe with lush green hills in background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYIWJSQPdjE5Rhw_HSgcsF-WnOdu9eGUtOfaTDxMauavkNaYM7ZJ1mdlPExFsVwIhBy8RAjssKS-fGKqvcfRMKrsU3PzqY3FpYL6hDDDmrL-quRWpHsrM5T3zK-r-de6w5qlYVdNyVrWF1tfckHR7VDnfb3bp3bxz0lGMhG4W2zQba72FxM6OMtfF_XV2iyB48a-0AA-6lgn5XQ4buvqrR6ewEmeOXuztN3v13sSfgUYEscpsZnQmZXA"/>
+<div class="absolute inset-0 bg-gradient-to-r from-on-surface/80 via-on-surface/40 to-transparent flex items-center px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container/90 backdrop-blur-md flex items-center justify-center text-on-primary-container shadow-sm">
+<span class="material-symbols-outlined text-[22px]">explore</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-primary-fixed block uppercase">İstanbul Parkurları</span>
+<p class="font-body-md-medium text-body-md-medium text-on-primary">Kişiselleştirilmiş rota motoru</p>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 1: Aktiviteler (Multi-select) -->
+<section class="mb-7">
+<div class="flex items-center justify-between mb-3">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">
+        Hangi aktiviteleri yapıyorsun?
+      </h3>
+<span class="font-label-sm text-label-sm text-primary font-medium">Çoklu Seçim</span>
+</div>
+<div class="flex flex-col gap-2.5" id="activity-group">
+<!-- Card 1: Yürüyüş (Selected) -->
+<button class="activity-card group w-full text-left p-3.5 rounded-xl bg-surface-container-low transition-all duration-200 flex items-center justify-between shadow-sm relative overflow-hidden" data-activity="yuruyus" onclick="toggleActivity(this)" type="button">
+<div class="flex items-center gap-3.5 min-w-0">
+<div class="activity-icon-box w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm transition-colors">
+<span aria-label="Yürüyüş" class="text-2xl" role="img">🚶</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">Yürüyüş</span>
+<span class="activity-badge font-label-caps text-label-caps px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed">Aktif</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Tempolu &amp; sahil turları</p>
+</div>
+</div>
+<div class="activity-check w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 transition-transform shadow-xs">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+</button>
+<!-- Card 2: Koşu (Selected) -->
+<button class="activity-card group w-full text-left p-3.5 rounded-xl bg-surface-container-low transition-all duration-200 flex items-center justify-between shadow-sm relative overflow-hidden" data-activity="kosu" onclick="toggleActivity(this)" type="button">
+<div class="flex items-center gap-3.5 min-w-0">
+<div class="activity-icon-box w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm transition-colors">
+<span aria-label="Koşu" class="text-2xl" role="img">🏃</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">Koşu</span>
+<span class="activity-badge font-label-caps text-label-caps px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed">Aktif</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Sabah koşuları &amp; interval</p>
+</div>
+</div>
+<div class="activity-check w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 transition-transform shadow-xs">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+</button>
+<!-- Card 3: Bisiklet (Unselected) -->
+<button class="activity-card group w-full text-left p-3.5 rounded-xl bg-surface-container-lowest transition-all duration-200 flex items-center justify-between shadow-xs relative overflow-hidden" data-activity="bisiklet" onclick="toggleActivity(this)" type="button">
+<div class="flex items-center gap-3.5 min-w-0">
+<div class="activity-icon-box w-12 h-12 rounded-xl bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 transition-colors">
+<span aria-label="Bisiklet" class="text-2xl" role="img">🚴</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">Bisiklet</span>
+<span class="activity-badge hidden font-label-caps text-label-caps px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed">Aktif</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Sahil yolu &amp; tırmanış parkurları</p>
+</div>
+</div>
+<div class="activity-check w-7 h-7 rounded-full bg-surface-container text-outline flex items-center justify-center shrink-0 transition-transform">
+<span class="material-symbols-outlined text-[18px] opacity-40">add</span>
+</div>
+</button>
+</div>
+</section>
+<!-- SECTION 2: Deneyim Seviyesi -->
+<section class="mb-7">
+<div class="mb-3">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">
+        Deneyim seviyen nedir?
+      </h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">
+        Eğim ve mesafe zorluk derecesini belirler.
+      </p>
+</div>
+<!-- Segmented Level Selector -->
+<div class="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-surface-container" id="level-group">
+<!-- Option 1: Yeni başlıyorum -->
+<button class="level-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl transition-all text-center group text-on-surface-variant" onclick="selectLevel(this)" type="button">
+<span class="material-symbols-outlined text-[24px] mb-1 text-outline group-hover:text-primary transition-colors">psychiatry</span>
+<span class="font-label-caps text-label-caps">Yeni Başlıyorum</span>
+</button>
+<!-- Option 2: Ara sıra (Selected) -->
+<button class="level-btn active flex flex-col items-center justify-center py-3 px-2 rounded-xl bg-primary text-on-primary shadow-sm transition-all text-center" onclick="selectLevel(this)" type="button">
+<span class="material-symbols-outlined text-[24px] mb-1 text-primary-fixed">timeline</span>
+<span class="font-label-caps text-label-caps">Ara Sıra</span>
+</button>
+<!-- Option 3: Düzenli yapıyorum -->
+<button class="level-btn flex flex-col items-center justify-center py-3 px-2 rounded-xl transition-all text-center group text-on-surface-variant" onclick="selectLevel(this)" type="button">
+<span class="material-symbols-outlined text-[24px] mb-1 text-secondary group-hover:text-secondary-container transition-colors">local_fire_department</span>
+<span class="font-label-caps text-label-caps">Düzenli</span>
+</button>
+</div>
+</section>
+<!-- SECTION 3: Tempo Tercihi (İsteğe Bağlı) -->
+<section class="mb-8">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-1.5">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">
+          Koşu tempo tercihin
+        </h3>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">İsteğe bağlı</span>
+</div>
+<!-- Interactive Slider Container Card -->
+<div class="p-4 rounded-2xl bg-surface-container-lowest shadow-sm">
+<!-- Current Metric Display -->
+<div class="flex items-baseline justify-between mb-2">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider block">Hedef Hız</span>
+<div class="flex items-baseline gap-1">
+<span class="font-metric-numeral text-metric-numeral text-primary" id="pace-display">5:30</span>
+<span class="font-body-md text-body-md text-on-surface-variant">dk / km</span>
+</div>
+</div>
+<div class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps flex items-center gap-1" id="pace-badge">
+<span class="material-symbols-outlined text-[14px]">speed</span>
+<span id="pace-label">Orta Tempo</span>
+</div>
+</div>
+<!-- Pace Split Mini-Chart Visualizer -->
+<div class="h-6 w-full flex items-end gap-1 mb-3 pt-2 px-1">
+<div class="flex-1 bg-surface-container rounded-xs h-2"></div>
+<div class="flex-1 bg-surface-container rounded-xs h-3"></div>
+<div class="flex-1 bg-primary-fixed-dim rounded-xs h-4"></div>
+<div class="flex-1 bg-primary rounded-xs h-5"></div>
+<div class="flex-1 bg-primary-container rounded-xs h-6"></div>
+<div class="flex-1 bg-primary rounded-xs h-5"></div>
+<div class="flex-1 bg-primary-fixed-dim rounded-xs h-4"></div>
+<div class="flex-1 bg-secondary-fixed-dim rounded-xs h-3"></div>
+<div class="flex-1 bg-secondary-container rounded-xs h-2"></div>
+</div>
+<!-- Native Interactive Range Input with Custom Track styling -->
+<div class="relative flex items-center my-3">
+<input aria-label="Koşu temposu seçin" class="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary" id="pace-slider" max="450" min="240" oninput="updatePace(this.value)" step="5" type="range" value="330"/>
+</div>
+<!-- Range Min/Max Footnotes -->
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline mt-1 px-0.5">
+<span>4:00 (Hızlı)</span>
+<span class="font-label-caps text-label-caps text-primary">5:45 İdeal Boğaz</span>
+<span>7:30 (Hafif)</span>
+</div>
+<!-- Motivational Micro-Tip -->
+<div class="mt-4 pt-3 flex items-start gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">info</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant">
+          Bebek - Kuruçeşme sahil hattı düz eğimiyle bu tempo için en çok tercih edilen rotadır.
+        </p>
+</div>
+</div>
+</section>
+<!-- Sticky-Safe Continue Action Button -->
+<div class="mt-2 w-full">
+<button class="w-full h-[52px] rounded-full bg-primary-container hover:bg-primary active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-on-primary shadow-md" onclick="handleContinue()" type="button">
+<span class="font-headline-sm text-headline-sm text-on-primary">Devam Et</span>
+<span class="material-symbols-outlined text-[20px] text-on-primary">arrow_forward</span>
+</button>
+<div class="text-center mt-3">
+<button class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" type="button">
+        Tercihleri daha sonra profilimden değiştirebilirim
+      </button>
+</div>
+</div>
+</div>
+<script>
+  function toggleActivity(card) {
+    const isSelected = card.classList.contains('bg-surface-container-low');
+    const badge = card.querySelector('.activity-badge');
+    const check = card.querySelector('.activity-check');
+    const iconBox = card.querySelector('.activity-icon-box');
+
+    if (isSelected) {
+      // Deselect
+      card.classList.remove('bg-surface-container-low', 'shadow-sm');
+      card.classList.add('bg-surface-container-lowest', 'shadow-xs');
+      if (badge) badge.classList.add('hidden');
+      if (check) {
+        check.classList.remove('bg-primary', 'text-on-primary', 'shadow-xs');
+        check.classList.add('bg-surface-container', 'text-outline');
+        check.innerHTML = '<span class="material-symbols-outlined text-[18px] opacity-40">add</span>';
+      }
+      if (iconBox) {
+        iconBox.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+        iconBox.classList.add('bg-surface-container', 'text-on-surface-variant');
+      }
+    } else {
+      // Select
+      card.classList.remove('bg-surface-container-lowest', 'shadow-xs');
+      card.classList.add('bg-surface-container-low', 'shadow-sm');
+      if (badge) badge.classList.remove('hidden');
+      if (check) {
+        check.classList.remove('bg-surface-container', 'text-outline');
+        check.classList.add('bg-primary', 'text-on-primary', 'shadow-xs');
+        check.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span>';
+      }
+      if (iconBox) {
+        iconBox.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        iconBox.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+      }
+    }
+  }
+
+  function selectLevel(targetBtn) {
+    const buttons = document.querySelectorAll('.level-btn');
+    buttons.forEach(btn => {
+      btn.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm', 'active');
+      btn.classList.add('text-on-surface-variant');
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (icon) {
+        if (btn.innerText.includes('Düzenli')) {
+          icon.className = 'material-symbols-outlined text-[24px] mb-1 text-secondary transition-colors';
+        } else {
+          icon.className = 'material-symbols-outlined text-[24px] mb-1 text-outline transition-colors';
+        }
+      }
+    });
+
+    targetBtn.classList.remove('text-on-surface-variant');
+    targetBtn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm', 'active');
+    const activeIcon = targetBtn.querySelector('.material-symbols-outlined');
+    if (activeIcon) {
+      activeIcon.className = 'material-symbols-outlined text-[24px] mb-1 text-primary-fixed';
+    }
+  }
+
+  function updatePace(seconds) {
+    const secNum = parseInt(seconds, 10);
+    const minutes = Math.floor(secNum / 60);
+    const remainingSeconds = secNum % 60;
+    const formattedSec = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+    
+    const display = document.getElementById('pace-display');
+    const label = document.getElementById('pace-label');
+    const badge = document.getElementById('pace-badge');
+
+    if (display) {
+      display.textContent = minutes + ':' + formattedSec;
+    }
+
+    if (label && badge) {
+      if (secNum < 290) {
+        label.textContent = 'Hızlı Tempo';
+        badge.className = 'px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps flex items-center gap-1';
+      } else if (secNum <= 360) {
+        label.textContent = 'Orta Tempo';
+        badge.className = 'px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps flex items-center gap-1';
+      } else {
+        label.textContent = 'Hafif / Toparlanma';
+        badge.className = 'px-3 py-1 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps flex items-center gap-1';
+      }
+    }
+  }
+
+  function handleContinue() {
+    const btn = event.currentTarget;
+    btn.classList.add('scale-95');
+    setTimeout(() => {
+      btn.classList.remove('scale-95');
+      // Natural transition placeholder
+    }, 150);
+  }
+</script></main></div></body></html>
