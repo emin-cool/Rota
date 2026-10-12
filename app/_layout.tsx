@@ -62,7 +62,9 @@ export default function RootLayout() {
             <Stack.Protected guard={!signedOut && onboarded}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="route/[id]/index" />
-              <Stack.Screen name="route-wizard/step-1" />
+              <Stack.Screen name="route-wizard" />
+              <Stack.Screen name="route-results" />
+              <Stack.Screen name="activity/live" />
             </Stack.Protected>
           </Stack>
         </QueryClientProvider>
