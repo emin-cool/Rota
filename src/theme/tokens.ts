@@ -70,6 +70,18 @@ const brandColors = {
   },
   canvas: '#F7F8F6', // sıcak kırık beyaz zemin
   hairline: '#E5E7EB', // ince ayırıcı / kart kenarlığı
+  // Canlı takip (karanlık tema) — Stitch canl_aktivite ekranından.
+  live: {
+    bg: '#101915',
+    card: '#16201B',
+    'card-deep': '#14231E',
+    'card-green': '#172D24',
+    border: '#203028',
+    ok: '#10B981',
+    alert: '#FF5449',
+    'alert-soft': '#FFD7C7',
+    'alert-bg': '#2F1407',
+  },
   // Aktivite renkleri: yürüyüş = marka yeşili, koşu = turuncu, bisiklet = mavi (Stitch route4Grad).
   activity: {
     walk: '#0E7C66',

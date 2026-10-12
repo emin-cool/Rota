@@ -86,7 +86,8 @@ skor = scenicScore
 Etiketleme: en yüksek scenicScore → "En manzaralı", en düşük tırmanış → "En düz", en kısa → "En kısa" (çakışırsa sonraki adaya geç).
 
 ## Canlı takip
-- `Location.startLocationUpdatesAsync` (arka plan task), `accuracy: Balanced`, `distanceInterval: 5`.
+- `Location.startLocationUpdatesAsync` (arka plan task), `accuracy: High`, `distanceInterval: 5`. (İlk taslakta `Balanced` yazıyordu; Balanced iOS'ta ~100 m, Android'de ağ tabanlı konum verir ve 25 m'lik doğruluk filtresi neredeyse tüm noktaları atardı. Pil, 5 m aralık + duraklatınca durdurma + toplu SQLite yazımıyla korunur.)
+- Android'de ekran kilitliyken kayıt **ön plan servisi** (bildirimli) ile sürer; ayrı "her zaman" konum izni (`ACCESS_BACKGROUND_LOCATION`) istenmez. iOS'ta "uygulama kullanılırken" izni + `UIBackgroundModes: location`.
 - Doğruluğu > 25 m olan noktaları at; basit hareketli ortalama ile yumuşat.
 - Noktalar önce SQLite'a yazılır, bitince Supabase'e tek seferde gönderilir.
 - Rotaya en yakın nokta mesafesi > 40 m → sapma uyarısı.
