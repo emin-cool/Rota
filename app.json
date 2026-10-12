@@ -44,7 +44,7 @@
           "locationAlwaysAndWhenInUsePermission": "Rota, ekran kilitliyken ya da uygulama arka plandayken de yürüyüş, koşu ve bisiklet aktiviteni kaydetmek için konumunu kullanır.",
           "locationAlwaysPermission": "Rota, ekran kilitliyken ya da uygulama arka plandayken de aktiviteni kaydetmek için konumunu kullanır.",
           "isIosBackgroundLocationEnabled": true,
-          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": false,
           "isAndroidForegroundServiceEnabled": true
         }
       ],
