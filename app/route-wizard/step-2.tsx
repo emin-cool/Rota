@@ -39,6 +39,8 @@ export default function WizardStep2() {
   const [active, setActive] = useState<Active>('start');
   const [fly, setFly] = useState<{ point: LngLat; key: number } | null>(null);
   const flyKey = useRef(0);
+  /** Haritanın en son bildirilen merkezi (nokta atanmasa bile): sekme değişince hemen kullanılır. */
+  const lastCenter = useRef<LngLat | null>(null);
   const goTo = (point: LngLat) => setFly({ point, key: ++flyKey.current });
   // Harita yalnızca ilk açılışta bu merkeze ortalanır; sonrası `flyTo` ile.
   const [initialCenter] = useState<LngLat>(() => start ?? location.coords ?? DEFAULT_CENTER);
@@ -53,6 +55,7 @@ export default function WizardStep2() {
   }, [location.coords, patch]);
 
   const onCenterChange = (c: LngLat) => {
+    lastCenter.current = c;
     const s = useWizardStore.getState();
     const stored = active === 'start' ? s.start : s.end;
     if (stored && haversineM(stored, c) < SAME_POINT_M) return;
@@ -69,7 +72,7 @@ export default function WizardStep2() {
     const timer = setTimeout(async () => {
       const name = await reverseGeocode(activePoint, controller.signal);
       if (name) patch(active === 'start' ? { startLabel: name } : { endLabel: name });
-    }, 500);
+    }, 350);
     return () => {
       clearTimeout(timer);
       controller.abort();
@@ -79,7 +82,12 @@ export default function WizardStep2() {
   const switchTo = (next: Active) => {
     setActive(next);
     const target = next === 'start' ? start : end;
-    if (target) goTo(target);
+    if (target) {
+      goTo(target);
+    } else if (next === 'end' && lastCenter.current) {
+      // Harita kıpırdamayacağı için "durdu" olayı gelmez; bitişi hemen haritanın merkezi yap.
+      patch({ end: lastCenter.current, endLabel: null });
+    }
   };
 
   const useCurrent = () => {
