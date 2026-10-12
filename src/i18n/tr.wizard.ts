@@ -46,6 +46,14 @@ export const trWizard = {
       needEnd: 'Bitiş noktasını da seçmelisin.',
       searching: 'Yer adı aranıyor…',
       pickOnMap: 'Haritadan bir nokta seç',
+      search: {
+        placeholder: 'Sokak, mahalle veya mekan ara',
+        noResults: 'Sonuç bulunamadı. Başka bir yazımı dene ya da haritadan seç.',
+        unavailable: 'Arama şu an kullanılamıyor; haritadan seçebilirsin.',
+        clear: 'Aramayı temizle',
+        loading: 'Aranıyor…',
+        pickFailed: 'Yer bilgisi alınamadı. Tekrar dene.',
+      },
       tooClose:
         'Bitiş noktası başlangıçtan en az 200 m uzakta olmalı. Haritayı kaydırarak bitişi taşı.',
     },

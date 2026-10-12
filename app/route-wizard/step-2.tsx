@@ -1,18 +1,21 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui';
 import { MapPointPicker } from '@/components/wizard/MapPointPicker';
+import { PlaceSearchBox } from '@/components/wizard/PlaceSearchBox';
 import { WizardScaffold } from '@/components/wizard/WizardScaffold';
+import { usePlaceSearch } from '@/hooks/usePlaceSearch';
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { tr } from '@/i18n/tr';
 import { haversineM } from '@/lib/geo';
 import { reverseGeocode } from '@/lib/geocode';
 import type { LngLat } from '@/lib/geo';
 import { DEFAULT_CENTER } from '@/lib/mapConfig';
+import type { PlaceSuggestion } from '@/lib/placeSearch';
 import { useWizardStore } from '@/stores/wizardStore';
 import { colors, shadows } from '@/theme/tokens';
 
@@ -39,8 +42,8 @@ export default function WizardStep2() {
   const [active, setActive] = useState<Active>('start');
   const [fly, setFly] = useState<{ point: LngLat; key: number } | null>(null);
   const flyKey = useRef(0);
-  /** Haritanın en son bildirilen merkezi (nokta atanmasa bile): sekme değişince hemen kullanılır. */
-  const lastCenter = useRef<LngLat | null>(null);
+  /** Haritanın en son bildirilen merkezi (nokta atanmasa bile): sekme değişince ve aramada kullanılır. */
+  const [mapCenter, setMapCenter] = useState<LngLat | null>(null);
   const goTo = (point: LngLat) => setFly({ point, key: ++flyKey.current });
   // Harita yalnızca ilk açılışta bu merkeze ortalanır; sonrası `flyTo` ile.
   const [initialCenter] = useState<LngLat>(() => start ?? location.coords ?? DEFAULT_CENTER);
@@ -55,7 +58,7 @@ export default function WizardStep2() {
   }, [location.coords, patch]);
 
   const onCenterChange = (c: LngLat) => {
-    lastCenter.current = c;
+    setMapCenter(c);
     const s = useWizardStore.getState();
     const stored = active === 'start' ? s.start : s.end;
     if (stored && haversineM(stored, c) < SAME_POINT_M) return;
@@ -86,6 +89,34 @@ export default function WizardStep2() {
     };
   }, [activePoint, activeLabel, active, patch, pointKey]);
 
+  // --- Yer arama (sokak, mahalle, mekan) ---
+  const [query, setQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [choosing, setChoosing] = useState(false);
+  const [pickError, setPickError] = useState(false);
+  const search = usePlaceSearch(query, mapCenter ?? start ?? location.coords ?? null);
+
+  const choosePlace = async (suggestion: PlaceSuggestion) => {
+    setChoosing(true);
+    setPickError(false);
+    const place = await search.select(suggestion);
+    setChoosing(false);
+    if (!place) {
+      setPickError(true);
+      return;
+    }
+    // Seçilen yerin adı etiket olur (yer adı sorgusu gereksiz); harita oraya uçar.
+    if (active === 'start') {
+      patch({ start: place.point, startIsCurrent: false, startLabel: place.name });
+    } else {
+      patch({ end: place.point, endLabel: place.name });
+    }
+    goTo(place.point);
+    setQuery('');
+    setSearchFocused(false);
+    Keyboard.dismiss();
+  };
+
   const switchTo = (next: Active) => {
     setActive(next);
     const target = next === 'start' ? start : end;
@@ -94,7 +125,7 @@ export default function WizardStep2() {
     } else if (next === 'end') {
       // Harita kıpırdamayacağı için "durdu" olayı gelmez; bitişi hemen haritanın merkezi yap
       // (merkez henüz bilinmiyorsa pin başlangıcın üzerindedir).
-      const point = lastCenter.current ?? start;
+      const point = mapCenter ?? start;
       if (point) patch({ end: point, endLabel: null });
     }
   };
@@ -158,6 +189,28 @@ export default function WizardStep2() {
             }
             showUserLocation={location.status === 'granted'}
           />
+
+          {/* Yer arama kutusu: haritanın üstünde */}
+          <View className="absolute inset-x-margin top-2">
+            <PlaceSearchBox
+              value={query}
+              onChangeText={(t) => {
+                setQuery(t);
+                setPickError(false);
+              }}
+              onFocus={() => setSearchFocused(true)}
+              // Kısa gecikme: öneriye dokunma, odak kaybından önce işlensin.
+              onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+              open={searchFocused && (search.active || pickError)}
+              suggestions={search.suggestions}
+              loading={search.loading}
+              empty={search.empty}
+              failed={search.failed && search.active}
+              choosing={choosing}
+              pickError={pickError}
+              onSelect={(s) => void choosePlace(s)}
+            />
+          </View>
 
           {/* Seçilen nokta kartı */}
           <View
