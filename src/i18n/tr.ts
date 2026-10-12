@@ -1,10 +1,12 @@
 /** Arayüz metinleri (Türkçe). İleride çok dil için `en.ts` ile aynı şekli taşıyacak. */
+import { trExplore } from './tr.explore';
 import { trLive } from './tr.live';
 import { trWizard } from './tr.wizard';
 
 export const tr = {
   ...trWizard,
   ...trLive,
+  ...trExplore,
   tabs: {
     map: 'Harita',
     explore: 'Keşfet',

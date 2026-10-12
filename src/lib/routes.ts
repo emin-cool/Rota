@@ -79,6 +79,7 @@ export async function insertGeneratedRoute(params: {
       scenic_score: route.scenicScore,
       difficulty: difficultyOf(route.distanceM, route.elevationGainM),
       is_public: false,
+      elevation_profile: route.elevationProfile,
     })
     .select('id')
     .single();

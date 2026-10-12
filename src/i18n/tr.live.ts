@@ -96,7 +96,6 @@ export const trLive = {
     rateLabels: ['Zayıf', 'Fena değil', 'İyi', 'Çok iyi', 'Mükemmel'],
     rateStar: (n: number) => `${n} yıldız`,
     tagsTitle: 'Hızlı değerlendirme etiketleri',
-    tags: ['Manzara harika', 'Kalabalıktı', 'Gölge az', 'Zemin temiz', 'Çeşmeler aktif'],
     commentPlaceholder: 'İstersen kısa bir yorum yaz',
     share: 'Paylaş',
     shareError: 'Paylaşım görseli hazırlanamadı.',

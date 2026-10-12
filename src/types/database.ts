@@ -57,6 +57,8 @@ export type RouteRow = {
   avg_rating: number;
   rating_count: number;
   completion_count: number;
+  /** [{d: metre, z: rakım}] — sihirbazdan üretilen rotalarda dolu, seed rotalarında null. */
+  elevation_profile: { d: number; z: number }[] | null;
   created_at: string;
 };
 
@@ -137,6 +139,103 @@ export type NearbyRoute = Pick<
   geojson: { type: 'LineString'; coordinates: [number, number][] } | null;
 };
 
+type LineGeoJson = { type: 'LineString'; coordinates: [number, number][] };
+
+/** `explore_routes` satırı (Keşfet listesi). */
+export type ExploreRoute = Pick<
+  RouteRow,
+  | 'id'
+  | 'title'
+  | 'activity_type'
+  | 'route_type'
+  | 'distance_m'
+  | 'elevation_gain_m'
+  | 'est_duration_min'
+  | 'scenic_score'
+  | 'difficulty'
+  | 'district'
+  | 'avg_rating'
+  | 'rating_count'
+  | 'completion_count'
+  | 'is_featured'
+> & {
+  start_lng: number;
+  start_lat: number;
+  geojson: LineGeoJson | null;
+  saved: boolean;
+  cover_url: string | null;
+};
+
+/** `route_detail` satırı. */
+export type RouteDetail = Pick<
+  RouteRow,
+  | 'id'
+  | 'title'
+  | 'description'
+  | 'activity_type'
+  | 'route_type'
+  | 'distance_m'
+  | 'elevation_gain_m'
+  | 'est_duration_min'
+  | 'scenic_score'
+  | 'difficulty'
+  | 'district'
+  | 'is_featured'
+  | 'is_public'
+  | 'avg_rating'
+  | 'rating_count'
+  | 'completion_count'
+  | 'created_at'
+  | 'creator_id'
+  | 'elevation_profile'
+> & {
+  start_lng: number;
+  start_lat: number;
+  geojson: LineGeoJson;
+  creator_name: string | null;
+  creator_avatar: string | null;
+  photos: string[];
+  saved: boolean;
+};
+
+export type RatingSummary = {
+  count: number;
+  avg: number;
+  dist: Record<'1' | '2' | '3' | '4' | '5', number>;
+  tags: { tag: string; count: number }[];
+};
+
+export type ReviewListItem = {
+  id: string;
+  user_id: string;
+  rating: number;
+  comment: string | null;
+  tags: string[];
+  is_verified: boolean;
+  created_at: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  photos: string[];
+  mine: boolean;
+};
+
+export type PoiType = 'water' | 'toilet' | 'cafe' | 'bench' | 'transit';
+export type PoiSummary = { poi_type: PoiType; n: number; sample_name: string | null };
+
+export type ExploreArgs = {
+  p_query?: string | null;
+  p_activity?: ActivityType | null;
+  p_min_duration?: number | null;
+  p_max_duration?: number | null;
+  p_difficulty?: Difficulty | null;
+  p_district?: string | null;
+  p_min_rating?: number | null;
+  p_featured_only?: boolean;
+  p_sort?: 'popular' | 'featured' | 'newest';
+  p_limit?: number;
+  p_offset?: number;
+};
+
 export type ProfileUpdate = Partial<
   Pick<
     ProfileRow,
@@ -188,6 +287,15 @@ export type Database = {
         Args: { lng: number; lat: number; radius_m?: number; activity?: ActivityType | null };
         Returns: NearbyRoute[];
       };
+      explore_routes: { Args: ExploreArgs; Returns: ExploreRoute[] };
+      route_districts: { Args: Record<string, never>; Returns: string[] };
+      route_detail: { Args: { p_id: string }; Returns: RouteDetail[] };
+      route_rating_summary: { Args: { p_id: string }; Returns: RatingSummary };
+      route_reviews_list: {
+        Args: { p_id: string; p_limit?: number; p_offset?: number };
+        Returns: ReviewListItem[];
+      };
+      route_pois: { Args: { p_id: string }; Returns: PoiSummary[] };
       my_privacy_zone: { Args: Record<string, never>; Returns: unknown };
     };
     Enums: Record<string, never>;

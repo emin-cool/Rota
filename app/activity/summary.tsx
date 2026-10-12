@@ -31,6 +31,7 @@ import {
 } from '@/lib/activityUpload';
 import { formatKmClock, formatPaceClock, formatElapsed } from '@/lib/tracking';
 import { lineLengthM, type LngLat } from '@/lib/geo';
+import { REVIEW_TAGS } from '@/lib/reviewTags';
 import { deleteSession, getSession, loadPoints, updateSession } from '@/lib/trackingDb';
 import type { SessionRow } from '@/lib/trackingDb';
 import { useSessionStore } from '@/stores/sessionStore';
@@ -530,7 +531,7 @@ export default function ActivitySummaryScreen() {
                   {tr.summary.tagsTitle}
                 </Text>
                 <View className="flex-row flex-wrap gap-space-sm">
-                  {tr.summary.tags.map((t) => (
+                  {REVIEW_TAGS.map(({ label: t }) => (
                     <Chip
                       key={t}
                       label={t}

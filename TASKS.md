@@ -18,7 +18,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [x] P1.3 Rota sihirbazı + sonuç ekranı (kod hazır; yeni development build (react-native-svg) kurulup tablette doğrulanacak)
 - [x] P1.4 Canlı aktivite takibi (kod hazır; yeni development build kurulup dışarıda 10 dk yürüyüşle doğrulanacak)
 - [x] P1.5 Aktivite özeti + kaydetme (kod hazır; `db:push`, yeni development build ve tablette doğrulama bekliyor — docs/06-supabase-kurulum.md)
-- [ ] P1.6 Keşfet + rota detayı + yorum
+- [x] P1.6 Keşfet + rota detayı + yorum (kod ve RPC'ler hazır; migration'lar uygulandı; tablette doğrulama bekliyor — yeni native modül yok, development build gerekmez)
 - [ ] P1.7 Profil, ayarlar, 30 seed rota
 - [ ] P1.8 Genel kontrol ve temizlik
 - [ ] Kapalı test (20–30 kişi)
