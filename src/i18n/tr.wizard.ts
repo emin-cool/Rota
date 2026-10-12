@@ -44,6 +44,9 @@ export const trWizard = {
       selectedPoint: 'Seçilen nokta',
       mapUnavailable: 'Harita yalnızca mobil uygulamada (development build) görüntülenir.',
       needEnd: 'Bitiş noktasını da seçmelisin.',
+      searching: 'Yer adı aranıyor…',
+      tooClose:
+        'Bitiş noktası başlangıçtan en az 200 m uzakta olmalı. Haritayı kaydırarak bitişi taşı.',
     },
     step3: {
       badge: 'HEDEF',

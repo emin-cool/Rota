@@ -64,20 +64,27 @@ export default function WizardStep2() {
   };
 
   // Seçilen noktanın yer adı (Mapbox ters kodlama), harita durduktan kısa süre sonra.
+  // Yer adı aranıyor mu? Etiket yokken ve arama henüz başarısız olmadıysa evet.
+  const [failedKey, setFailedKey] = useState<string | null>(null);
   const activePoint = active === 'start' ? start : end;
   const activeLabel = active === 'start' ? startLabel : endLabel;
+  const pointKey = activePoint ? `${active}:${activePoint[0]},${activePoint[1]}` : null;
+  const searching = !!activePoint && !activeLabel && failedKey !== pointKey;
+
   useEffect(() => {
     if (!activePoint || activeLabel) return;
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       const name = await reverseGeocode(activePoint, controller.signal);
+      if (controller.signal.aborted) return;
       if (name) patch(active === 'start' ? { startLabel: name } : { endLabel: name });
+      else setFailedKey(pointKey);
     }, 350);
     return () => {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [activePoint, activeLabel, active, patch]);
+  }, [activePoint, activeLabel, active, patch, pointKey]);
 
   const switchTo = (next: Active) => {
     setActive(next);
@@ -164,7 +171,8 @@ export default function WizardStep2() {
                     : copy.start.toUpperCase()}
                 </Text>
                 <Text variant="body-lg" className="font-bold" numberOfLines={1}>
-                  {activeLabel ?? (activePoint ? copy.selectedPoint : '…')}
+                  {activeLabel ??
+                    (activePoint ? (searching ? copy.searching : copy.selectedPoint) : '…')}
                 </Text>
               </View>
               {location.coords && active === 'start' ? (
@@ -193,6 +201,15 @@ export default function WizardStep2() {
             {location.status === 'denied' ? (
               <Text variant="label-sm" className="text-ink-secondary">
                 {copy.noLocation}
+              </Text>
+            ) : null}
+            {abTooClose ? (
+              <Text
+                variant="label-sm"
+                className="text-accent-deep"
+                accessibilityLiveRegion="polite"
+              >
+                {copy.tooClose}
               </Text>
             ) : null}
             {isAB && !end && active === 'start' ? (
