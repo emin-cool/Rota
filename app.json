@@ -40,10 +40,16 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Rota, yakınındaki rotaları göstermek ve başlangıç noktanı belirlemek için konumunu kullanır."
+          "locationWhenInUsePermission": "Rota, yakınındaki rotaları göstermek ve başlangıç noktanı belirlemek için konumunu kullanır.",
+          "locationAlwaysAndWhenInUsePermission": "Rota, ekran kilitliyken ya da uygulama arka plandayken de yürüyüş, koşu ve bisiklet aktiviteni kaydetmek için konumunu kullanır.",
+          "locationAlwaysPermission": "Rota, ekran kilitliyken ya da uygulama arka plandayken de aktiviteni kaydetmek için konumunu kullanır.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
         }
       ],
-      "@rnmapbox/maps"
+      "@rnmapbox/maps",
+      "expo-sqlite"
     ],
     "scheme": "rota",
     "experiments": {
