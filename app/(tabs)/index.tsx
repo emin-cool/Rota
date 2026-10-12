@@ -16,6 +16,7 @@ import { useUserLocation } from '@/hooks/useUserLocation';
 import { tr } from '@/i18n/tr';
 import { DEFAULT_CENTER, FALLBACK_RADIUS_M, NEARBY_RADIUS_M } from '@/lib/mapConfig';
 import { useSessionStore } from '@/stores/sessionStore';
+import { useWizardStore } from '@/stores/wizardStore';
 import { shadows } from '@/theme/tokens';
 
 // Sheet noktaları: 110 pt peek, ekranın %38'i (açılış), %90.
@@ -64,6 +65,12 @@ export default function MapScreen() {
           )
         : 0,
   }));
+
+  const startWizard = () => {
+    // Her yeni sihirbaz, profil tercihlerinden (aktivite, tempo) temiz başlar.
+    useWizardStore.getState().reset(profile);
+    router.push('/route-wizard/step-1');
+  };
 
   const openRoute = (id: string) => router.push({ pathname: '/route/[id]', params: { id } });
   const initial = (profile?.display_name ?? profile?.username ?? '?').charAt(0).toUpperCase();
@@ -136,7 +143,7 @@ export default function MapScreen() {
           title={tr.map.createRoute}
           className="bg-accent active:bg-accent-deep"
           style={shadows.record}
-          onPress={() => router.push('/route-wizard/step-1')}
+          onPress={startWizard}
         />
       </Animated.View>
 

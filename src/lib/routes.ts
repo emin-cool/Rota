@@ -2,11 +2,13 @@ import { FunctionsFetchError, FunctionsHttpError } from '@supabase/supabase-js';
 
 import { tr } from '@/i18n/tr';
 import { supabase } from '@/lib/supabase';
+import { difficultyOf } from '@/lib/wizard';
 import type {
   ErrorBody,
   ErrorCode,
   GenerateRoutesInput,
   GenerateRoutesResponse,
+  RouteOption,
 } from '@/types/routes';
 
 /** Sunucunun Türkçe, kullanıcıya gösterilebilir mesajını taşıyan hata. */
@@ -42,4 +44,60 @@ export async function generateRoutes(input: GenerateRoutesInput): Promise<Genera
   }
   if (!data) throw new GenerateRoutesError('internal', tr.routes.errors.generic);
   return data;
+}
+
+/** LineString/Point'i PostgREST'in kabul ettiği EWKT metnine çevirir. */
+const toLineEwkt = (coords: [number, number][]) =>
+  `SRID=4326;LINESTRING(${coords.map((c) => `${c[0]} ${c[1]}`).join(',')})`;
+
+/**
+ * Üretilen rotayı `routes` tablosuna (özel, is_public=false) ve kullanıcının kayıtlılarına ekler.
+ * Dönen değer routes.id; kaydı geri almak için `unsaveRoute` kullanılır.
+ */
+export async function saveGeneratedRoute(params: {
+  userId: string;
+  route: RouteOption;
+  input: GenerateRoutesInput;
+  title: string;
+}): Promise<string> {
+  const { userId, route, input, title } = params;
+  const coords = route.geojson.coordinates;
+  const start = coords[0]!;
+
+  const { data, error } = await supabase
+    .from('routes')
+    .insert({
+      creator_id: userId,
+      title,
+      activity_type: input.activityType,
+      route_type: input.routeType,
+      geom: toLineEwkt(coords),
+      start_point: `SRID=4326;POINT(${start[0]} ${start[1]})`,
+      distance_m: route.distanceM,
+      elevation_gain_m: route.elevationGainM,
+      est_duration_min: route.estDurationMin,
+      scenic_score: route.scenicScore,
+      difficulty: difficultyOf(route.distanceM, route.elevationGainM),
+      is_public: false,
+    })
+    .select('id')
+    .single();
+  if (error) throw error;
+
+  const routeId = data.id as string;
+  const { error: saveError } = await supabase
+    .from('saved_routes')
+    .insert({ user_id: userId, route_id: routeId });
+  if (saveError) throw saveError;
+  return routeId;
+}
+
+/** Kayıtlılardan çıkarır (routes satırı kalır; tekrar kaydedilebilir). */
+export async function unsaveRoute(userId: string, routeId: string): Promise<void> {
+  const { error } = await supabase
+    .from('saved_routes')
+    .delete()
+    .eq('user_id', userId)
+    .eq('route_id', routeId);
+  if (error) throw error;
 }

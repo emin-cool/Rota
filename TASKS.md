@@ -15,7 +15,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 ## Faz 1 — MVP
 - [x] P1.1 Ana harita (tablette development build ile doğrulandı; örnek rotalar supabase/seed.sql)
 - [x] P1.2 `generate-routes` Edge Function (OSM verisi kendi PostGIS tablomuzda: scripts/osm-import.mjs; ORS secret + db push + import + deploy sırası docs/06-supabase-kurulum.md)
-- [ ] P1.3 Rota sihirbazı + sonuç ekranı
+- [x] P1.3 Rota sihirbazı + sonuç ekranı (kod hazır; yeni development build (react-native-svg) kurulup tablette doğrulanacak)
 - [ ] P1.4 Canlı aktivite takibi
 - [ ] P1.5 Aktivite özeti + kaydetme
 - [ ] P1.6 Keşfet + rota detayı + yorum

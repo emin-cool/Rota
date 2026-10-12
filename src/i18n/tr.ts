@@ -1,5 +1,8 @@
 /** Arayüz metinleri (Türkçe). İleride çok dil için `en.ts` ile aynı şekli taşıyacak. */
+import { trWizard } from './tr.wizard';
+
 export const tr = {
+  ...trWizard,
   tabs: {
     map: 'Harita',
     explore: 'Keşfet',
