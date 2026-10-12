@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { ActivityIndicator, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui';
@@ -91,9 +91,11 @@ export default function WizardStep2() {
     const target = next === 'start' ? start : end;
     if (target) {
       goTo(target);
-    } else if (next === 'end' && lastCenter.current) {
-      // Harita kıpırdamayacağı için "durdu" olayı gelmez; bitişi hemen haritanın merkezi yap.
-      patch({ end: lastCenter.current, endLabel: null });
+    } else if (next === 'end') {
+      // Harita kıpırdamayacağı için "durdu" olayı gelmez; bitişi hemen haritanın merkezi yap
+      // (merkez henüz bilinmiyorsa pin başlangıcın üzerindedir).
+      const point = lastCenter.current ?? start;
+      if (point) patch({ end: point, endLabel: null });
     }
   };
 
@@ -170,10 +172,23 @@ export default function WizardStep2() {
                     ? (active === 'start' ? copy.start : copy.end).toUpperCase()
                     : copy.start.toUpperCase()}
                 </Text>
-                <Text variant="body-lg" className="font-bold" numberOfLines={1}>
-                  {activeLabel ??
-                    (activePoint ? (searching ? copy.searching : copy.selectedPoint) : '…')}
-                </Text>
+                <View className="min-h-[28px] flex-row items-center gap-space-sm">
+                  {!activeLabel && searching ? (
+                    <ActivityIndicator size="small" color={colors.brand.DEFAULT} />
+                  ) : null}
+                  <Text
+                    variant="body-lg"
+                    className={`flex-1 font-bold ${!activeLabel && searching ? 'text-ink-secondary' : ''}`}
+                    numberOfLines={1}
+                  >
+                    {activeLabel ??
+                      (activePoint
+                        ? searching
+                          ? copy.searching
+                          : copy.selectedPoint
+                        : copy.pickOnMap)}
+                  </Text>
+                </View>
               </View>
               {location.coords && active === 'start' ? (
                 <Pressable

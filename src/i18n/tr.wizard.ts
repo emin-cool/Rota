@@ -45,6 +45,7 @@ export const trWizard = {
       mapUnavailable: 'Harita yalnızca mobil uygulamada (development build) görüntülenir.',
       needEnd: 'Bitiş noktasını da seçmelisin.',
       searching: 'Yer adı aranıyor…',
+      pickOnMap: 'Haritadan bir nokta seç',
       tooClose:
         'Bitiş noktası başlangıçtan en az 200 m uzakta olmalı. Haritayı kaydırarak bitişi taşı.',
     },
