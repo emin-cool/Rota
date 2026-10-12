@@ -6,13 +6,13 @@ import { Button, Card, Text } from '@/components/ui';
 import { WizardScaffold } from '@/components/wizard/WizardScaffold';
 import { tr } from '@/i18n/tr';
 import { buildGenerateInput, formatClock, formatKmValue, visibleExtraKeys } from '@/lib/wizard';
-import { selectAnswers, useWizardStore } from '@/stores/wizardStore';
+import { useWizardAnswers, useWizardStore } from '@/stores/wizardStore';
 import { colors } from '@/theme/tokens';
 
 type Row = { label: string; value: string; step: number };
 
 export default function WizardStep6() {
-  const a = useWizardStore(selectAnswers);
+  const a = useWizardAnswers();
   const copy = tr.wizard.step6;
   const input = buildGenerateInput(a, null);
 

@@ -24,7 +24,7 @@ import {
   stepDistance,
   stepDuration,
 } from '@/lib/wizard';
-import { selectAnswers, useWizardStore } from '@/stores/wizardStore';
+import { useWizardAnswers, useWizardStore } from '@/stores/wizardStore';
 import { suggestionGradients } from '@/theme/gradients';
 import { colors, shadows } from '@/theme/tokens';
 
@@ -53,7 +53,7 @@ function RoundButton({
 }
 
 export default function WizardStep3() {
-  const a = useWizardStore(selectAnswers);
+  const a = useWizardAnswers();
   const patch = useWizardStore((s) => s.patch);
   const { routes } = useWizardNearby();
   const { recommended, nature } = pickRecommendations(routes);

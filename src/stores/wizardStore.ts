@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 
 import { DEFAULT_ANSWERS, clampGoalToActivity, type WizardAnswers } from '@/lib/wizard';
 import type { ProfileRow } from '@/types/database';
@@ -66,4 +67,13 @@ export function selectAnswers(state: WizardState): WizardAnswers {
     extras,
     paceSecPerKm,
   };
+}
+
+/**
+ * Cevap alanlarını bileşende okumak için. `selectAnswers` her çağrıda yeni bir nesne döndürür;
+ * Zustand 5'te bu doğrudan seçici olarak verilirse sonsuz yeniden çizim döngüsü oluşur,
+ * bu yüzden `useShallow` ile sarılır (alan değerleri değişmedikçe aynı referans döner).
+ */
+export function useWizardAnswers(): WizardAnswers {
+  return useWizardStore(useShallow(selectAnswers));
 }

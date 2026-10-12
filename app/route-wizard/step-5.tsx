@@ -7,7 +7,7 @@ import { FilledChoice, ToggleRow } from '@/components/wizard/controls';
 import { WizardScaffold } from '@/components/wizard/WizardScaffold';
 import { tr } from '@/i18n/tr';
 import { activeExtraCount, visibleExtraKeys, type ExtraToggleKey } from '@/lib/wizard';
-import { selectAnswers, useWizardStore } from '@/stores/wizardStore';
+import { useWizardAnswers, useWizardStore } from '@/stores/wizardStore';
 import type { SurfacePref } from '@/types/routes';
 
 type IconName = keyof typeof MaterialIcons.glyphMap;
@@ -29,7 +29,7 @@ const SURFACES: { value: SurfacePref; icon: IconName }[] = [
 ];
 
 export default function WizardStep5() {
-  const a = useWizardStore(selectAnswers);
+  const a = useWizardAnswers();
   const patch = useWizardStore((s) => s.patch);
   const copy = tr.wizard.step5;
   const keys = visibleExtraKeys(a.activityType, a.routeType);

@@ -3,11 +3,11 @@ import { useMemo } from 'react';
 import { useNearbyRoutes } from '@/hooks/useNearbyRoutes';
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { DEFAULT_CENTER } from '@/lib/mapConfig';
-import { selectAnswers, useWizardStore } from '@/stores/wizardStore';
+import { useWizardAnswers, useWizardStore } from '@/stores/wizardStore';
 
 /** Sihirbaz adımlarındaki öneri blokları için: seçilen noktaya yakın, aktiviteye uygun rotalar (8 km). */
 export function useWizardNearby() {
-  const answers = useWizardStore(selectAnswers);
+  const answers = useWizardAnswers();
   const location = useUserLocation();
   const center = useMemo(
     () =>
