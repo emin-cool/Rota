@@ -129,6 +129,12 @@ export const tr = {
     permissionSettings: 'Ayarları aç',
     webPlaceholder: 'Harita yalnızca mobil uygulamada (development build) görüntülenir.',
   },
+  routes: {
+    errors: {
+      network: 'Rota servisine bağlanılamadı. İnternetini kontrol edip tekrar dene.',
+      generic: 'Rotalar oluşturulamadı. Lütfen tekrar dene.',
+    },
+  },
   routeStub: {
     detailTitle: 'Rota detayı',
     wizardTitle: 'Rota Oluştur',

@@ -14,7 +14,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 
 ## Faz 1 — MVP
 - [x] P1.1 Ana harita (tablette development build ile doğrulandı; örnek rotalar supabase/seed.sql)
-- [ ] P1.2 `generate-routes` Edge Function
+- [x] P1.2 `generate-routes` Edge Function (OSM verisi kendi PostGIS tablomuzda: scripts/osm-import.mjs; ORS secret + db push + import + deploy sırası docs/06-supabase-kurulum.md)
 - [ ] P1.3 Rota sihirbazı + sonuç ekranı
 - [ ] P1.4 Canlı aktivite takibi
 - [ ] P1.5 Aktivite özeti + kaydetme
@@ -30,3 +30,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 
 ## Faz 3 — Yayın
 - [ ] P3.1 Mağaza hazırlığı ve yayın
+
+## Bekleyen küçük işler
+- [ ] **OSM verisi: kalan 22 karoyu yükle** (en kuzey şerit 41.20–41.25 ve kuzeydoğu köşesi; Karadeniz kıyısı/orman). Overpass düzelince: `node scripts/osm-import.mjs` (kaldığı yerden devam eder). Şehir çekirdeği (Boğaz'ın iki yakası) tamam, Emirgan dahil. Not: Overpass bazen tamamen yanıt vermiyor, o zaman birkaç saat sonra tekrar dene.
+- [ ] P1.2 commit + PR (branch: feat/p1.2-generate-routes)

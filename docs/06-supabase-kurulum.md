@@ -48,3 +48,18 @@ npm run db:types
 - `routes` sayaçları (`avg_rating`, `completion_count`, `is_featured`) ve `route_reviews.is_verified`
   istemciden yazılamaz; sadece trigger'lar günceller.
 - `route_cache` istemciye tamamen kapalı (politika yok); sadece Edge Function (service role) kullanır.
+
+## Rota üretimi (P1.2): ORS + OSM verisi
+1. **ORS anahtarı** (Supabase secret, istemciye gelmez):
+   `npx supabase secrets set ORS_API_KEY=anahtarin`
+2. **Migration'lar:** `npm run db:push` (route_generation_log ve osm_features tabloları).
+3. **OSM verisini yükle** (İstanbul, bir kerelik, ~10–20 dk, kesilirse devam eder). `.env`'e
+   `SUPABASE_SERVICE_ROLE_KEY=...` (Dashboard → Project Settings → API Keys → *Secret keys*) ekle:
+   - `node scripts/osm-import.mjs --dry` → 1 karo çeker, hiçbir şey yazmaz
+   - `node scripts/osm-import.mjs` → tamamını yükler (`--reset` baştan başlatır)
+4. **Fonksiyonu yayınla** (Docker gerekmez): `npx supabase functions deploy generate-routes --use-api`
+5. **Dene:** `.env`'e `TEST_EMAIL` / `TEST_PASSWORD` yaz → `node scripts/test-generate-routes.mjs`
+
+Neden canlı Overpass yok: herkese açık Overpass sunucuları Supabase Edge'den kararlı çalışmıyor
+(HTTP 406/500/timeout). Bu yüzden veri önceden `osm_features` tablosuna alınır ve
+`osm_features_in_bbox()` ile okunur. Yeni bir şehir eklemek için script'i `--bbox` ile çalıştır.
