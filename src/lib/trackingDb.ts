@@ -27,6 +27,17 @@ export type SessionRow = {
   route_title: string | null;
   /** Supabase'e yüklendi mi (P1.5). */
   uploaded: number;
+  /** Planlı rotanın `routes.id`'si (yorum, fotoğraf, completion_count için); serbest kayıtta null. */
+  route_id: string | null;
+  /** Kullanıcının düzenlediği başlık. */
+  title: string | null;
+  visibility: 'public' | 'followers' | 'private' | null;
+  /** Kaydet'e basıldı, yükleme bekliyor (internet yoksa kuyrukta kalır). */
+  queued: number;
+  /** ReviewDraft JSON (rating, tags, comment). */
+  review_json: string | null;
+  /** PhotoDraft[] JSON. */
+  photos_json: string | null;
 };
 
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
@@ -64,16 +75,35 @@ export function getDb(): Promise<SQLite.SQLiteDatabase> {
         value TEXT NOT NULL
       );
     `);
+    await addMissingColumns(db);
     return db;
   });
   return dbPromise;
 }
 
+/** P1.5 ile gelen kolonlar: eski kurulumlarda tabloyu bozmadan eklenir. */
+const ADDED_COLUMNS: [name: string, ddl: string][] = [
+  ['route_id', 'TEXT'],
+  ['title', 'TEXT'],
+  ['visibility', 'TEXT'],
+  ['queued', 'INTEGER NOT NULL DEFAULT 0'],
+  ['review_json', 'TEXT'],
+  ['photos_json', 'TEXT'],
+];
+
+async function addMissingColumns(db: SQLite.SQLiteDatabase): Promise<void> {
+  const info = await db.getAllAsync<{ name: string }>(`PRAGMA table_info(sessions)`);
+  const have = new Set(info.map((c) => c.name));
+  for (const [name, ddl] of ADDED_COLUMNS) {
+    if (!have.has(name)) await db.execAsync(`ALTER TABLE sessions ADD COLUMN ${name} ${ddl}`);
+  }
+}
+
 export async function createSession(row: SessionRow): Promise<void> {
   const db = await getDb();
   await db.runAsync(
-    `INSERT INTO sessions (id, status, activity_type, started_at, ended_at, paused_ms, pause_started_at, segment, route_json, route_title, uploaded)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO sessions (id, status, activity_type, started_at, ended_at, paused_ms, pause_started_at, segment, route_json, route_title, uploaded, route_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       row.id,
       row.status,
@@ -86,6 +116,7 @@ export async function createSession(row: SessionRow): Promise<void> {
       row.route_json,
       row.route_title,
       row.uploaded,
+      row.route_id,
     ],
   );
 }
@@ -161,11 +192,19 @@ export async function deleteSession(id: string): Promise<void> {
   });
 }
 
-/** Bitirilmiş ama henüz yüklenmemiş kayıtlar (P1.5 yükleme için). */
+/** Bitirilmiş ama henüz yüklenmemiş kayıtlar (kullanıcı Kaydet'e basmamış olanlar dahil). */
 export async function listPendingUploads(): Promise<SessionRow[]> {
   const db = await getDb();
   return db.getAllAsync<SessionRow>(
     `SELECT * FROM sessions WHERE status = 'finished' AND uploaded = 0 ORDER BY started_at`,
+  );
+}
+
+/** Kullanıcının Kaydet'e bastığı ama yüklenemeyen kayıtlar: yükleme kuyruğu. */
+export async function listQueuedUploads(): Promise<SessionRow[]> {
+  const db = await getDb();
+  return db.getAllAsync<SessionRow>(
+    `SELECT * FROM sessions WHERE status = 'finished' AND uploaded = 0 AND queued = 1 ORDER BY started_at`,
   );
 }
 

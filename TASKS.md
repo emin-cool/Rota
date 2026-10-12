@@ -17,7 +17,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [x] P1.2 `generate-routes` Edge Function (OSM verisi kendi PostGIS tablomuzda: scripts/osm-import.mjs; ORS secret + db push + import + deploy sırası docs/06-supabase-kurulum.md)
 - [x] P1.3 Rota sihirbazı + sonuç ekranı (kod hazır; yeni development build (react-native-svg) kurulup tablette doğrulanacak)
 - [x] P1.4 Canlı aktivite takibi (kod hazır; yeni development build kurulup dışarıda 10 dk yürüyüşle doğrulanacak)
-- [ ] P1.5 Aktivite özeti + kaydetme
+- [x] P1.5 Aktivite özeti + kaydetme (kod hazır; `db:push`, yeni development build ve tablette doğrulama bekliyor — docs/06-supabase-kurulum.md)
 - [ ] P1.6 Keşfet + rota detayı + yorum
 - [ ] P1.7 Profil, ayarlar, 30 seed rota
 - [ ] P1.8 Genel kontrol ve temizlik

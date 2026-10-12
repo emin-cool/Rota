@@ -3,7 +3,7 @@ import * as Battery from 'expo-battery';
 import { useKeepAwake } from 'expo-keep-awake';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -84,9 +84,12 @@ export default function LiveActivityScreen() {
 
   // Kayıt yoksa (bitti/silindi) ana ekrana dön.
   const { status } = snap;
+  // Bitir'e basıldıysa özet ekranına geçiş zaten yapılıyor; "kayıt yok" yönlendirmesi onu ezmesin.
+  const finishing = useRef(false);
   useEffect(() => {
     if (status === 'idle') {
       const t = setTimeout(() => {
+        if (finishing.current) return;
         if (trackingEngine.getSnapshot().status === 'idle') router.replace('/');
       }, 400); // ilk açılışta kayıttan toparlanmayı bekle
       return () => clearTimeout(t);
@@ -110,6 +113,7 @@ export default function LiveActivityScreen() {
     : null;
 
   const finish = async () => {
+    finishing.current = true;
     const id = await trackingEngine.finish();
     router.replace(id ? { pathname: '/activity/summary', params: { id } } : '/');
   };

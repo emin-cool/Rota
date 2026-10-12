@@ -230,6 +230,8 @@ class TrackingEngine {
     activityType: ActivityType;
     route?: LngLat[] | null;
     routeTitle?: string | null;
+    /** Planlı rotanın `routes.id`'si. */
+    routeId?: string | null;
     /** Geliştirme: gerçek GPS yerine sahte konum akıtılacak mı? */
     simulate?: boolean;
   }): Promise<void> {
@@ -253,6 +255,12 @@ class TrackingEngine {
       route_json: params.route && params.route.length > 1 ? JSON.stringify(params.route) : null,
       route_title: params.routeTitle ?? null,
       uploaded: 0,
+      route_id: params.routeId ?? null,
+      title: null,
+      visibility: null,
+      queued: 0,
+      review_json: null,
+      photos_json: null,
     };
     try {
       await createSession(row);

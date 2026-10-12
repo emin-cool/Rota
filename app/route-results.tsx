@@ -18,7 +18,7 @@ import { HeadlineMd, Text } from '@/components/ui';
 import { useStartActivity } from '@/hooks/useStartActivity';
 import { tr } from '@/i18n/tr';
 import { formatKmValue, routeTitle } from '@/lib/wizard';
-import { saveGeneratedRoute, unsaveRoute } from '@/lib/routes';
+import { insertGeneratedRoute, saveGeneratedRoute, unsaveRoute } from '@/lib/routes';
 import { useResultsStore } from '@/stores/resultsStore';
 import { useSessionStore } from '@/stores/sessionStore';
 import { routeColor } from '@/theme/routeColors';
@@ -32,9 +32,11 @@ export default function RouteResultsScreen() {
   const cardWidth = Math.min(screenWidth - 48, 380);
   const snap = cardWidth + CARD_GAP;
 
-  const { input, routes, startName, warnings, selected, savedRouteIds } = useResultsStore();
+  const { input, routes, startName, warnings, selected, savedRouteIds, insertedRouteIds } =
+    useResultsStore();
   const select = useResultsStore((s) => s.select);
   const markSaved = useResultsStore((s) => s.markSaved);
+  const markInserted = useResultsStore((s) => s.markInserted);
   const userId = useSessionStore((s) => s.session?.user.id);
 
   const { start: startActivity } = useStartActivity();
@@ -77,7 +79,9 @@ export default function RouteResultsScreen() {
           route: routes[i]!,
           input,
           title: `${routes[i]!.label} • ${title}`,
+          existingRouteId: insertedRouteIds[i],
         });
+        markInserted(i, id);
         markSaved(i, id);
       }
     } catch {
@@ -87,12 +91,31 @@ export default function RouteResultsScreen() {
     }
   };
 
-  const beginActivity = (i: number) =>
-    startActivity({
+  const beginActivity = async (i: number) => {
+    const routeTitleText = `${routes[i]!.label} • ${title}`;
+    // Özet ekranında puanlama/fotoğraf/completion_count için rotanın routes'ta olması gerekir.
+    // Eklenemezse (internet yok) kayıt yine de başlar; sadece rota bağlantısı olmaz.
+    let routeId: string | null = savedRouteIds[i] ?? insertedRouteIds[i] ?? null;
+    if (!routeId && userId) {
+      try {
+        routeId = await insertGeneratedRoute({
+          userId,
+          route: routes[i]!,
+          input,
+          title: routeTitleText,
+        });
+        markInserted(i, routeId);
+      } catch {
+        routeId = null;
+      }
+    }
+    await startActivity({
       activityType: input.activityType,
       route: routes[i]!.geojson.coordinates,
-      routeTitle: `${routes[i]!.label} • ${title}`,
+      routeTitle: routeTitleText,
+      routeId,
     });
+  };
 
   const share = (i: number) => {
     const r = routes[i]!;
