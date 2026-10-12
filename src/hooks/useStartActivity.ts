@@ -44,8 +44,11 @@ export function useStartActivity() {
         }
         await trackingEngine.start(params);
         router.push('/activity/live');
-      } catch {
-        Alert.alert(tr.live.errors.startFailed);
+      } catch (e) {
+        const detail = e instanceof Error ? e.message : String(e);
+        console.warn('[tracking] kayıt başlatılamadı:', detail);
+        // Geliştirme sürümünde gerçek sebebi göster; üretimde yalnızca genel mesaj.
+        Alert.alert(tr.live.errors.startFailed, __DEV__ ? detail : undefined);
       } finally {
         setStarting(false);
       }

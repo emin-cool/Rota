@@ -242,7 +242,11 @@ class TrackingEngine {
       route_title: params.routeTitle ?? null,
       uploaded: 0,
     };
-    await createSession(row);
+    try {
+      await createSession(row);
+    } catch (e) {
+      throw new Error(`kayıt veritabanı (SQLite): ${e instanceof Error ? e.message : String(e)}`);
+    }
     this.session = row;
     this.points = [];
     this.smoothed = [];
@@ -261,7 +265,7 @@ class TrackingEngine {
       await deleteSession(row.id);
       this.session = null;
       this.rebuild();
-      throw e;
+      throw new Error(`konum servisi: ${e instanceof Error ? e.message : String(e)}`);
     }
     this.rebuild();
   }
