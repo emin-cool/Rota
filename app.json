@@ -50,7 +50,9 @@
         }
       ],
       "@rnmapbox/maps",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-sharing",
+      ["expo-image-picker", { "photosPermission": "Rota, aktivitene fotoğraf eklemek için galerine erişir." }]
     ],
     "scheme": "rota",
     "experiments": {
