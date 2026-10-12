@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useNearbyRoutes } from '@/hooks/useNearbyRoutes';
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { DEFAULT_CENTER } from '@/lib/mapConfig';
-import { useWizardAnswers, useWizardStore } from '@/stores/wizardStore';
+import { useWizardAnswers } from '@/stores/wizardStore';
 
 /** Sihirbaz adımlarındaki öneri blokları için: seçilen noktaya yakın, aktiviteye uygun rotalar (8 km). */
 export function useWizardNearby() {

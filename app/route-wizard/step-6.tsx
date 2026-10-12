@@ -6,7 +6,7 @@ import { Button, Card, Text } from '@/components/ui';
 import { WizardScaffold } from '@/components/wizard/WizardScaffold';
 import { tr } from '@/i18n/tr';
 import { buildGenerateInput, formatClock, formatKmValue, visibleExtraKeys } from '@/lib/wizard';
-import { useWizardAnswers, useWizardStore } from '@/stores/wizardStore';
+import { useWizardAnswers } from '@/stores/wizardStore';
 import { colors } from '@/theme/tokens';
 
 type Row = { label: string; value: string; step: number };
