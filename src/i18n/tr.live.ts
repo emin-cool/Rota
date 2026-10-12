@@ -60,6 +60,8 @@ export const trLive = {
     plannedBody: 'Önce sihirbazla sana uygun 3 rota üret.',
     openTitle: 'Devam eden kayıt var',
     openBody: (activity: string, elapsed: string) => `${activity} • ${elapsed}`,
+    openBody2: 'Yeni bir kayıt başlatmadan önce devam eden kaydı sürdürebilir ya da silebilirsin.',
+    discardAndStart: 'Sil ve yenisini başlat',
     resume: 'Kayda dön',
     discard: 'Kaydı sil',
     discardConfirmTitle: 'Kayıt silinsin mi?',

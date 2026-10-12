@@ -33,6 +33,14 @@ import {
 import { startUpdates, stopUpdates } from '@/lib/trackingLocation';
 import type { ActivityType } from '@/types/routes';
 
+/** Zaten devam eden, noktası olan bir kayıt varken yenisi başlatılmak istendi. */
+export class ActiveSessionError extends Error {
+  constructor() {
+    super('Zaten devam eden bir kayıt var.');
+    this.name = 'ActiveSessionError';
+  }
+}
+
 /** Konum olayının (expo-location LocationObject) ihtiyaç duyulan kısmı. */
 export type LocationLike = {
   coords: { latitude: number; longitude: number; altitude: number | null; accuracy: number | null };
@@ -226,7 +234,11 @@ class TrackingEngine {
     simulate?: boolean;
   }): Promise<void> {
     await this.hydrate();
-    if (this.session) throw new Error('Zaten devam eden bir kayıt var.');
+    if (this.session) {
+      // Hiç noktası olmayan kayıt (yarım kalmış başlatma) kaybedecek veri taşımaz: sessizce temizle.
+      if (this.points.length === 0) await this.discard();
+      else throw new ActiveSessionError();
+    }
 
     const now = Date.now();
     const row: SessionRow = {
