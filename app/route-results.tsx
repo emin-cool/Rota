@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ResultsMap } from '@/components/route/ResultsMap';
 import { RouteResultCard } from '@/components/route/RouteResultCard';
 import { HeadlineMd, Text } from '@/components/ui';
+import { useStartActivity } from '@/hooks/useStartActivity';
 import { tr } from '@/i18n/tr';
 import { formatKmValue, routeTitle } from '@/lib/wizard';
 import { saveGeneratedRoute, unsaveRoute } from '@/lib/routes';
@@ -36,6 +37,7 @@ export default function RouteResultsScreen() {
   const markSaved = useResultsStore((s) => s.markSaved);
   const userId = useSessionStore((s) => s.session?.user.id);
 
+  const { start: startActivity } = useStartActivity();
   const [savingIndex, setSavingIndex] = useState<number | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const list = useRef<FlatList>(null);
@@ -84,6 +86,13 @@ export default function RouteResultsScreen() {
       setSavingIndex(null);
     }
   };
+
+  const beginActivity = (i: number) =>
+    startActivity({
+      activityType: input.activityType,
+      route: routes[i]!.geojson.coordinates,
+      routeTitle: `${routes[i]!.label} • ${title}`,
+    });
 
   const share = (i: number) => {
     const r = routes[i]!;
@@ -184,7 +193,7 @@ export default function RouteResultsScreen() {
               width={cardWidth}
               saved={!!savedRouteIds[index]}
               saving={savingIndex === index}
-              onStart={() => router.push('/activity/live')}
+              onStart={() => void beginActivity(index)}
               onSave={() => void toggleSave(index)}
               onShare={() => share(index)}
             />

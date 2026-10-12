@@ -10,6 +10,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ProfileGate } from '@/components/ProfileGate';
+// Arka plan konum görevi modül yüklenirken tanımlanmak zorundadır.
+import '@/lib/trackingTask';
 import { useSessionStore } from '@/stores/sessionStore';
 import { fontAssets } from '@/theme/fonts';
 
@@ -65,6 +67,7 @@ export default function RootLayout() {
               <Stack.Screen name="route-wizard" />
               <Stack.Screen name="route-results" />
               <Stack.Screen name="activity/live" />
+              <Stack.Screen name="activity/summary" />
             </Stack.Protected>
           </Stack>
         </QueryClientProvider>
