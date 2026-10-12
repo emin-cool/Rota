@@ -63,3 +63,19 @@ npm run db:types
 Neden canlı Overpass yok: herkese açık Overpass sunucuları Supabase Edge'den kararlı çalışmıyor
 (HTTP 406/500/timeout). Bu yüzden veri önceden `osm_features` tablosuna alınır ve
 `osm_features_in_bbox()` ile okunur. Yeni bir şehir eklemek için script'i `--bbox` ile çalıştır.
+
+## Aktivite özeti (P1.5)
+1. `npm run db:push` → `20261013120000_activity_summary.sql` (gizlilik bölgesi trigger'ı + `route-photos` bucket'ı).
+2. **Gizlilik kırpmasını dene** (SQL Editor; `<UID>` = kendi `auth.users.id`). Önce profiline küçük bir bölge ver,
+   sonra başı ve sonu bölgede olan bir track ekle; başı/sonu kırpılmış olmalı:
+   ```sql
+   update profiles set privacy_zone = st_buffer(st_setsrid(st_makepoint(29.0, 41.0), 4326)::geography, 200)
+     where user_id = '<UID>';
+   insert into activities (user_id, activity_type, started_at, duration_sec, distance_m, track)
+   values ('<UID>', 'walk', now(), 600, 1000,
+     'SRID=4326;LINESTRING(29.0 41.0, 29.0005 41.0, 29.01 41.01, 29.02 41.02, 29.0 41.0)');
+   select st_npoints(track::geometry) from activities order by created_at desc limit 1; -- 3 beklenir
+   ```
+   (Denemeden sonra test satırını ve `privacy_zone`'u temizle.)
+3. Fotoğraflar `route-photos/{user_id}/{activity_id}-{n}.jpg` yoluna yüklenir; bucket herkese açık
+   okunur (yollar tahmin edilemez), yazma/silme yalnızca kendi klasörüne.

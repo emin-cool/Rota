@@ -13,6 +13,8 @@ type StartParams = {
   /** Planlı rota; serbest kayıtta yok. */
   route?: LngLat[] | null;
   routeTitle?: string | null;
+  /** Planlı rotanın `routes.id`'si (özet ekranında puanlama ve fotoğraf için). */
+  routeId?: string | null;
 };
 
 /** İzin ister, motoru başlatır, canlı ekrana geçer. İzin yoksa açıklayıcı uyarı gösterip false döner. */

@@ -51,10 +51,10 @@ const toLineEwkt = (coords: [number, number][]) =>
   `SRID=4326;LINESTRING(${coords.map((c) => `${c[0]} ${c[1]}`).join(',')})`;
 
 /**
- * Üretilen rotayı `routes` tablosuna (özel, is_public=false) ve kullanıcının kayıtlılarına ekler.
- * Dönen değer routes.id; kaydı geri almak için `unsaveRoute` kullanılır.
+ * Üretilen rotayı `routes` tablosuna (özel, is_public=false) ekler; kayıtlılara eklemez.
+ * Kayıtlıya almadan aktivite başlatılırken (yorum/fotoğraf için route_id gerekir) bu kullanılır.
  */
-export async function saveGeneratedRoute(params: {
+export async function insertGeneratedRoute(params: {
   userId: string;
   route: RouteOption;
   input: GenerateRoutesInput;
@@ -84,7 +84,23 @@ export async function saveGeneratedRoute(params: {
     .single();
   if (error) throw error;
 
-  const routeId = data.id as string;
+  return data.id as string;
+}
+
+/**
+ * Üretilen rotayı `routes` tablosuna ve kullanıcının kayıtlılarına ekler.
+ * Dönen değer routes.id; kaydı geri almak için `unsaveRoute` kullanılır.
+ */
+export async function saveGeneratedRoute(params: {
+  userId: string;
+  route: RouteOption;
+  input: GenerateRoutesInput;
+  title: string;
+  /** Rota zaten `routes`'ta varsa (aktivite için eklenmişse) tekrar eklenmez. */
+  existingRouteId?: string;
+}): Promise<string> {
+  const { userId, existingRouteId } = params;
+  const routeId = existingRouteId ?? (await insertGeneratedRoute(params));
   const { error: saveError } = await supabase
     .from('saved_routes')
     .insert({ user_id: userId, route_id: routeId });

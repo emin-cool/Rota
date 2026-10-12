@@ -12,6 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ProfileGate } from '@/components/ProfileGate';
 // Arka plan konum görevi modül yüklenirken tanımlanmak zorundadır.
 import '@/lib/trackingTask';
+import { useUploadQueue } from '@/hooks/useUploadQueue';
 import { useSessionStore } from '@/stores/sessionStore';
 import { fontAssets } from '@/theme/fonts';
 
@@ -29,6 +30,7 @@ export default function RootLayout() {
   const init = useSessionStore((s) => s.init);
 
   useEffect(() => init(), [init]);
+  useUploadQueue();
 
   const ready = (fontsLoaded || !!fontError) && initialized;
 
