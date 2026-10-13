@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { memo } from 'react';
-import { Image, ScrollView, View } from 'react-native';
+import { router } from 'expo-router';
+import { Image, Pressable, ScrollView, View } from 'react-native';
 
 import { Avatar, Card, Text } from '@/components/ui';
 import { tr } from '@/i18n/tr';
@@ -67,7 +68,14 @@ export const ReviewItem = memo(function ReviewItem({ review }: { review: ReviewL
   return (
     <Card className="gap-space-sm p-space-md">
       <View className="flex-row items-center gap-space-md">
-        <Avatar name={review.display_name} uri={review.avatar_url} size={40} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={review.display_name ?? ''}
+          disabled={review.mine}
+          onPress={() => router.push({ pathname: '/user/[id]', params: { id: review.user_id } })}
+        >
+          <Avatar name={review.display_name} uri={review.avatar_url} size={40} />
+        </Pressable>
         <View className="flex-1">
           <Text variant="body-md" className="font-bold" numberOfLines={1}>
             {review.mine ? tr.detail.mine : (review.display_name ?? '—')}

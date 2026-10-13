@@ -74,6 +74,11 @@ function RootLayout() {
               <Stack.Screen name="settings" />
               <Stack.Screen name="profile-edit" />
               <Stack.Screen name="privacy-zone" />
+              <Stack.Screen name="activity/[id]" />
+              <Stack.Screen name="user/[id]" />
+              <Stack.Screen name="people" />
+              <Stack.Screen name="follow-list" />
+              <Stack.Screen name="follow-requests" />
               <Stack.Screen name="route-wizard" />
               <Stack.Screen name="route-results" />
               <Stack.Screen name="activity/live" />

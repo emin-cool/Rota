@@ -2,6 +2,7 @@
 import { trExplore } from './tr.explore';
 import { trLive } from './tr.live';
 import { trProfile } from './tr.profile';
+import { trSocial } from './tr.social';
 import { trWizard } from './tr.wizard';
 
 export const tr = {
@@ -9,6 +10,7 @@ export const tr = {
   ...trLive,
   ...trExplore,
   ...trProfile,
+  ...trSocial,
   tabs: {
     map: 'Harita',
     explore: 'Keşfet',

@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { memo } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { ACTIVITY_ICON, ACTIVITY_SOFT_BG } from '@/components/route/ExploreCard';
 import { Card, Text } from '@/components/ui';
@@ -23,9 +23,15 @@ function Metric({ label, value }: { label: string; value: string }) {
 }
 
 /** Profil "Aktivitelerim" satırı: tarih, başlık, mesafe / süre / tempo ya da yükseklik. */
-export const ActivityCard = memo(function ActivityCard({ item }: { item: ActivityListItem }) {
+export const ActivityCard = memo(function ActivityCard({
+  item,
+  onPress,
+}: {
+  item: ActivityListItem;
+  onPress?: (id: string) => void;
+}) {
   const hasPace = item.activity_type !== 'bike' && item.avg_pace_sec_per_km !== null;
-  return (
+  const body = (
     <Card elevation="raised" className="gap-space-md p-space-md">
       <View className="flex-row items-center gap-space-md">
         <View
@@ -56,5 +62,15 @@ export const ActivityCard = memo(function ActivityCard({ item }: { item: Activit
         )}
       </View>
     </Card>
+  );
+  if (!onPress) return body;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={item.title ?? tr.profile.activityName[item.activity_type]}
+      onPress={() => onPress(item.id)}
+    >
+      {body}
+    </Pressable>
   );
 });

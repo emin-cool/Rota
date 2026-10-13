@@ -72,6 +72,8 @@ const row = (over: Partial<SessionRow> = {}): SessionRow => ({
   queued: 1,
   review_json: null,
   photos_json: null,
+  description: null,
+  share_route: 0,
   ...over,
 });
 
@@ -164,6 +166,36 @@ describe('uploadSession', () => {
     mockResults['activities.insert'] = { error: { code: '08006', message: 'ağ' } };
     await expect(uploadSession(row(), 'u1')).rejects.toBeTruthy();
     expect(mockUpdateSession).not.toHaveBeenCalledWith('sess-1', { uploaded: 1, queued: 0 });
+  });
+
+  it('aktivite notu (description) yüklenir; boşsa null gider', async () => {
+    await uploadSession(row({ description: '  güzel bir sabah  ' }), 'u1');
+    expect(mockUpdateArgs[0]).toMatchObject({ description: 'güzel bir sabah' });
+    mockUpdateArgs.length = 0;
+    await uploadSession(row({ description: '   ' }), 'u1');
+    expect(mockUpdateArgs[0]).toMatchObject({ description: null });
+  });
+
+  it('"rotayı paylaş" seçiliyse aktiviteden sonra rota herkese açılır', async () => {
+    await uploadSession(row({ share_route: 1 }), 'u1');
+    expect(mockCalls).toEqual(['activities.insert', 'routes.update']);
+    expect(mockUpdateArgs[1]).toEqual({ is_public: true });
+  });
+
+  it('seçili değilse ya da rotasız aktivitede rota açılmaz', async () => {
+    await uploadSession(row({ share_route: 0 }), 'u1');
+    await uploadSession(row({ share_route: 1, route_id: null }), 'u1');
+    expect(mockCalls).not.toContain('routes.update');
+  });
+
+  it('fotoğraf satırı aktiviteye bağlanır (activity_id)', async () => {
+    await uploadSession(
+      row({ photos_json: JSON.stringify([{ uri: 'file://1.jpg', done: false }]) }),
+      'u1',
+    );
+    expect(mockUpdateArgs).toContainEqual(
+      expect.objectContaining({ route_id: 'route-1', activity_id: 'sess-1' }),
+    );
   });
 
   it('rotasız aktivitede fotoğraf ve yorum atlanır', async () => {
