@@ -262,6 +262,8 @@ class TrackingEngine {
       queued: 0,
       review_json: null,
       photos_json: null,
+      description: null,
+      share_route: 0,
     };
     try {
       await createSession(row);

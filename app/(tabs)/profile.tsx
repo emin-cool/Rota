@@ -19,6 +19,8 @@ import {
 } from '@/components/ui';
 import { useMyActivities, useMyStats, useScopedRoutes, useWeekly } from '@/hooks/useProfileQueries';
 import { useToggleSaved } from '@/hooks/useRouteQueries';
+import { useSocialCounts } from '@/hooks/useSocialQueries';
+import { formatCount } from '@/lib/social';
 import { tr } from '@/i18n/tr';
 import { formatChange, formatTotalHours, formatTotalKm, summarizeWeek } from '@/lib/profileStats';
 import { formatDistance } from '@/lib/geo';
@@ -69,6 +71,11 @@ export default function ProfileScreen() {
   const [tab, setTab] = useState<Tab>('activities');
 
   const stats = useMyStats();
+  const social = useSocialCounts();
+  const openActivity = useCallback(
+    (id: string) => router.push({ pathname: '/activity/[id]', params: { id } }),
+    [],
+  );
   const weekly = useWeekly();
   const activities = useMyActivities(tab === 'activities');
   const myRoutes = useScopedRoutes('mine', tab === 'routes');
@@ -155,6 +162,58 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Card>
+
+      {/* Takipçi / takip / rota */}
+      <View className="flex-row rounded-lg border border-hairline bg-surface-container-lowest">
+        {(
+          [
+            ['followers', social.data?.followers_count, tr.userProfile.followers],
+            ['following', social.data?.following_count, tr.userProfile.following],
+            ['routes', social.data?.route_count, tr.userProfile.routes],
+          ] as const
+        ).map(([key, value, label]) => (
+          <Pressable
+            key={key}
+            accessibilityRole={key === 'routes' ? undefined : 'button'}
+            accessibilityLabel={`${value ?? 0} ${label}`}
+            disabled={key === 'routes'}
+            onPress={() =>
+              router.push({
+                pathname: '/follow-list',
+                params: {
+                  id: profile?.user_id ?? '',
+                  kind: key === 'followers' ? 'followers' : 'following',
+                },
+              })
+            }
+            className="min-h-[60px] flex-1 items-center justify-center"
+          >
+            <Text variant="headline-md">{formatCount(value ?? 0)}</Text>
+            <Text variant="label-sm" className="text-ink-secondary">
+              {label}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+      {(social.data?.pending_requests ?? 0) > 0 ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={tr.people.requests}
+          onPress={() => router.push('/follow-requests')}
+        >
+          <Card className="min-h-[56px] flex-row items-center gap-space-md bg-accent-soft px-space-md">
+            <MaterialIcons name="person-add" size={22} color={colors.accent.deep} />
+            <Text variant="body-lg" className="flex-1 font-bold">
+              {tr.people.requests}
+            </Text>
+            <View className="min-w-[24px] items-center rounded-full bg-accent-deep px-2 py-0.5">
+              <Text variant="label-sm" className="font-bold text-white">
+                {social.data?.pending_requests}
+              </Text>
+            </View>
+          </Card>
+        </Pressable>
+      ) : null}
 
       {/* İstatistikler */}
       {stats.isPending ? (
@@ -314,7 +373,7 @@ export default function ProfileScreen() {
         ItemSeparatorComponent={ListSeparator}
         renderItem={({ item }) =>
           item.kind === 'activity' ? (
-            <ActivityCard item={item.item} />
+            <ActivityCard item={item.item} onPress={openActivity} />
           ) : (
             <ExploreCard route={item.item} onPress={openRoute} onToggleSave={toggleSave} />
           )

@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -11,6 +12,7 @@ import {
   Pressable,
   ScrollView,
   Share,
+  Switch,
   useWindowDimensions,
   View,
 } from 'react-native';
@@ -33,6 +35,8 @@ import { tr } from '@/i18n/tr';
 import { estimateCalories } from '@/lib/activitySummary';
 import { directionsUrl } from '@/lib/explore';
 import { formatDuration, type LngLat } from '@/lib/geo';
+import { supabase } from '@/lib/supabase';
+import { useSessionStore } from '@/stores/sessionStore';
 import { colors } from '@/theme/tokens';
 import type { PoiType } from '@/types/database';
 
@@ -91,6 +95,23 @@ export default function RouteDetailScreen() {
   const pois = usePois(id);
   const reviews = useRouteReviews(id);
   const toggle = useToggleSaved();
+  const myId = useSessionStore((s) => s.session?.user.id);
+  const qc = useQueryClient();
+  const publish = useMutation({
+    mutationFn: async (isPublic: boolean) => {
+      const { error } = await supabase
+        .from('routes')
+        .update({ is_public: isPublic })
+        .eq('id', id!)
+        .eq('creator_id', myId!);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      for (const key of ['route-detail', 'explore', 'featured']) {
+        void qc.invalidateQueries({ queryKey: [key] });
+      }
+    },
+  });
   const { start, starting } = useStartActivity();
   const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -279,6 +300,25 @@ export default function RouteDetailScreen() {
               {route.creator_name ?? tr.detail.noCreator}
             </Text>
           </View>
+          {myId && route.creator_id === myId ? (
+            <Card className="flex-row items-center gap-space-md p-space-md">
+              <View className="flex-1">
+                <Text variant="body-md" className="font-bold">
+                  {tr.share.makePublic}
+                </Text>
+                <Text variant="label-sm" className="text-ink-secondary">
+                  {publish.isError ? tr.share.publicToggleError : tr.share.makePublicHint}
+                </Text>
+              </View>
+              <Switch
+                value={route.is_public}
+                disabled={publish.isPending}
+                onValueChange={(on) => publish.mutate(on)}
+                trackColor={{ true: colors.brand.DEFAULT, false: colors.hairline }}
+                accessibilityLabel={tr.share.makePublic}
+              />
+            </Card>
+          ) : null}
           {route.description ? (
             <Text variant="body-md" className="text-ink-secondary">
               {route.description}

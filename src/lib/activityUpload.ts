@@ -55,6 +55,7 @@ async function insertActivity(row: SessionRow, userId: string): Promise<void> {
     track: toLineEwkt(s.track),
     visibility: row.visibility ?? 'followers',
     title: row.title,
+    description: row.description?.trim() || null,
   });
   if (error && error.code !== PG_UNIQUE_VIOLATION) throw error;
 }
@@ -65,6 +66,7 @@ export async function uploadRoutePhoto(
   routeId: string,
   name: string,
   body: ArrayBuffer,
+  activityId: string | null = null,
 ): Promise<void> {
   const path = `${userId}/${name}`;
   const up = await supabase.storage
@@ -74,7 +76,18 @@ export async function uploadRoutePhoto(
   const url = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl;
   const { error } = await supabase
     .from('route_photos')
-    .insert({ route_id: routeId, user_id: userId, url });
+    .insert({ route_id: routeId, user_id: userId, url, activity_id: activityId });
+  if (error) throw error;
+}
+
+/** Kullanıcı seçtiyse kendi özel rotasını herkese açar (RLS: yalnızca oluşturan günceller). */
+async function shareRoute(row: SessionRow, userId: string): Promise<void> {
+  if (row.share_route !== 1 || !row.route_id) return;
+  const { error } = await supabase
+    .from('routes')
+    .update({ is_public: true })
+    .eq('id', row.route_id)
+    .eq('creator_id', userId);
   if (error) throw error;
 }
 
@@ -92,7 +105,7 @@ async function uploadPhotos(row: SessionRow, userId: string): Promise<void> {
       photos[i] = { ...photo, done: true };
       continue;
     }
-    await uploadRoutePhoto(userId, row.route_id, `${row.id}-${i}.jpg`, body);
+    await uploadRoutePhoto(userId, row.route_id, `${row.id}-${i}.jpg`, body, row.id);
     photos[i] = { ...photo, done: true };
     await updateSession(row.id, { photos_json: JSON.stringify(photos) });
   }
@@ -131,6 +144,7 @@ async function uploadReview(row: SessionRow, userId: string): Promise<void> {
 /** Sırayla: aktivite → fotoğraflar → yorum. Hata atarsa kayıt kuyrukta kalır. */
 export async function uploadSession(row: SessionRow, userId: string): Promise<void> {
   await insertActivity(row, userId);
+  await shareRoute(row, userId);
   await uploadPhotos(row, userId);
   await uploadReview(row, userId);
   await updateSession(row.id, { uploaded: 1, queued: 0 });

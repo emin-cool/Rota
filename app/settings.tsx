@@ -35,6 +35,8 @@ export default function SettingsScreen() {
   const [pace, setPace] = useState(profile?.default_pace_sec_per_km ?? DEFAULT_RUN_PACE_SEC);
   const [paceError, setPaceError] = useState(false);
   const [voice, setVoice] = useState(true);
+  const [isPrivate, setIsPrivate] = useState(profile?.is_private ?? false);
+  const [privateError, setPrivateError] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(false);
 
@@ -54,6 +56,17 @@ export default function SettingsScreen() {
       await patchProfile({ default_pace_sec_per_km: Math.round(value) });
     } catch {
       setPaceError(true);
+    }
+  };
+
+  const togglePrivate = async (on: boolean) => {
+    setIsPrivate(on);
+    setPrivateError(false);
+    try {
+      await patchProfile({ is_private: on });
+    } catch {
+      setIsPrivate(!on);
+      setPrivateError(true);
     }
   };
 
@@ -176,6 +189,24 @@ export default function SettingsScreen() {
         </Card>
 
         <SectionTitle>{tr.settings.sectionPrivacy}</SectionTitle>
+        <Card className="flex-row items-center gap-space-md p-space-md">
+          <View className="flex-1">
+            <Text variant="body-lg" className="font-bold">
+              {tr.userProfile.privateAccount}
+            </Text>
+            <Text variant="label-sm" className="text-ink-secondary">
+              {privateError
+                ? tr.userProfile.privateAccountError
+                : tr.userProfile.privateAccountHint}
+            </Text>
+          </View>
+          <Switch
+            value={isPrivate}
+            onValueChange={(on) => void togglePrivate(on)}
+            trackColor={{ true: colors.brand.DEFAULT, false: colors.hairline }}
+            accessibilityLabel={tr.userProfile.privateAccount}
+          />
+        </Card>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={tr.settings.privacyZone}

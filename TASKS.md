@@ -24,7 +24,9 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [ ] Kapalı test (20–30 kişi)
 
 ## Faz 2 — Sosyal ve Kurslar
-- [ ] P2.1 Takip, akış, alkış, yorum, rota paylaşma
+- [x] P2.1a Takip (gizli hesap istekleri), akış, alkış, yorum, kişi arama, başkasının profili, rota paylaşma (sunucu kuralları test-rls 85/85; tablette doğrulama bekliyor)
+- [ ] P2.1b Push bildirimleri (yeni takipçi, alkış, yorum) + öne çıkan rota otomasyonu (pg_cron)
+- [ ] P2.1c Engelle / bildir (moderasyon): dış testçilere ve mağazaya açmadan ÖNCE (Apple kullanıcı içeriği şartı)
 - [ ] P2.2 Kurslar ve sesli aralık yönlendirme
 - [ ] P2.3 Etkinlikler, meydan okumalar, hava durumu, segmentler, canlı konum paylaşımı
 

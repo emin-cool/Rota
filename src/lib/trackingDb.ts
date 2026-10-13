@@ -38,6 +38,10 @@ export type SessionRow = {
   review_json: string | null;
   /** PhotoDraft[] JSON. */
   photos_json: string | null;
+  /** Aktivite notu (akışta görünür). */
+  description: string | null;
+  /** 1 ise rota Kaydet'te herkese açılır (yalnızca kendi özel rotan). */
+  share_route: number;
 };
 
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
@@ -89,6 +93,8 @@ const ADDED_COLUMNS: [name: string, ddl: string][] = [
   ['queued', 'INTEGER NOT NULL DEFAULT 0'],
   ['review_json', 'TEXT'],
   ['photos_json', 'TEXT'],
+  ['description', 'TEXT'],
+  ['share_route', 'INTEGER NOT NULL DEFAULT 0'],
 ];
 
 async function addMissingColumns(db: SQLite.SQLiteDatabase): Promise<void> {

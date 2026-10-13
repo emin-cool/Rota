@@ -68,6 +68,7 @@ export type RoutePhotoRow = {
   user_id: string;
   url: string;
   location: unknown;
+  activity_id: string | null;
   created_at: string;
 };
 
@@ -97,6 +98,7 @@ export type ActivityRow = {
   track: unknown;
   visibility: Visibility;
   title: string | null;
+  description: string | null;
   created_at: string;
 };
 
@@ -259,6 +261,105 @@ export type ActivityListItem = Pick<
   | 'route_id'
 >;
 
+export type FollowRow = {
+  follower_id: string;
+  following_id: string;
+  status: 'pending' | 'accepted';
+  created_at: string;
+};
+export type KudosRow = { activity_id: string; user_id: string; created_at: string };
+export type CommentRow = {
+  id: string;
+  activity_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+};
+
+export type FollowState = 'self' | 'following' | 'pending' | 'requested_me' | 'none';
+
+/** `feed_activities` satırı: akış kartı ve aktivite detayı. */
+export type FeedActivity = {
+  id: string;
+  user_id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+  activity_type: ActivityType;
+  title: string | null;
+  description: string | null;
+  started_at: string;
+  created_at: string;
+  distance_m: number;
+  duration_sec: number;
+  avg_pace_sec_per_km: number | null;
+  elevation_gain_m: number;
+  district: string | null;
+  track: LineGeoJson | null;
+  photos: string[];
+  kudos_count: number;
+  comment_count: number;
+  kudosed: boolean;
+  last_comment_author: string | null;
+  last_comment_body: string | null;
+  mine: boolean;
+};
+
+export type FeedArgs = {
+  p_scope?: 'following' | 'user' | 'one';
+  p_user?: string | null;
+  p_id?: string | null;
+  p_activity?: ActivityType | null;
+  p_before?: string | null;
+  p_limit?: number;
+  p_full_track?: boolean;
+};
+
+export type ActivityComment = {
+  id: string;
+  user_id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+  body: string;
+  created_at: string;
+  mine: boolean;
+  can_delete: boolean;
+};
+
+export type ProfileCard = {
+  user_id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+  level: Level | null;
+  is_private: boolean;
+  followers_count: number;
+  following_count: number;
+  activity_count: number;
+  total_distance_m: number;
+  route_count: number;
+  follow_state: FollowState;
+  can_view: boolean;
+};
+
+export type PersonRow = {
+  user_id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+  follow_state: FollowState;
+};
+
+export type FollowRequest = Omit<PersonRow, 'follow_state'> & { requested_at: string };
+
+export type SocialCounts = {
+  followers_count: number;
+  following_count: number;
+  pending_requests: number;
+  route_count: number;
+};
+
 export type ProfileUpdate = Partial<
   Pick<
     ProfileRow,
@@ -301,6 +402,13 @@ export type Database = {
           >,
         Partial<ActivityRow>
       >;
+      follows: Table<
+        FollowRow,
+        Pick<FollowRow, 'follower_id' | 'following_id'>,
+        Pick<FollowRow, 'status'>
+      >;
+      kudos: Table<KudosRow, Pick<KudosRow, 'activity_id' | 'user_id'>, never>;
+      comments: Table<CommentRow, Pick<CommentRow, 'activity_id' | 'user_id' | 'body'>, never>;
       saved_routes: Table<SavedRouteRow, Pick<SavedRouteRow, 'user_id' | 'route_id'>, never>;
       route_cache: Table<RouteCacheRow, never, never>;
     };
@@ -329,6 +437,24 @@ export type Database = {
         Returns: undefined;
       };
       clear_privacy_zone: { Args: Record<string, never>; Returns: undefined };
+      feed_activities: { Args: FeedArgs; Returns: FeedActivity[] };
+      activity_comments: {
+        Args: { p_id: string; p_limit?: number; p_offset?: number };
+        Returns: ActivityComment[];
+      };
+      profile_card: { Args: { p_user: string }; Returns: ProfileCard[] };
+      my_social_counts: { Args: Record<string, never>; Returns: SocialCounts[] };
+      follow_list: {
+        Args: {
+          p_user: string;
+          p_kind: 'followers' | 'following';
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: PersonRow[];
+      };
+      search_profiles: { Args: { p_query: string; p_limit?: number }; Returns: PersonRow[] };
+      follow_requests: { Args: { p_limit?: number; p_offset?: number }; Returns: FollowRequest[] };
       my_privacy_zone_info: { Args: Record<string, never>; Returns: PrivacyZoneInfo[] };
       my_privacy_zone: { Args: Record<string, never>; Returns: unknown };
     };

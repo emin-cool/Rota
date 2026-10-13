@@ -13,6 +13,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  Switch,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,6 +35,7 @@ import { lineLengthM, type LngLat } from '@/lib/geo';
 import { REVIEW_TAGS } from '@/lib/reviewTags';
 import { deleteSession, getSession, loadPoints, updateSession } from '@/lib/trackingDb';
 import type { SessionRow } from '@/lib/trackingDb';
+import { supabase } from '@/lib/supabase';
 import { useSessionStore } from '@/stores/sessionStore';
 import { colors } from '@/theme/tokens';
 
@@ -99,6 +101,9 @@ export default function ActivitySummaryScreen() {
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
 
   const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
+  const [shareRoute, setShareRoute] = useState(false);
+  const [routeShareable, setRouteShareable] = useState(false);
   const [visibility, setVisibility] = useState<Visibility>('followers');
   const [rating, setRating] = useState(0);
   const [tags, setTags] = useState<string[]>([]);
@@ -138,6 +143,24 @@ export default function ActivitySummaryScreen() {
       active = false;
     };
   }, [id, reloadKey]);
+
+  // Rota benim ve henüz özelse "herkese aç" seçeneği gösterilir (çevrimdışıysa gizli kalır).
+  const routeId = session?.route_id ?? null;
+  useEffect(() => {
+    if (!routeId || !userId) return;
+    let active = true;
+    void supabase
+      .from('routes')
+      .select('is_public, creator_id')
+      .eq('id', routeId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (active) setRouteShareable(!!data && !data.is_public && data.creator_id === userId);
+      });
+    return () => {
+      active = false;
+    };
+  }, [routeId, userId]);
 
   const hasRoute = !!session?.route_id;
   const plannedM = session?.route_json
@@ -206,6 +229,8 @@ export default function ActivitySummaryScreen() {
         hasRoute && rating > 0 ? { rating, tags, comment: comment.trim() } : null;
       await updateSession(session.id, {
         title: title.trim() || defaultTitle(session),
+        description: note.trim() || null,
+        share_route: shareRoute && routeShareable ? 1 : 0,
         visibility,
         review_json: review ? JSON.stringify(review) : null,
         photos_json: hasRoute && photos.length > 0 ? JSON.stringify(photos) : null,
@@ -223,7 +248,21 @@ export default function ActivitySummaryScreen() {
     } finally {
       setSaving(false);
     }
-  }, [session, saving, hasRoute, rating, tags, comment, title, visibility, photos, userId]);
+  }, [
+    session,
+    saving,
+    hasRoute,
+    rating,
+    tags,
+    comment,
+    title,
+    note,
+    shareRoute,
+    routeShareable,
+    visibility,
+    photos,
+    userId,
+  ]);
 
   // --- Kaydetmeden çıkış ------------------------------------------------------
   const leave = useCallback(() => {
@@ -425,6 +464,13 @@ export default function ActivitySummaryScreen() {
             placeholder={tr.summary.titlePlaceholder}
             maxLength={80}
           />
+          <TextField
+            label={tr.share.note}
+            value={note}
+            onChangeText={setNote}
+            placeholder={tr.share.notePlaceholder}
+            maxLength={500}
+          />
           <View className="gap-space-sm">
             <Text variant="label-caps" className="text-ink-secondary">
               {tr.summary.visibilityLabel}
@@ -491,6 +537,26 @@ export default function ActivitySummaryScreen() {
                 </View>
               </ScrollView>
             ) : null}
+          </Card>
+        ) : null}
+
+        {/* Rotayı herkesle paylaş (yalnızca kendi özel rotan) */}
+        {hasRoute && routeShareable ? (
+          <Card className="flex-row items-center gap-space-md p-space-md">
+            <View className="flex-1">
+              <Text variant="body-lg" className="font-bold">
+                {tr.share.shareRoute}
+              </Text>
+              <Text variant="label-sm" className="text-ink-secondary">
+                {tr.share.shareRouteHint}
+              </Text>
+            </View>
+            <Switch
+              value={shareRoute}
+              onValueChange={setShareRoute}
+              trackColor={{ true: colors.brand.DEFAULT, false: colors.hairline }}
+              accessibilityLabel={tr.share.shareRoute}
+            />
           </Card>
         ) : null}
 
