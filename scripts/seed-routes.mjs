@@ -109,13 +109,13 @@ async function reverse([lng, lat]) {
 const PROFILE = { walk: 'foot-walking', run: 'foot-walking', bike: 'cycling-regular' };
 
 async function orsRoute(route, points) {
-  const profile = PROFILE[route.activity];
+  const profile = route.profile ?? PROFILE[route.activity];
   const body = {
     coordinates: points,
     elevation: true,
     extra_info: ['surface', 'waytype'],
     instructions: false,
-    radiuses: points.map(() => 500),
+    radiuses: points.map(() => route.radius ?? 500),
   };
   const key = `ors:${profile}:${JSON.stringify(points)}`;
   return cached(key, ORS_PAUSE_MS, async () => {
@@ -304,6 +304,13 @@ for (const [i, route] of list.entries()) {
   } catch (e) {
     failed.push({ title: route.title, error: e instanceof Error ? e.message : String(e) });
     console.log(`${String(i + 1).padStart(2)}. ${route.title}\n    ✗ ${failed.at(-1).error}`);
+    if (++streak >= MAX_CONSECUTIVE_FAILURES) {
+      console.log(
+        `
+✗ Üst üste ${streak} rota üretilemedi: OpenRouteService yanıt vermiyor olabilir. Bir süre sonra tekrar dene (başarılı sonuçlar önbellekte kalır).`,
+      );
+      break;
+    }
   }
 }
 

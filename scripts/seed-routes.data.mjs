@@ -4,6 +4,8 @@
 // Bir nokta [lng, lat] ya da { q: 'Yer adı', dLng?, dLat? } olabilir (q: OSM Nominatim ile İstanbul kutusunda
 // aranır; dLng/dLat bulunan noktayı derece cinsinden kaydırır — park çevresinde döngü kurmak için).
 // type: a_b (A→B), loop (başlangıçta biter: son nokta = ilk nokta), out_back (git-dön: [A, B, A]).
+// profile (isteğe bağlı): ORS profilini zorlar (Büyükada'da bisiklet ağı bağlantı kuramadığı için yaya ağı).
+// radius (isteğe bağlı): noktanın yola oturtulacağı en büyük uzaklık (m); varsayılan 500.
 // `node scripts/seed-routes.mjs --check` hangi noktanın nereye düştüğünü ve rotaya ne kadar uzak
 // kaldığını yazdırır; emin olmadığın noktaları o çıktıyla doğrula.
 
@@ -12,11 +14,11 @@
 export const ROUTES = [
   // ---------------------------------------------------------------- Yürüyüş (14)
   {
-    title: 'Emirgan Sahil Yürüyüşü',
+    title: 'Emirgan - İstinye Yürüyüşü',
     activity: 'walk',
     type: 'a_b',
     district: 'Sarıyer',
-    description: "Emirgan'dan İstinye yönüne Boğaz kıyısı boyunca uzanan yürüyüş.",
+    description: "Emirgan'dan İstinye yönüne Boğaz çevresinde yürüyüş.",
     wp: [
       [29.0556, 41.1052],
       [29.064, 41.1138],
@@ -52,7 +54,7 @@ export const ROUTES = [
     description: "Taksim Meydanı'ndan Kabataş iskelesine kısa şehir yürüyüşü.",
     wp: [
       [28.985, 41.037],
-      [29.0068, 41.034],
+      [28.994152, 41.032935],
     ],
   },
   {
@@ -144,7 +146,7 @@ export const ROUTES = [
     description: 'Fenerbahçe Parkı ve Kalamış Marina çevresinde sahil turu.',
     wp: [
       [29.0365, 40.969],
-      [29.0372, 40.9655],
+      [29.032003, 40.968139],
       [29.0395, 40.9717],
       [29.0365, 40.969],
     ],
@@ -169,7 +171,6 @@ export const ROUTES = [
     wp: [
       { q: 'Neşet Suyu Belgrad Ormanı' },
       { q: 'Büyükbent Belgrad Ormanı' },
-      { q: 'Kirazlı Bent' },
       { q: 'Atatürk Arboretumu' },
       { q: 'Neşet Suyu Belgrad Ormanı' },
     ],
@@ -214,17 +215,13 @@ export const ROUTES = [
     ],
   },
   {
-    title: 'Belgrad Ormanı 6,5 km Parkuru',
+    title: 'Belgrad Ormanı 6 km Parkuru',
     activity: 'run',
-    type: 'loop',
+    type: 'out_back',
     district: 'Sarıyer',
-    description: 'Belgrad Ormanı içinde yaklaşık 6,5 km uzunluğunda orman koşu parkuru.',
-    wp: [
-      { q: 'Neşet Suyu Belgrad Ormanı' },
-      { q: 'Atatürk Arboretumu' },
-      { q: 'Kirazlı Bent' },
-      { q: 'Neşet Suyu Belgrad Ormanı' },
-    ],
+    description:
+      "Atatürk Arboretumu'ndan Kirazlı Bent'e gidiş-dönüş yaklaşık 6 km'lik orman koşu parkuru.",
+    wp: [{ q: 'Atatürk Arboretumu' }, { q: 'Kirazlı Bent' }, { q: 'Atatürk Arboretumu' }],
   },
   {
     title: 'Kadıköy - Bostancı Sahil Koşusu',
@@ -374,13 +371,13 @@ export const ROUTES = [
     type: 'loop',
     district: 'Adalar',
     description: 'Büyükada çevresinde ada yolundan bisiklet turu.',
+    profile: 'foot-walking',
+    radius: 1000,
     wp: [
-      [29.129, 40.8755],
-      [29.118, 40.8665],
-      [29.123, 40.859],
-      [29.138, 40.852],
+      [29.128303, 40.874941],
       [29.145, 40.866],
-      [29.129, 40.8755],
+      [29.123, 40.859],
+      [29.128303, 40.874941],
     ],
   },
 ];
