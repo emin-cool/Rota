@@ -71,6 +71,12 @@
         "projectId": "e5748426-f7fd-467e-bb20-0b731f3a301e"
       }
     },
-    "owner": "emin06"
+    "owner": "emin06",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e5748426-f7fd-467e-bb20-0b731f3a301e"
+    }
   }
 }

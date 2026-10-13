@@ -51,6 +51,25 @@ Gereken: Apple Developer hesabı (var). Bundle kimliği: `com.rota.app`.
 - Konum izni açıklamaları (Türkçe) app.json'da; arka plan konum için App Store incelemesinde "neden" sorulur (aktivite kaydı).
 - Hesabı silme zorunluluğu karşılandı (Ayarlar → Hesabımı sil).
 
+## 3b. Anında güncelleme (EAS Update) — sık test için
+
+`expo-updates` kurulu: JS/TS ve görsel değişiklikler **yeni build ve TestFlight yüklemesi beklemeden** telefona gider.
+Kanallar: `development`, `preview` (Android APK), `production` (iOS TestFlight ve mağaza). Bu kuruluma geçişte **bir kez** yeni build gerekir.
+
+```bash
+# JS/TS değişikliği (ekran, mantık, metin, stil): iOS TestFlight kullanıcılarına
+npx eas-cli update --channel production --environment production --message "ne değişti"
+# Android APK (preview) kullanıcılarına
+npx eas-cli update --channel preview --environment production --message "ne değişti"
+```
+Uygulama açılışta güncellemeyi arka planda indirir; **bir sonraki açılışta** (tamamen kapatıp aç) devreye girer.
+
+**Kural (önemli):** Native modül eklenir/çıkarılırsa, `app.json` eklentileri/izinleri/ikon değişirse **yeni build al ve `app.json` içindeki `version`'ı artır**
+(`1.0.0` → `1.0.1`). Güncellemeler yalnızca aynı `version` taşıyan build'lere gider (`runtimeVersion: appVersion`); artırmazsan eski build
+yeni JS'i alır ama eksik native modül yüzünden çöker.
+Geri alma: `npx eas-cli update:rollback --channel production` (önceki güncellemeye döner).
+`EXPO_PUBLIC_*` değerleri güncelleme paketlenirken `--environment production` ile EAS'tan alınır.
+
 ## 4. Kapalı testten önce hızlı kontrol listesi
 - [ ] `npx tsc --noEmit`, `npx eslint .`, `npx jest`, `node scripts/test-rls.mjs` yeşil
 - [ ] Sentry DSN'i EAS'ta ve test hatası Sentry'de görünüyor

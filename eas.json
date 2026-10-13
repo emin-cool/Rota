@@ -13,7 +13,8 @@
       "env": {
         "APP_ENV": "development",
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
-      }
+      },
+      "channel": "development"
     },
     "preview": {
       "distribution": "internal",
@@ -22,13 +23,15 @@
       },
       "env": {
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
-      }
+      },
+      "channel": "preview"
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
-      }
+      },
+      "channel": "production"
     }
   },
   "submit": {
