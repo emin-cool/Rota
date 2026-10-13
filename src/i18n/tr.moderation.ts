@@ -1,0 +1,46 @@
+/** Engelle / bildir (P2.1c). */
+export const trModeration = {
+  moderation: {
+    more: 'Daha fazla',
+    menuTitle: (name: string) => name,
+    report: 'Bildir',
+    block: (name: string) => `${name} kullanıcısını engelle`,
+    cancel: 'Vazgeç',
+    reportTitle: 'Neden bildiriyorsun?',
+    reportHint: 'Bildirimin gizli kalır. Ekibimiz inceler.',
+    reasons: {
+      spam: 'Spam ya da yanıltıcı',
+      harassment: 'Taciz ya da zorbalık',
+      inappropriate: 'Uygunsuz içerik',
+      dangerous: 'Tehlikeli ya da zararlı',
+      other: 'Diğer',
+    },
+    detailsPlaceholder: 'İstersen kısaca açıkla (isteğe bağlı)',
+    send: 'Bildirimi gönder',
+    sending: 'Gönderiliyor…',
+    sentTitle: 'Bildirimin alındı',
+    sentBody: 'Teşekkürler. İncelenecek. İstersen bu kullanıcıyı engelleyebilirsin.',
+    errors: {
+      generic: 'Bildirim gönderilemedi. Tekrar dene.',
+      rateLimited: 'Bugün çok fazla bildirim gönderdin. Yarın tekrar dene.',
+      notFound: 'Bu içerik artık bulunamıyor.',
+    },
+    blockTitle: (name: string) => `${name} engellensin mi?`,
+    blockBody:
+      'Birbirinizin aktivitelerini, yorumlarını ve profilini göremezsiniz; takip ilişkisi kalkar. Engellediğini karşı taraf bilmez. İstediğin zaman Ayarlar → Engellenen kullanıcılar bölümünden kaldırabilirsin.',
+    blockConfirm: 'Engelle',
+    blocked: (name: string) => `${name} engellendi.`,
+    blockError: 'Engellenemedi. Tekrar dene.',
+    unblock: 'Engeli kaldır',
+    unblockError: 'Engel kaldırılamadı. Tekrar dene.',
+    blockedByMeTitle: 'Bu kullanıcıyı engelledin',
+    blockedByMeBody: 'Aktivitelerini ve yorumlarını görmezsin.',
+  },
+  blockedUsers: {
+    title: 'Engellenen kullanıcılar',
+    settingsRow: 'Engellenen kullanıcılar',
+    settingsHint: 'Engellediklerini görüntüle ve engeli kaldır.',
+    empty: 'Kimseyi engellemedin.',
+    errorLoad: 'Liste yüklenemedi.',
+  },
+} as const;

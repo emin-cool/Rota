@@ -9,9 +9,11 @@ import { timeAgo } from '@/lib/explore';
 import { formatDistance, formatDuration } from '@/lib/geo';
 import { formatPace } from '@/lib/pace';
 import { activityTitle, formatCount } from '@/lib/social';
+import { useModerationStore } from '@/stores/moderationStore';
 import { colors } from '@/theme/tokens';
 import type { FeedActivity } from '@/types/database';
 
+import { MoreButton } from './ModerationSheet';
 import { TrackThumb } from './TrackThumb';
 
 /** Stat sütunları: yürüyüş/koşuda tempo, bisiklette ortalama hız. */
@@ -32,6 +34,16 @@ export function activityStats(a: FeedActivity): { label: string; value: string }
     pace,
     { label: tr.social.ascent, value: `+${a.elevation_gain_m} m` },
   ];
+}
+
+/** Başkasının aktivitesinde "⋯" bildir/engelle menüsünü açar. */
+export function openActivityMenu(a: FeedActivity) {
+  useModerationStore.getState().open({
+    type: 'activity',
+    targetId: a.id,
+    ownerId: a.user_id,
+    ownerName: a.display_name,
+  });
 }
 
 export function ActivityHeader({
@@ -71,6 +83,9 @@ export function ActivityHeader({
           </Text>
         </View>
       </Pressable>
+      {a.mine ? null : (
+        <MoreButton label={tr.moderation.more} onPress={() => openActivityMenu(a)} />
+      )}
     </View>
   );
 }

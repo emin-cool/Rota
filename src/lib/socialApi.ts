@@ -1,6 +1,9 @@
 import { supabase } from '@/lib/supabase';
 import type {
   ActivityComment,
+  BlockedUser,
+  ReportReason,
+  ReportType,
   ActivityType,
   FeedActivity,
   FollowRequest,
@@ -163,4 +166,43 @@ export async function removeFollower(myId: string, followerId: string): Promise<
     .eq('follower_id', followerId)
     .eq('following_id', myId);
   if (error) throw error;
+}
+
+/** İçeriği bildir. Sahibi sunucuda bulunur; hata mesajı `reportErrorKey` ile çevrilir. */
+export async function reportContent(
+  type: ReportType,
+  targetId: string,
+  reason: ReportReason,
+  details: string | null,
+): Promise<void> {
+  const { error } = await supabase.rpc('report_content', {
+    p_type: type,
+    p_target: targetId,
+    p_reason: reason,
+    p_details: details?.trim() || null,
+  });
+  if (error) throw error;
+}
+
+/** Engelle: karşılıklı takip ilişkisi sunucudaki trigger ile kalkar. */
+export async function blockUser(myId: string, targetId: string): Promise<void> {
+  const { error } = await supabase
+    .from('blocks')
+    .insert({ blocker_id: myId, blocked_id: targetId });
+  if (error && error.code !== '23505') throw error;
+}
+
+export async function unblockUser(myId: string, targetId: string): Promise<void> {
+  const { error } = await supabase
+    .from('blocks')
+    .delete()
+    .eq('blocker_id', myId)
+    .eq('blocked_id', targetId);
+  if (error) throw error;
+}
+
+export async function fetchBlockedUsers(): Promise<BlockedUser[]> {
+  const { data, error } = await supabase.rpc('blocked_users');
+  if (error) throw error;
+  return data ?? [];
 }

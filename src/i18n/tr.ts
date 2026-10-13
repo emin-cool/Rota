@@ -1,6 +1,7 @@
 /** Arayüz metinleri (Türkçe). İleride çok dil için `en.ts` ile aynı şekli taşıyacak. */
 import { trExplore } from './tr.explore';
 import { trLive } from './tr.live';
+import { trModeration } from './tr.moderation';
 import { trProfile } from './tr.profile';
 import { trSocial } from './tr.social';
 import { trWizard } from './tr.wizard';
@@ -11,6 +12,7 @@ export const tr = {
   ...trExplore,
   ...trProfile,
   ...trSocial,
+  ...trModeration,
   tabs: {
     map: 'Harita',
     explore: 'Keşfet',

@@ -29,6 +29,8 @@ import { tr } from '@/i18n/tr';
 import { timeAgo } from '@/lib/explore';
 import type { LngLat } from '@/lib/geo';
 import { activityTitle, formatCount, normalizeComment } from '@/lib/social';
+import { MoreButton } from '@/components/social/ModerationSheet';
+import { useModerationStore } from '@/stores/moderationStore';
 import { colors } from '@/theme/tokens';
 
 export default function ActivityDetailScreen() {
@@ -251,6 +253,19 @@ export default function ActivityDetailScreen() {
                 </View>
                 <Text variant="body-md">{c.body}</Text>
               </View>
+              {c.mine ? null : (
+                <MoreButton
+                  label={tr.moderation.more}
+                  onPress={() =>
+                    useModerationStore.getState().open({
+                      type: 'comment',
+                      targetId: c.id,
+                      ownerId: c.user_id,
+                      ownerName: c.display_name,
+                    })
+                  }
+                />
+              )}
               {c.can_delete ? (
                 <Pressable
                   accessibilityRole="button"

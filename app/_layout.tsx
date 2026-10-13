@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ProfileGate } from '@/components/ProfileGate';
+import { ModerationSheet } from '@/components/social/ModerationSheet';
 // Arka plan konum görevi modül yüklenirken tanımlanmak zorundadır.
 import '@/lib/trackingTask';
 import { useUploadQueue } from '@/hooks/useUploadQueue';
@@ -79,12 +80,14 @@ function RootLayout() {
               <Stack.Screen name="people" />
               <Stack.Screen name="follow-list" />
               <Stack.Screen name="follow-requests" />
+              <Stack.Screen name="blocked-users" />
               <Stack.Screen name="route-wizard" />
               <Stack.Screen name="route-results" />
               <Stack.Screen name="activity/live" />
               <Stack.Screen name="activity/summary" />
             </Stack.Protected>
           </Stack>
+          <ModerationSheet />
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

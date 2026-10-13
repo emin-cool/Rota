@@ -235,6 +235,27 @@ export default function SettingsScreen() {
           {tr.settings.privacyZoneHint}
         </Text>
 
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={tr.blockedUsers.settingsRow}
+          onPress={() => router.push('/blocked-users')}
+        >
+          <Card className="flex-row items-center gap-space-md p-space-md">
+            <View className="h-11 w-11 items-center justify-center rounded-full bg-surface-container">
+              <MaterialIcons name="block" size={22} color={colors.ink.secondary} />
+            </View>
+            <View className="flex-1">
+              <Text variant="body-lg" className="font-bold">
+                {tr.blockedUsers.settingsRow}
+              </Text>
+              <Text variant="label-sm" className="text-ink-secondary">
+                {tr.blockedUsers.settingsHint}
+              </Text>
+            </View>
+            <MaterialIcons name="chevron-right" size={24} color={colors.ink.muted} />
+          </Card>
+        </Pressable>
+
         <SectionTitle>{tr.settings.sectionAccount}</SectionTitle>
         {email ? (
           <Text variant="body-md" className="px-space-xs text-ink-secondary">
