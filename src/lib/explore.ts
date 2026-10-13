@@ -43,7 +43,7 @@ export function hasAnyFilter(f: ExploreFilters): boolean {
 
 export function filtersToArgs(
   f: ExploreFilters,
-  extra: Pick<ExploreArgs, 'p_offset' | 'p_limit' | 'p_featured_only' | 'p_sort'> = {},
+  extra: Pick<ExploreArgs, 'p_offset' | 'p_limit' | 'p_featured_only' | 'p_sort' | 'p_scope'> = {},
 ): ExploreArgs {
   const range = f.duration ? DURATION_RANGE[f.duration] : null;
   return {

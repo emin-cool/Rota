@@ -234,7 +234,30 @@ export type ExploreArgs = {
   p_sort?: 'popular' | 'featured' | 'newest';
   p_limit?: number;
   p_offset?: number;
+  p_scope?: 'public' | 'mine' | 'saved';
 };
+
+export type MyStats = {
+  total_distance_m: number;
+  activity_count: number;
+  total_duration_sec: number;
+};
+
+export type PrivacyZoneInfo = { lng: number; lat: number; radius_m: number };
+
+/** Profil "Aktivitelerim" listesi satırı. */
+export type ActivityListItem = Pick<
+  ActivityRow,
+  | 'id'
+  | 'title'
+  | 'activity_type'
+  | 'started_at'
+  | 'duration_sec'
+  | 'distance_m'
+  | 'avg_pace_sec_per_km'
+  | 'elevation_gain_m'
+  | 'route_id'
+>;
 
 export type ProfileUpdate = Partial<
   Pick<
@@ -296,6 +319,17 @@ export type Database = {
         Returns: ReviewListItem[];
       };
       route_pois: { Args: { p_id: string }; Returns: PoiSummary[] };
+      my_stats: { Args: Record<string, never>; Returns: MyStats[] };
+      my_weekly_distance: {
+        Args: Record<string, never>;
+        Returns: { day: string; distance_m: number | string }[];
+      };
+      set_privacy_zone: {
+        Args: { p_lng: number; p_lat: number; p_radius_m: number };
+        Returns: undefined;
+      };
+      clear_privacy_zone: { Args: Record<string, never>; Returns: undefined };
+      my_privacy_zone_info: { Args: Record<string, never>; Returns: PrivacyZoneInfo[] };
       my_privacy_zone: { Args: Record<string, never>; Returns: unknown };
     };
     Enums: Record<string, never>;

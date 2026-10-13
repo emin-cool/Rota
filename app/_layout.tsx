@@ -67,6 +67,9 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="route/[id]/index" />
               <Stack.Screen name="route/[id]/review" />
+              <Stack.Screen name="settings" />
+              <Stack.Screen name="profile-edit" />
+              <Stack.Screen name="privacy-zone" />
               <Stack.Screen name="route-wizard" />
               <Stack.Screen name="route-results" />
               <Stack.Screen name="activity/live" />
