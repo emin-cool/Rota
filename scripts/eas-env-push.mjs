@@ -11,6 +11,7 @@ const VARS = {
   EXPO_PUBLIC_SUPABASE_URL: 'plaintext',
   EXPO_PUBLIC_SUPABASE_ANON_KEY: 'plaintext',
   EXPO_PUBLIC_MAPBOX_TOKEN: 'plaintext',
+  EXPO_PUBLIC_SENTRY_DSN: 'plaintext',
   RNMAPBOX_MAPS_DOWNLOAD_TOKEN: 'secret',
 };
 
@@ -20,9 +21,16 @@ for (const line of readFileSync('.env', 'utf8').split(/\r?\n/)) {
   if (m) env[m[1]] = m[2].trim();
 }
 
+/** Boş olabilen değişkenler: .env'de yoksa sessizce atlanır (hata sayılmaz). */
+const OPTIONAL = new Set(['EXPO_PUBLIC_SENTRY_DSN']);
+
 let failed = false;
 for (const [name, visibility] of Object.entries(VARS)) {
   const value = env[name];
+  if (!value && OPTIONAL.has(name)) {
+    console.log(`– ${name}: boş, atlandı (isteğe bağlı).`);
+    continue;
+  }
   if (!value || value.includes('xxxx')) {
     console.error(`✗ ${name}: .env içinde gerçek bir değer yok, atlandı.`);
     failed = true;

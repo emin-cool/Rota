@@ -11,6 +11,7 @@
       "bundleIdentifier": "com.rota.app",
       "usesAppleSignIn": true,
       "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "Rota, yakınındaki rotaları göstermek ve başlangıç noktanı belirlemek için konumunu kullanır."
       }
     },
@@ -52,7 +53,13 @@
       "@rnmapbox/maps",
       "expo-sqlite",
       "expo-sharing",
-      ["expo-image-picker", { "photosPermission": "Rota, aktivitene fotoğraf eklemek için galerine erişir." }]
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Rota, aktivitene fotoğraf eklemek için galerine erişir."
+        }
+      ],
+      "@sentry/react-native"
     ],
     "scheme": "rota",
     "experiments": {

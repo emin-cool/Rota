@@ -1,4 +1,5 @@
 import { summarize, toLineEwkt } from '@/lib/activitySummary';
+import { reportError } from '@/lib/monitoring';
 import { supabase } from '@/lib/supabase';
 import { listQueuedUploads, loadPoints, updateSession, type SessionRow } from '@/lib/trackingDb';
 
@@ -137,6 +138,16 @@ export async function uploadSession(row: SessionRow, userId: string): Promise<vo
 
 let running = false;
 
+/** Ağ yokluğu beklenen bir durumdur; onun dışındaki hatalar (RLS, şema, kod) izlenir. */
+function reportUploadError(e: unknown) {
+  const msg = e instanceof Error ? e.message : String(e);
+  if (/network|fetch|timed? ?out|offline|failed to/i.test(msg)) {
+    if (__DEV__) console.warn('[upload] ertelendi:', msg);
+    return;
+  }
+  reportError(e, 'upload-queue');
+}
+
 /** Kuyruktaki kayıtları yükler; eşzamanlı çağrılar tek çalışmaya indirilir. Yüklenen sayıyı döner. */
 export async function processUploadQueue(userId: string): Promise<number> {
   if (running) return 0;
@@ -148,8 +159,9 @@ export async function processUploadQueue(userId: string): Promise<number> {
         await uploadSession(row, userId);
         done++;
       } catch (e) {
-        // İnternet yok / geçici hata: sonra tekrar denenecek.
-        if (__DEV__) console.warn('[upload] ertelendi:', e instanceof Error ? e.message : e);
+        // İnternet yok / geçici hata: sonra tekrar denenecek. Ağ hataları gürültü olmasın diye
+        // yalnızca geliştirmede yazılır; beklenmeyen (sunucu/yetki) hataları Sentry'ye gider.
+        reportUploadError(e);
       }
     }
   } finally {

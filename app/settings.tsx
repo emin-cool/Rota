@@ -10,6 +10,7 @@ import { usePrivacyZone } from '@/hooks/useProfileQueries';
 import { tr } from '@/i18n/tr';
 import { signOut } from '@/lib/auth';
 import { DEFAULT_RUN_PACE_SEC, formatPace, PACE_MAX_SEC, PACE_MIN_SEC } from '@/lib/pace';
+import { isMonitoringEnabled, reportError } from '@/lib/monitoring';
 import { deleteMyAccount } from '@/lib/profileApi';
 import { getSetting, SETTING_VOICE } from '@/lib/trackingDb';
 import { trackingEngine } from '@/lib/trackingEngine';
@@ -114,7 +115,19 @@ export default function SettingsScreen() {
         >
           <MaterialIcons name="arrow-back-ios-new" size={20} color={colors.ink.DEFAULT} />
         </Pressable>
-        <HeadlineMd>{tr.settings.title}</HeadlineMd>
+        {/* Başlığa uzun basmak Sentry'ye test hatası gönderir (yalnızca hata izleme açık derlemelerde). */}
+        <Pressable
+          onLongPress={() => {
+            if (isMonitoringEnabled()) reportError(new Error('Sentry testi'), 'manual-test');
+            Alert.alert(
+              isMonitoringEnabled() ? tr.settings.monitoringTest : tr.settings.monitoringOff,
+            );
+          }}
+          delayLongPress={1500}
+          accessible={false}
+        >
+          <HeadlineMd>{tr.settings.title}</HeadlineMd>
+        </Pressable>
         <View className="h-11 w-11" />
       </View>
 

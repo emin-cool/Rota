@@ -65,6 +65,8 @@ export const trProfile = {
   },
   settings: {
     title: 'Ayarlar',
+    monitoringTest: 'Test hatası gönderildi',
+    monitoringOff: 'Hata izleme bu derlemede kapalı',
     sectionTraining: 'Antrenman',
     pace: 'Varsayılan koşu temposu',
     paceHint: 'Rota sürelerini hesaplarken kullanılır.',
