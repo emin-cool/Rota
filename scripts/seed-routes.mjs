@@ -32,6 +32,8 @@ const CACHE_FILE = '.seed-cache.json';
 const UA = 'RotaApp-seed/0.1 (+https://github.com/emin-cool/Rota)';
 const ORS_BASE = 'https://api.openrouteservice.org/v2/directions';
 const ORS_PAUSE_MS = 1700; // dakikada ≤ 40 istek
+const ORS_TIMEOUT_MS = 30_000;
+const MAX_CONSECUTIVE_FAILURES = 3; // üst üste bu kadar ORS hatasında dur (servis kapalıdır)
 const NOMINATIM_PAUSE_MS = 1200; // Nominatim politikası: saniyede en çok 1 istek
 const MAX_PROFILE_POINTS = 300;
 // İstanbul kutusu: west,north,east,south
@@ -121,6 +123,8 @@ async function orsRoute(route, points) {
       method: 'POST',
       headers: { Authorization: env.ORS_API_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      // ORS yürüyüş/bisiklet sunucuları zaman zaman yanıt vermez; sonsuza kadar bekleme.
+      signal: AbortSignal.timeout(ORS_TIMEOUT_MS),
     });
     const text = await res.text();
     if (!res.ok) throw new Error(`ORS HTTP ${res.status}: ${text.slice(0, 200)}`);
@@ -280,9 +284,11 @@ if (pointsOnly) {
 
 const built = [];
 const failed = [];
+let streak = 0;
 for (const [i, route] of list.entries()) {
   try {
     const b = await build(route);
+    streak = 0;
     built.push(b);
     const km = (b.distanceM / 1000).toFixed(1);
     const warn = b.maxOffsetM > 150 ? `  ⚠ nokta rotadan ${b.maxOffsetM} m uzakta` : '';
