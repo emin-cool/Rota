@@ -32,6 +32,7 @@ import {
 } from '@/lib/trackingDb';
 import { startUpdates, stopUpdates } from '@/lib/trackingLocation';
 import type { ActivityType } from '@/types/routes';
+import { tr } from '@/i18n/tr';
 
 /** Zaten devam eden, noktası olan bir kayıt varken yenisi başlatılmak istendi. */
 export class ActiveSessionError extends Error {
@@ -413,7 +414,7 @@ class TrackingEngine {
         const pace = dDist >= 200 ? dMoving / (dDist / 1000) : stats.avgPaceSecPerKm;
         this.speak(buildKmAnnouncement({ km, paceSecPerKm: pace, remainingM: this.remainingM }));
       }
-      if (!wasOff && this.offRouteState.off) this.speak('Rotadan çıktın.');
+      if (!wasOff && this.offRouteState.off) this.speak(tr.spoken.offRoute);
     }
     if (kmMarksCrossed(prevDistance, stats.distanceM).length > 0) {
       this.lastMarkDistance = Math.floor(stats.distanceM / 1000) * 1000;

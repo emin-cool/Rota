@@ -1,6 +1,6 @@
-/** Profil sekmesi için saf hesaplamalar (istatistik biçimleme, haftalık grafik). */
+import { tr } from '@/i18n/tr';
 
-export const WEEKDAYS_TR = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'] as const;
+/** Profil sekmesi için saf hesaplamalar (istatistik biçimleme, haftalık grafik). */
 
 /** 148600 → "148,6" (km, tek ondalık, virgül). */
 export function formatTotalKm(meters: number): string {
@@ -83,9 +83,9 @@ export function formatActivityWhen(iso: string, now = new Date()): string {
   const startOfDay = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
   const days = Math.round((startOfDay(now) - startOfDay(d)) / 86_400_000);
   let day: string;
-  if (days <= 0) day = 'Bugün';
-  else if (days === 1) day = 'Dün';
-  else if (days < 7) day = `${days} gün önce`;
+  if (days <= 0) day = tr.time.today;
+  else if (days === 1) day = tr.time.yesterday;
+  else if (days < 7) day = tr.time.daysAgo(days);
   else day = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
   return `${day} · ${time}`;
 }

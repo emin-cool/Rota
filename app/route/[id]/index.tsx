@@ -226,7 +226,7 @@ export default function RouteDetailScreen() {
                 )}
               />
               <View className="absolute bottom-3 right-3 flex-row items-center gap-1 rounded-full bg-black/55 px-2.5 py-1">
-                <MaterialIcons name="photo-camera" size={14} color="#fff" />
+                <MaterialIcons name="photo-camera" size={14} color={colors.white} />
                 <Text variant="label-sm" className="font-bold text-white">
                   {tr.detail.photoCount(photoIndex + 1, route.photos.length)}
                 </Text>
@@ -252,7 +252,7 @@ export default function RouteDetailScreen() {
               </View>
             ) : null}
             {route.is_featured ? (
-              <View className="rounded-full bg-accent px-3 py-1.5">
+              <View className="rounded-full bg-accent-deep px-3 py-1.5">
                 <Text variant="label-sm" className="font-bold text-white">
                   {tr.detail.popularBadge}
                 </Text>
@@ -440,7 +440,7 @@ export default function RouteDetailScreen() {
         <Button
           title={tr.detail.start}
           loading={starting}
-          leading={<MaterialIcons name="navigation" size={20} color="#fff" />}
+          leading={<MaterialIcons name="navigation" size={20} color={colors.white} />}
           onPress={startRoute}
           className="flex-[1.6]"
         />

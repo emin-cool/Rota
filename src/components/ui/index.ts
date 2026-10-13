@@ -3,6 +3,7 @@ export { BottomSheet, type BottomSheetRef } from './BottomSheet';
 export { Button, type ButtonVariant } from './Button';
 export { Card } from './Card';
 export { Chip } from './Chip';
+export { ListSeparator } from './ListSeparator';
 export {
   DisplayHero,
   HeadlineLg,

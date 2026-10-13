@@ -1,5 +1,6 @@
 import * as TaskManager from 'expo-task-manager';
 
+import { reportError } from '@/lib/monitoring';
 import { trackingEngine, type LocationLike } from '@/lib/trackingEngine';
 import { LOCATION_TASK } from '@/lib/trackingLocation';
 
@@ -13,6 +14,6 @@ TaskManager.defineTask<{ locations: LocationLike[] }>(LOCATION_TASK, async ({ da
   try {
     await trackingEngine.ingestFromTask(data.locations);
   } catch (e) {
-    console.warn('[tracking] konum işlenemedi', e);
+    reportError(e, 'tracking-task');
   }
 });

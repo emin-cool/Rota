@@ -111,7 +111,7 @@ export default function OnboardingScreen() {
                   <MaterialIcons
                     name={icon}
                     size={26}
-                    color={selected ? '#ffffff' : colors['on-surface-variant']}
+                    color={selected ? colors.white : colors['on-surface-variant']}
                   />
                 </View>
                 <View className="flex-1">
@@ -128,7 +128,7 @@ export default function OnboardingScreen() {
                   <MaterialIcons
                     name={selected ? 'check' : 'add'}
                     size={18}
-                    color={selected ? '#ffffff' : colors.ink.muted}
+                    color={selected ? colors.white : colors.ink.muted}
                   />
                 </View>
               </Pressable>
@@ -164,7 +164,7 @@ export default function OnboardingScreen() {
                   <MaterialIcons
                     name={icon}
                     size={22}
-                    color={selected ? '#ffffff' : colors['on-surface-variant']}
+                    color={selected ? colors.white : colors['on-surface-variant']}
                   />
                   <Text
                     variant="label-sm"
@@ -243,7 +243,7 @@ export default function OnboardingScreen() {
           title={tr.common.continue}
           loading={saving}
           disabled={!canContinue}
-          leading={<MaterialIcons name="arrow-forward" size={20} color="#ffffff" />}
+          leading={<MaterialIcons name="arrow-forward" size={20} color={colors.white} />}
           onPress={() => void next()}
         />
         <Text variant="label-sm" className="text-center text-ink-secondary">

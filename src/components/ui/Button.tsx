@@ -21,7 +21,7 @@ const containerClass: Record<ButtonVariant, string> = {
   primary: 'bg-brand active:bg-brand-deep',
   secondary: 'bg-brand-soft active:bg-primary-fixed',
   ghost: 'bg-transparent active:bg-brand-soft',
-  accent: 'bg-accent active:bg-accent-deep',
+  accent: 'bg-accent-deep active:bg-accent-pressed',
 };
 
 const labelClass: Record<ButtonVariant, string> = {

@@ -85,7 +85,7 @@ export function RouteResultCard({
           className="flex-row items-center gap-1 rounded-full px-3 py-1.5"
           style={{ backgroundColor: color }}
         >
-          <MaterialIcons name={LABEL_ICON[route.label] ?? 'route'} size={16} color="#ffffff" />
+          <MaterialIcons name={LABEL_ICON[route.label] ?? 'route'} size={16} color={colors.white} />
           <Text variant="label-sm" className="font-bold text-white">
             {route.label}
           </Text>
@@ -161,7 +161,7 @@ export function RouteResultCard({
           <MaterialIcons
             name={saved ? 'bookmark' : 'bookmark-border'}
             size={24}
-            color={saved ? '#ffffff' : colors.brand.DEFAULT}
+            color={saved ? colors.white : colors.brand.DEFAULT}
           />
         </Pressable>
         <Pressable

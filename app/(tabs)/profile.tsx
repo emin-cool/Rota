@@ -1,13 +1,22 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActivityCard } from '@/components/profile/ActivityCard';
 import { WeeklyChart } from '@/components/profile/WeeklyChart';
 import { ExploreCard } from '@/components/route/ExploreCard';
-import { Avatar, Button, Card, HeadlineLg, HeadlineMd, Skeleton, Text } from '@/components/ui';
+import {
+  Avatar,
+  Button,
+  Card,
+  HeadlineLg,
+  HeadlineMd,
+  ListSeparator,
+  Skeleton,
+  Text,
+} from '@/components/ui';
 import { useMyActivities, useMyStats, useScopedRoutes, useWeekly } from '@/hooks/useProfileQueries';
 import { useToggleSaved } from '@/hooks/useRouteQueries';
 import { tr } from '@/i18n/tr';
@@ -86,7 +95,15 @@ export default function ProfileScreen() {
     }));
   }, [tab, activityPages, routePages]);
 
-  const openRoute = (id: string) => router.push({ pathname: '/route/[id]', params: { id } });
+  const { mutate: mutateSaved } = toggle;
+  const openRoute = useCallback(
+    (id: string) => router.push({ pathname: '/route/[id]', params: { id } }),
+    [],
+  );
+  const toggleSave = useCallback(
+    (r: ExploreRoute) => mutateSaved({ routeId: r.id, saved: !r.saved }),
+    [mutateSaved],
+  );
 
   const header = (
     <View className="gap-space-md pb-space-md">
@@ -294,16 +311,12 @@ export default function ProfileScreen() {
         keyExtractor={(r) => r.key}
         contentContainerClassName="px-margin pb-space-xl pt-space-md"
         ListHeaderComponent={header}
-        ItemSeparatorComponent={() => <View className="h-space-md" />}
+        ItemSeparatorComponent={ListSeparator}
         renderItem={({ item }) =>
           item.kind === 'activity' ? (
             <ActivityCard item={item.item} />
           ) : (
-            <ExploreCard
-              route={item.item}
-              onPress={() => openRoute(item.item.id)}
-              onToggleSave={() => toggle.mutate({ routeId: item.item.id, saved: !item.item.saved })}
-            />
+            <ExploreCard route={item.item} onPress={openRoute} onToggleSave={toggleSave} />
           )
         }
         ListEmptyComponent={empty}

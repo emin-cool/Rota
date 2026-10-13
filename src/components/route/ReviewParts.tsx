@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { memo } from 'react';
 import { Image, ScrollView, View } from 'react-native';
 
 import { Avatar, Card, Text } from '@/components/ui';
@@ -62,7 +63,7 @@ export function RatingSummaryCard({ summary }: { summary: RatingSummary }) {
 }
 
 /** Tek yorum: yorumcu, puan, doğrulanmış rozeti, metin, fotoğraflar. */
-export function ReviewItem({ review }: { review: ReviewListItem }) {
+export const ReviewItem = memo(function ReviewItem({ review }: { review: ReviewListItem }) {
   return (
     <Card className="gap-space-sm p-space-md">
       <View className="flex-row items-center gap-space-md">
@@ -113,4 +114,4 @@ export function ReviewItem({ review }: { review: ReviewListItem }) {
       ) : null}
     </Card>
   );
-}
+});

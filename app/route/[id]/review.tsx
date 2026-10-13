@@ -29,7 +29,7 @@ import { colors } from '@/theme/tokens';
 function whenText(iso: string): string {
   const d = new Date(iso);
   return d.toDateString() === new Date().toDateString()
-    ? 'Bugün'
+    ? tr.time.today
     : d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
 }
 
@@ -138,7 +138,7 @@ function ReviewForm({ routeId, userId, initial, existingPhotos }: FormProps) {
                 <MaterialIcons
                   name={n <= rating ? 'star' : 'star-border'}
                   size={38}
-                  color={n <= rating ? '#F59E0B' : colors.ink.muted}
+                  color={n <= rating ? colors.star : colors.ink.muted}
                 />
               </Pressable>
             ))}
@@ -253,7 +253,7 @@ function ReviewForm({ routeId, userId, initial, existingPhotos }: FormProps) {
                     hitSlop={8}
                     className="absolute right-1 top-1 h-7 w-7 items-center justify-center rounded-full bg-black/60"
                   >
-                    <MaterialIcons name="close" size={16} color="#fff" />
+                    <MaterialIcons name="close" size={16} color={colors.white} />
                   </Pressable>
                 </View>
               ))}
@@ -283,7 +283,7 @@ function ReviewForm({ routeId, userId, initial, existingPhotos }: FormProps) {
         <Button
           title={sending ? tr.review.submitting : initial ? tr.review.update : tr.review.submit}
           loading={sending}
-          leading={<MaterialIcons name="send" size={20} color="#fff" />}
+          leading={<MaterialIcons name="send" size={20} color={colors.white} />}
           onPress={() => void submit()}
         />
       </View>

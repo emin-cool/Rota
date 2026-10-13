@@ -1,12 +1,13 @@
 import { Stack } from 'expo-router';
 
 import { useSessionStore } from '@/stores/sessionStore';
+import { colors } from '@/theme/tokens';
 
 export default function AuthLayout() {
   const session = useSessionStore((s) => s.session);
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F7F8F6' } }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas } }}>
       {/* Çıkış yapmış kullanıcı: karşılama ve giriş */}
       <Stack.Protected guard={!session}>
         <Stack.Screen name="welcome" />
