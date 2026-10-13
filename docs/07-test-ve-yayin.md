@@ -36,18 +36,18 @@ Güncelleme: yeni build al, bağlantıyı yeniden gönder. Daha düzgün yol: Go
 
 ## 3. Kapalı test — iOS (TestFlight)
 
-Gereken: Apple Developer hesabı (var). Bundle kimliği: `com.rota.app`.
+Gereken: Apple Developer hesabı (var). iOS bundle kimliği: `com.eminkal.rota` (`com.rota.app` Apple'da başkasına ait çıktı; Android paketi şimdilik `com.rota.app`, Play Store öncesi benzersizliği kontrol edilmeli).
 
 1. **İlk build (etkileşimli, bir kez):** `npx eas-cli build --platform ios --profile production` — Apple ID ile giriş ister; sertifika,
    provisioning profili ve App ID'yi EAS oluşturur. Yetenekler: Sign in with Apple (app.json'da var), arka plan konumu (eklentiyle).
-2. **App Store Connect'te uygulama kaydı oluştur:** Apps → + → New App → ad **Rota**, bundle ID `com.rota.app`, SKU serbest.
+2. **App Store Connect'te uygulama kaydı oluştur:** Apps → + → New App → ad **Rota**, bundle ID `com.eminkal.rota`, SKU serbest.
 3. **Yükle:** `npx eas-cli submit --platform ios --profile production --latest` (ilk seferde Apple girişi ve uygulamayı seçmen istenir).
 4. **TestFlight:** build birkaç dakika işlenir. *İç test* (App Store Connect kullanıcıları, 100 kişiye kadar) incelemesiz; *dış test*
    (10.000 kişiye kadar, herkese bağlantı/e-posta) ilk build için Beta App Review ister (genelde 1–2 gün).
 5. Şifreleme sorusu çıkmasın diye `ITSAppUsesNonExemptEncryption: false` app.json'a eklendi.
 
 **iOS'ta kontrol et:**
-- Supabase → Authentication → Providers → **Apple**: Client ID listesine `com.rota.app` ekli mi? (Native Apple girişi buna bağlı.)
+- Supabase → Authentication → Providers → **Apple**: Client ID listesine `com.eminkal.rota` ekli mi? (eski `com.rota.app` kalabilir, virgülle ayır) (Native Apple girişi buna bağlı.)
 - Konum izni açıklamaları (Türkçe) app.json'da; arka plan konum için App Store incelemesinde "neden" sorulur (aktivite kaydı).
 - Hesabı silme zorunluluğu karşılandı (Ayarlar → Hesabımı sil).
 
