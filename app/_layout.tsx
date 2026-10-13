@@ -66,6 +66,7 @@ export default function RootLayout() {
             <Stack.Protected guard={!signedOut && onboarded}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="route/[id]/index" />
+              <Stack.Screen name="route/[id]/review" />
               <Stack.Screen name="route-wizard" />
               <Stack.Screen name="route-results" />
               <Stack.Screen name="activity/live" />

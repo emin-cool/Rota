@@ -18,7 +18,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [x] P1.3 Rota sihirbazı + sonuç ekranı (kod hazır; yeni development build (react-native-svg) kurulup tablette doğrulanacak)
 - [x] P1.4 Canlı aktivite takibi (kod hazır; yeni development build kurulup dışarıda 10 dk yürüyüşle doğrulanacak)
 - [x] P1.5 Aktivite özeti + kaydetme (kod hazır; `db:push`, yeni development build ve tablette doğrulama bekliyor — docs/06-supabase-kurulum.md)
-- [ ] P1.6 Keşfet + rota detayı + yorum
+- [x] P1.6 Keşfet + rota detayı + yorum (kod ve RPC'ler hazır; migration'lar uygulandı; tablette doğrulama bekliyor — yeni native modül yok, development build gerekmez)
 - [ ] P1.7 Profil, ayarlar, 30 seed rota
 - [ ] P1.8 Genel kontrol ve temizlik
 - [ ] Kapalı test (20–30 kişi)
@@ -32,5 +32,5 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [ ] P3.1 Mağaza hazırlığı ve yayın
 
 ## Bekleyen küçük işler
-- [ ] **OSM verisi: kalan 22 karoyu yükle** (en kuzey şerit 41.20–41.25 ve kuzeydoğu köşesi; Karadeniz kıyısı/orman). Overpass düzelince: `node scripts/osm-import.mjs` (kaldığı yerden devam eder). Şehir çekirdeği (Boğaz'ın iki yakası) tamam, Emirgan dahil. Not: Overpass bazen tamamen yanıt vermiyor, o zaman birkaç saat sonra tekrar dene.
+- [x] **OSM verisi: kalan 22 karoyu yükle** (120/120 karo tamamlandı, 2026-10-13) (en kuzey şerit 41.20–41.25 ve kuzeydoğu köşesi; Karadeniz kıyısı/orman). Overpass düzelince: `node scripts/osm-import.mjs` (kaldığı yerden devam eder). Şehir çekirdeği (Boğaz'ın iki yakası) tamam, Emirgan dahil. Not: Overpass bazen tamamen yanıt vermiyor, o zaman birkaç saat sonra tekrar dene.
 - [ ] **P1.4 saha testi (dışarıda):** gerçek yürüyüşte 10 dk, ekran kilitliyken mesafe artıyor mu, bildirim kalıyor mu, 1 km'de sesli bildirim, GPS kalite rozeti, rotadan sapma uyarısı (40 m). Masa testleri (simülasyon) ayrıca yapıldı.

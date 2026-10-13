@@ -58,6 +58,25 @@ async function insertActivity(row: SessionRow, userId: string): Promise<void> {
   if (error && error.code !== PG_UNIQUE_VIOLATION) throw error;
 }
 
+/** Fotoğrafı `route-photos/{userId}/{name}` yoluna yükler ve `route_photos` satırını ekler. */
+export async function uploadRoutePhoto(
+  userId: string,
+  routeId: string,
+  name: string,
+  body: ArrayBuffer,
+): Promise<void> {
+  const path = `${userId}/${name}`;
+  const up = await supabase.storage
+    .from(PHOTO_BUCKET)
+    .upload(path, body, { contentType: 'image/jpeg', upsert: true });
+  if (up.error) throw up.error;
+  const url = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl;
+  const { error } = await supabase
+    .from('route_photos')
+    .insert({ route_id: routeId, user_id: userId, url });
+  if (error) throw error;
+}
+
 async function uploadPhotos(row: SessionRow, userId: string): Promise<void> {
   if (!row.route_id) return;
   const photos = parsePhotos(row.photos_json);
@@ -72,27 +91,21 @@ async function uploadPhotos(row: SessionRow, userId: string): Promise<void> {
       photos[i] = { ...photo, done: true };
       continue;
     }
-    const path = `${userId}/${row.id}-${i}.jpg`;
-    const up = await supabase.storage
-      .from(PHOTO_BUCKET)
-      .upload(path, body, { contentType: 'image/jpeg', upsert: true });
-    if (up.error) throw up.error;
-    const url = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl;
-    const { error } = await supabase
-      .from('route_photos')
-      .insert({ route_id: row.route_id, user_id: userId, url });
-    if (error) throw error;
+    await uploadRoutePhoto(userId, row.route_id, `${row.id}-${i}.jpg`, body);
     photos[i] = { ...photo, done: true };
     await updateSession(row.id, { photos_json: JSON.stringify(photos) });
   }
 }
 
-async function uploadReview(row: SessionRow, userId: string): Promise<void> {
-  const review = parseReview(row.review_json);
-  if (!review || !row.route_id) return;
+/** Yorumu ekler; bu rotaya zaten yorum yazılmışsa günceller (route_id/user_id kolonları güncellenemez). */
+export async function saveReview(
+  userId: string,
+  routeId: string,
+  review: ReviewDraft,
+): Promise<void> {
   const comment = review.comment.trim() || null;
   const { error } = await supabase.from('route_reviews').insert({
-    route_id: row.route_id,
+    route_id: routeId,
     user_id: userId,
     rating: review.rating,
     comment,
@@ -100,13 +113,18 @@ async function uploadReview(row: SessionRow, userId: string): Promise<void> {
   });
   if (!error) return;
   if (error.code !== PG_UNIQUE_VIOLATION) throw error;
-  // Bu rotaya daha önce yorum yazılmış: güncelle (route_id/user_id kolonları güncellenemez).
   const upd = await supabase
     .from('route_reviews')
     .update({ rating: review.rating, comment, tags: review.tags })
-    .eq('route_id', row.route_id)
+    .eq('route_id', routeId)
     .eq('user_id', userId);
   if (upd.error) throw upd.error;
+}
+
+async function uploadReview(row: SessionRow, userId: string): Promise<void> {
+  const review = parseReview(row.review_json);
+  if (!review || !row.route_id) return;
+  await saveReview(userId, row.route_id, review);
 }
 
 /** Sırayla: aktivite → fotoğraflar → yorum. Hata atarsa kayıt kuyrukta kalır. */
