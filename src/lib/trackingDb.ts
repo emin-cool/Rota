@@ -192,6 +192,16 @@ export async function deleteSession(id: string): Promise<void> {
   });
 }
 
+/** Hesap silinince bu cihazdaki tüm yerel kayıtları (oturumlar, noktalar, ayarlar) temizler. */
+export async function clearAllLocalData(): Promise<void> {
+  const db = await getDb();
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(`DELETE FROM points`);
+    await db.runAsync(`DELETE FROM sessions`);
+    await db.runAsync(`DELETE FROM settings`);
+  });
+}
+
 /** Bitirilmiş ama henüz yüklenmemiş kayıtlar (kullanıcı Kaydet'e basmamış olanlar dahil). */
 export async function listPendingUploads(): Promise<SessionRow[]> {
   const db = await getDb();

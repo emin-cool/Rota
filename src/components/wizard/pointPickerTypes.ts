@@ -12,4 +12,6 @@ export type PointPickerProps = {
   /** Sabit duran diğer noktalar (A→B'de seçilmiş başlangıç gibi). */
   fixedPoints: { point: LngLat; color: string }[];
   showUserLocation: boolean;
+  /** Seçili noktanın çevresine çizilecek daire yarıçapı (metre); gizlilik bölgesi seçiminde kullanılır. */
+  radiusM?: number;
 };

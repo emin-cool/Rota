@@ -126,5 +126,7 @@ export function useToggleSaved() {
     },
     onMutate: (v) => patch(v.routeId, v.saved),
     onError: (_e, v) => patch(v.routeId, !v.saved),
+    // Kaydedilenler listesi sunucudan yenilensin (kaldırılan rota listeden çıksın).
+    onSettled: () => qc.invalidateQueries({ queryKey: ['explore', 'scope', 'saved'] }),
   });
 }

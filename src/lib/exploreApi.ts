@@ -13,14 +13,19 @@ export type ExplorePage = { items: ExploreRoute[]; next: number | undefined };
 export async function fetchExplorePage(
   filters: ExploreFilters,
   offset: number,
-  opts: { featuredOnly?: boolean; limit?: number } = {},
+  opts: { featuredOnly?: boolean; limit?: number; scope?: 'public' | 'mine' | 'saved' } = {},
 ): Promise<ExplorePage> {
   const { data, error } = await supabase.rpc(
     'explore_routes',
     filtersToArgs(filters, {
       p_offset: offset,
       p_featured_only: opts.featuredOnly ?? false,
-      p_sort: opts.featuredOnly ? 'featured' : 'popular',
+      p_sort: opts.featuredOnly
+        ? 'featured'
+        : opts.scope && opts.scope !== 'public'
+          ? 'newest'
+          : 'popular',
+      p_scope: opts.scope ?? 'public',
       ...(opts.limit ? { p_limit: opts.limit } : {}),
     }),
   );

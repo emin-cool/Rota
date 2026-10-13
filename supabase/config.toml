@@ -417,3 +417,6 @@ enabled = true
 # JWT'yi fonksiyon kendisi doğrular (auth.getUser); yeni asimetrik JWT anahtarlarıyla uyumlu.
 [functions.generate-routes]
 verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = false
