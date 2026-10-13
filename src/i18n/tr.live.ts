@@ -71,6 +71,9 @@ export const trLive = {
   },
   summary: {
     title: 'Aktivite Özeti',
+    activityNoun: { walk: 'yürüyüşü', run: 'koşusu', bike: 'bisiklet turu' },
+    dayParts: { night: 'Gece', morning: 'Sabah', afternoon: 'Öğleden sonra', evening: 'Akşam' },
+    defaultTitle: (part: string, noun: string) => `${part} ${noun}`,
     greatJob: 'Harika iş!',
     completedRoute: (name: string) => `${name} tamamlandı.`,
     completedFree: 'Aktiviten tamamlandı.',
@@ -115,5 +118,15 @@ export const trLive = {
     leaveDiscard: 'Sil ve çık',
     leaveSave: 'Kaydet',
     home: 'Ana ekrana dön',
+  },
+  spoken: {
+    minutes: (n: number) => `${n} dakika`,
+    seconds: (n: number) => `${n} saniye`,
+    meters: (n: number) => `${n} metre`,
+    kilometers: (km: string) => `${km} kilometre`,
+    kmDone: (km: number) => `${km} kilometre tamamlandı.`,
+    yourPace: (pace: string) => `Tempon ${pace}.`,
+    remaining: (dist: string) => `Kalan ${dist}.`,
+    offRoute: 'Rotadan çıktın.',
   },
 } as const;

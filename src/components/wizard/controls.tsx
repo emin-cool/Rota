@@ -45,7 +45,7 @@ export function SelectCard({
         <MaterialIcons
           name={icon}
           size={28}
-          color={selected ? '#ffffff' : colors['on-surface-variant']}
+          color={selected ? colors.white : colors['on-surface-variant']}
         />
       </View>
       <View className="flex-1">
@@ -65,7 +65,7 @@ export function SelectCard({
       </View>
       {selected ? (
         <View className="h-8 w-8 items-center justify-center rounded-full bg-brand">
-          <MaterialIcons name="check" size={20} color="#ffffff" />
+          <MaterialIcons name="check" size={20} color={colors.white} />
         </View>
       ) : (
         <View className="h-8 w-8" />
@@ -149,7 +149,7 @@ export function FilledChoice<T extends string>({
             <MaterialIcons
               name={o.icon}
               size={24}
-              color={selected ? '#ffffff' : colors['on-surface-variant']}
+              color={selected ? colors.white : colors['on-surface-variant']}
             />
             <Text
               variant="body-md-medium"
@@ -221,7 +221,7 @@ export function SelectRow({
       </View>
       {selected ? (
         <View className="h-7 w-7 items-center justify-center rounded-full bg-brand">
-          <MaterialIcons name="check" size={18} color="#ffffff" />
+          <MaterialIcons name="check" size={18} color={colors.white} />
         </View>
       ) : null}
     </Pressable>
@@ -260,7 +260,7 @@ export function ToggleRow({
         value={value}
         onValueChange={onChange}
         trackColor={{ false: colors['surface-container-high'], true: colors.brand.DEFAULT }}
-        thumbColor="#ffffff"
+        thumbColor={colors.white}
       />
     </View>
   );
@@ -304,7 +304,7 @@ export function SceneryCard({
             </View>
             {selected ? (
               <View className="h-7 w-7 items-center justify-center rounded-full bg-brand">
-                <MaterialIcons name="check" size={18} color="#ffffff" />
+                <MaterialIcons name="check" size={18} color={colors.white} />
               </View>
             ) : (
               <View className="h-7 w-7 rounded-full border-2 border-white/70" />

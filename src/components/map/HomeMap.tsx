@@ -98,7 +98,7 @@ export const HomeMap = forwardRef<HomeMapHandle, HomeMapProps>(function HomeMap(
       >
         <Mapbox.LineLayer
           id="routes-casing"
-          style={{ lineColor: '#ffffff', lineWidth: 8, lineCap: 'round', lineJoin: 'round' }}
+          style={{ lineColor: colors.white, lineWidth: 8, lineCap: 'round', lineJoin: 'round' }}
         />
         <Mapbox.LineLayer
           id="routes-line"

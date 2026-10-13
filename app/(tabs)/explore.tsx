@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,6 +14,7 @@ import {
   Chip,
   HeadlineLg,
   HeadlineMd,
+  ListSeparator,
   Skeleton,
   Text,
 } from '@/components/ui';
@@ -74,8 +75,15 @@ export default function ExploreScreen() {
   const items = useMemo(() => query.data?.pages.flatMap((p) => p.items) ?? [], [query.data]);
   const editors = featured.data?.items ?? [];
 
-  const openRoute = (id: string) => router.push({ pathname: '/route/[id]', params: { id } });
-  const toggleSave = (r: ExploreRoute) => toggle.mutate({ routeId: r.id, saved: !r.saved });
+  const { mutate: mutateSaved } = toggle;
+  const openRoute = useCallback(
+    (id: string) => router.push({ pathname: '/route/[id]', params: { id } }),
+    [],
+  );
+  const toggleSave = useCallback(
+    (r: ExploreRoute) => mutateSaved({ routeId: r.id, saved: !r.saved }),
+    [mutateSaved],
+  );
   const clearAll = () => {
     setText('');
     setFilters(EMPTY_FILTERS);
@@ -147,12 +155,7 @@ export default function ExploreScreen() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View className="flex-row gap-space-md">
               {editors.map((r) => (
-                <FeaturedCard
-                  key={r.id}
-                  route={r}
-                  onPress={() => openRoute(r.id)}
-                  onToggleSave={() => toggleSave(r)}
-                />
+                <FeaturedCard key={r.id} route={r} onPress={openRoute} onToggleSave={toggleSave} />
               ))}
             </View>
           </ScrollView>
@@ -185,7 +188,7 @@ export default function ExploreScreen() {
           >
             <MaterialIcons name="tune" size={22} color={colors.brand.DEFAULT} />
             {activeCount > 0 ? (
-              <View className="absolute right-0 top-0 h-5 min-w-[20px] items-center justify-center rounded-full bg-accent px-1">
+              <View className="absolute right-0 top-0 h-5 min-w-[20px] items-center justify-center rounded-full bg-accent-deep px-1">
                 <Text variant="label-sm" className="font-bold text-white">
                   {activeCount}
                 </Text>
@@ -244,7 +247,7 @@ export default function ExploreScreen() {
           data={items}
           keyExtractor={(r) => r.id}
           contentContainerClassName="px-margin pb-space-xl"
-          ItemSeparatorComponent={() => <View className="h-space-md" />}
+          ItemSeparatorComponent={ListSeparator}
           ListHeaderComponent={
             items.length > 0 ? (
               <View className="flex-row items-center justify-between pb-space-md pt-space-sm">
@@ -253,11 +256,7 @@ export default function ExploreScreen() {
             ) : null
           }
           renderItem={({ item }) => (
-            <ExploreCard
-              route={item}
-              onPress={() => openRoute(item.id)}
-              onToggleSave={() => toggleSave(item)}
-            />
+            <ExploreCard route={item} onPress={openRoute} onToggleSave={toggleSave} />
           )}
           ListEmptyComponent={emptyView}
           ListFooterComponent={footer}
@@ -282,11 +281,7 @@ export default function ExploreScreen() {
               />
               {selected ? (
                 <View className="absolute inset-x-0 bottom-0 px-margin pb-space-md">
-                  <ExploreCard
-                    route={selected}
-                    onPress={() => openRoute(selected.id)}
-                    onToggleSave={() => toggleSave(selected)}
-                  />
+                  <ExploreCard route={selected} onPress={openRoute} onToggleSave={toggleSave} />
                 </View>
               ) : null}
             </>

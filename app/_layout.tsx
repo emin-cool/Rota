@@ -13,16 +13,18 @@ import { ProfileGate } from '@/components/ProfileGate';
 // Arka plan konum görevi modül yüklenirken tanımlanmak zorundadır.
 import '@/lib/trackingTask';
 import { useUploadQueue } from '@/hooks/useUploadQueue';
+import { initMonitoring, setMonitoringUser, wrapRoot } from '@/lib/monitoring';
 import { useSessionStore } from '@/stores/sessionStore';
 import { fontAssets } from '@/theme/fonts';
 
+initMonitoring();
 void SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
 });
 
-export default function RootLayout() {
+function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(fontAssets);
   const initialized = useSessionStore((s) => s.initialized);
   const session = useSessionStore((s) => s.session);
@@ -30,6 +32,8 @@ export default function RootLayout() {
   const init = useSessionStore((s) => s.init);
 
   useEffect(() => init(), [init]);
+  const userId = useSessionStore((s) => s.session?.user.id ?? null);
+  useEffect(() => setMonitoringUser(userId), [userId]);
   useUploadQueue();
 
   const ready = (fontsLoaded || !!fontError) && initialized;
@@ -81,3 +85,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default wrapRoot(RootLayout);

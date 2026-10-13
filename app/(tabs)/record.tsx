@@ -128,7 +128,7 @@ export default function RecordScreen() {
               title={copy.start}
               variant="accent"
               loading={starting}
-              leading={<MaterialIcons name="play-arrow" size={22} color="#ffffff" />}
+              leading={<MaterialIcons name="play-arrow" size={22} color={colors.white} />}
               onPress={() => void start({ activityType: activity })}
             />
           </Card>

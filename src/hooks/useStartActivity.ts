@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { Alert, Linking } from 'react-native';
 
 import { tr } from '@/i18n/tr';
+import { reportError } from '@/lib/monitoring';
 import type { LngLat } from '@/lib/geo';
 import { ActiveSessionError, trackingEngine } from '@/lib/trackingEngine';
 import { ensureTrackingPermission } from '@/lib/trackingLocation';
@@ -41,7 +42,8 @@ async function begin(params: StartParams): Promise<void> {
 /** Beklenmeyen başlatma hatasını gösterir (geliştirmede gerçek sebep, üretimde genel mesaj). */
 function showStartError(e: unknown) {
   const detail = e instanceof Error ? e.message : String(e);
-  console.warn('[tracking] kayıt başlatılamadı:', detail);
+  reportError(e, 'start-activity');
+  if (__DEV__) console.warn('[tracking] kayıt başlatılamadı:', detail);
   Alert.alert(tr.live.errors.startFailed, __DEV__ ? detail : undefined);
 }
 

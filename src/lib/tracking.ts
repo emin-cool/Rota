@@ -1,5 +1,6 @@
 import { distPointToSegmentM } from '../../supabase/functions/_shared/geo.ts';
 
+import { tr } from '@/i18n/tr';
 import { haversineM, type LngLat } from '@/lib/geo';
 import type { ActivityType } from '@/types/routes';
 
@@ -301,16 +302,16 @@ export function spokenDuration(totalSec: number): string {
   const m = Math.floor(s / 60);
   const r = s % 60;
   const parts: string[] = [];
-  if (m > 0) parts.push(`${m} dakika`);
-  if (r > 0 || m === 0) parts.push(`${r} saniye`);
+  if (m > 0) parts.push(tr.spoken.minutes(m));
+  if (r > 0 || m === 0) parts.push(tr.spoken.seconds(r));
   return parts.join(' ');
 }
 
 /** 3800 → "3,8 kilometre"; 850 → "850 metre". */
 export function spokenDistance(m: number): string {
-  if (m < 1000) return `${Math.max(0, Math.round(m / 10) * 10)} metre`;
+  if (m < 1000) return tr.spoken.meters(Math.max(0, Math.round(m / 10) * 10));
   const km = Math.round(m / 100) / 10;
-  return `${String(km).replace('.', ',')} kilometre`;
+  return tr.spoken.kilometers(String(km).replace('.', ','));
 }
 
 /** Her km'de okunan metin: "1 kilometre tamamlandı. Tempon 11 dakika 10 saniye. Kalan 3,8 kilometre." */
@@ -319,10 +320,10 @@ export function buildKmAnnouncement(params: {
   paceSecPerKm: number | null;
   remainingM: number | null;
 }): string {
-  const parts = [`${params.km} kilometre tamamlandı.`];
-  if (params.paceSecPerKm) parts.push(`Tempon ${spokenDuration(params.paceSecPerKm)}.`);
+  const parts = [tr.spoken.kmDone(params.km)];
+  if (params.paceSecPerKm) parts.push(tr.spoken.yourPace(spokenDuration(params.paceSecPerKm)));
   if (params.remainingM !== null && params.remainingM > 0) {
-    parts.push(`Kalan ${spokenDistance(params.remainingM)}.`);
+    parts.push(tr.spoken.remaining(spokenDistance(params.remainingM)));
   }
   return parts.join(' ');
 }

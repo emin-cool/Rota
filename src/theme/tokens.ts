@@ -65,9 +65,12 @@ const brandColors = {
   },
   accent: {
     DEFAULT: '#FF6B35', // Sunset Orange
-    deep: '#E0531F', // basılı durum
+    deep: '#C2410C', // beyaz yazılı zemin ve turuncu metin (AA: beyaz üstünde 5,2:1)
+    pressed: '#9A3412', // basılı durum
     soft: '#FFF0EB',
   },
+  white: '#FFFFFF', // renkli zemin üstündeki ikon/metin
+  star: '#D97706', // puan yıldızı (beyaz üstünde 3,2:1)
   canvas: '#F7F8F6', // sıcak kırık beyaz zemin
   hairline: '#E5E7EB', // ince ayırıcı / kart kenarlığı
   // Canlı takip (karanlık tema) — Stitch canl_aktivite ekranından.
@@ -96,7 +99,7 @@ const brandColors = {
   ink: {
     DEFAULT: '#111827', // birincil metin
     secondary: '#4B5563',
-    muted: '#9CA3AF',
+    muted: '#6B7280', // AA: beyaz üstünde 4,8:1
   },
 } as const;
 

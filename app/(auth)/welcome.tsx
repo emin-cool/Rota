@@ -23,7 +23,7 @@ export default function WelcomeScreen() {
 
       <View className="flex-row items-center gap-space-sm self-start rounded-full bg-white/15 py-2 pl-2 pr-4">
         <View className="h-9 w-9 items-center justify-center rounded-full bg-brand">
-          <MaterialIcons name="explore" size={22} color="#ffffff" />
+          <MaterialIcons name="explore" size={22} color={colors.white} />
         </View>
         <Text variant="headline-sm" className="text-white">
           ROTA
@@ -31,7 +31,7 @@ export default function WelcomeScreen() {
       </View>
 
       <View className="gap-space-md">
-        <View className="flex-row items-center gap-1 self-start rounded-full bg-accent px-3 py-1.5">
+        <View className="flex-row items-center gap-1 self-start rounded-full bg-accent-deep px-3 py-1.5">
           <MaterialIcons name="bolt" size={16} color={colors['on-secondary-fixed']} />
           <Text variant="label-caps" className="text-on-secondary-fixed">
             {tr.welcome.badge}
@@ -45,7 +45,7 @@ export default function WelcomeScreen() {
         <View className="mt-space-md gap-space-sm">
           <Button
             title={tr.welcome.start}
-            leading={<MaterialIcons name="arrow-forward" size={20} color="#ffffff" />}
+            leading={<MaterialIcons name="arrow-forward" size={20} color={colors.white} />}
             onPress={() => router.push({ pathname: '/login', params: { mode: 'signup' } })}
           />
           <Button

@@ -88,7 +88,7 @@ export default function WizardStep4() {
       {/* Gerçek verilerden: seçimlere uyan kayıtlı rotalar */}
       <View className="flex-row items-center gap-space-md rounded-lg bg-primary-fixed/40 p-space-md">
         <View className="h-12 w-12 items-center justify-center rounded-full bg-brand">
-          <MaterialIcons name="explore" size={24} color="#ffffff" />
+          <MaterialIcons name="explore" size={24} color={colors.white} />
         </View>
         <View className="flex-1">
           <Text variant="label-caps" className="text-on-primary-fixed-variant">

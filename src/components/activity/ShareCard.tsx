@@ -47,7 +47,7 @@ export const ShareCard = forwardRef<View, Props>(function ShareCard(
               <Polyline
                 points={pts.map((p) => `${p[0]},${p[1]}`).join(' ')}
                 fill="none"
-                stroke="#ffffff"
+                stroke={colors.white}
                 strokeWidth={9}
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -65,7 +65,7 @@ export const ShareCard = forwardRef<View, Props>(function ShareCard(
                 cy={first![1]}
                 r={7}
                 fill={colors.brand.DEFAULT}
-                stroke="#fff"
+                stroke={colors.white}
                 strokeWidth={3}
               />
               <Circle
@@ -73,7 +73,7 @@ export const ShareCard = forwardRef<View, Props>(function ShareCard(
                 cy={last![1]}
                 r={7}
                 fill={colors.accent.DEFAULT}
-                stroke="#fff"
+                stroke={colors.white}
                 strokeWidth={3}
               />
             </>
