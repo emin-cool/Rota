@@ -32,5 +32,5 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [ ] P3.1 Mağaza hazırlığı ve yayın
 
 ## Bekleyen küçük işler
-- [ ] **OSM verisi: kalan 22 karoyu yükle** (en kuzey şerit 41.20–41.25 ve kuzeydoğu köşesi; Karadeniz kıyısı/orman). Overpass düzelince: `node scripts/osm-import.mjs` (kaldığı yerden devam eder). Şehir çekirdeği (Boğaz'ın iki yakası) tamam, Emirgan dahil. Not: Overpass bazen tamamen yanıt vermiyor, o zaman birkaç saat sonra tekrar dene.
+- [x] **OSM verisi: kalan 22 karoyu yükle** (120/120 karo tamamlandı, 2026-10-13) (en kuzey şerit 41.20–41.25 ve kuzeydoğu köşesi; Karadeniz kıyısı/orman). Overpass düzelince: `node scripts/osm-import.mjs` (kaldığı yerden devam eder). Şehir çekirdeği (Boğaz'ın iki yakası) tamam, Emirgan dahil. Not: Overpass bazen tamamen yanıt vermiyor, o zaman birkaç saat sonra tekrar dene.
 - [ ] **P1.4 saha testi (dışarıda):** gerçek yürüyüşte 10 dk, ekran kilitliyken mesafe artıyor mu, bildirim kalıyor mu, 1 km'de sesli bildirim, GPS kalite rozeti, rotadan sapma uyarısı (40 m). Masa testleri (simülasyon) ayrıca yapıldı.
