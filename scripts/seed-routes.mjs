@@ -304,6 +304,13 @@ for (const [i, route] of list.entries()) {
   } catch (e) {
     failed.push({ title: route.title, error: e instanceof Error ? e.message : String(e) });
     console.log(`${String(i + 1).padStart(2)}. ${route.title}\n    ✗ ${failed.at(-1).error}`);
+    if (++streak >= MAX_CONSECUTIVE_FAILURES) {
+      console.log(
+        `
+✗ Üst üste ${streak} rota üretilemedi: OpenRouteService yanıt vermiyor olabilir. Bir süre sonra tekrar dene (başarılı sonuçlar önbellekte kalır).`,
+      );
+      break;
+    }
   }
 }
 
