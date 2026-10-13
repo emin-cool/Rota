@@ -5,6 +5,7 @@ import { trackBounds } from '@/lib/activitySummary';
 import type { LngLat } from '@/lib/geo';
 import { routeColor } from '@/theme/routeColors';
 import type { ExploreRoute } from '@/types/database';
+import { colors } from '@/theme/tokens';
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '');
 
@@ -66,7 +67,7 @@ export function ExploreMap({ routes, selectedId, onSelect }: Props) {
         <Mapbox.LineLayer
           id="explore-casing"
           style={{
-            lineColor: '#ffffff',
+            lineColor: colors.white,
             lineWidth: ['case', ['==', ['get', 'selected'], 1], 10, 6],
             lineCap: 'round',
             lineJoin: 'round',

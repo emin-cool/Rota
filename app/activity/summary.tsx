@@ -39,15 +39,13 @@ import { colors } from '@/theme/tokens';
 
 type Visibility = 'public' | 'followers' | 'private';
 const VISIBILITIES: Visibility[] = ['public', 'followers', 'private'];
-const ACTIVITY_NAME = { walk: 'yürüyüşü', run: 'koşusu', bike: 'bisiklet turu' } as const;
-
 /** "Sabah yürüyüşü" gibi varsayılan başlık. */
 function defaultTitle(session: SessionRow): string {
   const h = new Date(session.started_at).getHours();
+  const p = tr.summary.dayParts;
   const part =
-    h < 5 ? 'Gece' : h < 12 ? 'Sabah' : h < 17 ? 'Öğleden sonra' : h < 21 ? 'Akşam' : 'Gece';
-  const name = ACTIVITY_NAME[session.activity_type];
-  return `${part} ${name}`;
+    h < 5 ? p.night : h < 12 ? p.morning : h < 17 ? p.afternoon : h < 21 ? p.evening : p.night;
+  return tr.summary.defaultTitle(part, tr.summary.activityNoun[session.activity_type]);
 }
 
 function dateText(ms: number): string {
@@ -55,7 +53,7 @@ function dateText(ms: number): string {
   const today = new Date();
   const day =
     d.toDateString() === today.toDateString()
-      ? 'Bugün'
+      ? tr.time.today
       : d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
   return `${day}, ${d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`;
 }
@@ -334,7 +332,7 @@ export default function ActivitySummaryScreen() {
         {/* Kutlama kartı */}
         <Card className="flex-row items-center gap-space-md bg-brand-soft p-space-md">
           <View className="h-14 w-14 items-center justify-center rounded-full bg-brand">
-            <MaterialIcons name="workspace-premium" size={28} color="#fff" />
+            <MaterialIcons name="workspace-premium" size={28} color={colors.white} />
           </View>
           <View className="shrink gap-space-xs">
             <Text variant="headline-md">{tr.summary.greatJob}</Text>
@@ -486,7 +484,7 @@ export default function ActivitySummaryScreen() {
                         hitSlop={8}
                         className="absolute right-1 top-1 h-7 w-7 items-center justify-center rounded-full bg-black/60"
                       >
-                        <MaterialIcons name="close" size={16} color="#fff" />
+                        <MaterialIcons name="close" size={16} color={colors.white} />
                       </Pressable>
                     </View>
                   ))}
@@ -520,7 +518,7 @@ export default function ActivitySummaryScreen() {
                   <MaterialIcons
                     name={n <= rating ? 'star' : 'star-border'}
                     size={36}
-                    color={n <= rating ? '#F59E0B' : colors.ink.muted}
+                    color={n <= rating ? colors.star : colors.ink.muted}
                   />
                 </Pressable>
               ))}
@@ -580,7 +578,7 @@ export default function ActivitySummaryScreen() {
           title={saving ? tr.summary.saving : tr.summary.save}
           onPress={() => void save()}
           loading={saving}
-          leading={<MaterialIcons name="check-circle" size={20} color="#fff" />}
+          leading={<MaterialIcons name="check-circle" size={20} color={colors.white} />}
           className="flex-[1.6]"
         />
       </View>

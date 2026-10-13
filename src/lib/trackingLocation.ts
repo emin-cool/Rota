@@ -1,6 +1,7 @@
 import * as Location from 'expo-location';
 
 import { tr } from '@/i18n/tr';
+import { colors } from '@/theme/tokens';
 
 /** Arka plan görevinin adı (src/lib/trackingTask.ts içinde tanımlanır). */
 export const LOCATION_TASK = 'rota-location-task';
@@ -41,7 +42,7 @@ export async function startUpdates(): Promise<void> {
     foregroundService: {
       notificationTitle: tr.live.notificationTitle,
       notificationBody: tr.live.notificationBody,
-      notificationColor: '#0E7C66',
+      notificationColor: colors.brand.DEFAULT,
     },
   });
 }

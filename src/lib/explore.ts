@@ -1,3 +1,4 @@
+import { tr } from '@/i18n/tr';
 import type { ActivityType, Difficulty, ExploreArgs, RatingSummary } from '@/types/database';
 
 /** Süre filtresi: kısa < 30 dk, orta 30–60 dk, uzun > 60 dk. */
@@ -74,17 +75,17 @@ export function ratingBarPercent(summary: RatingSummary, star: 1 | 2 | 3 | 4 | 5
 export function timeAgo(iso: string, now = Date.now()): string {
   const diff = Math.max(0, now - new Date(iso).getTime());
   const min = Math.floor(diff / 60_000);
-  if (min < 1) return 'şimdi';
-  if (min < 60) return `${min} dk önce`;
+  if (min < 1) return tr.time.now;
+  if (min < 60) return tr.time.minutesAgo(min);
   const h = Math.floor(min / 60);
-  if (h < 24) return `${h} saat önce`;
+  if (h < 24) return tr.time.hoursAgo(h);
   const d = Math.floor(h / 24);
-  if (d < 7) return `${d} gün önce`;
+  if (d < 7) return tr.time.daysAgo(d);
   const w = Math.floor(d / 7);
-  if (d < 30) return `${w} hafta önce`;
+  if (d < 30) return tr.time.weeksAgo(w);
   const mo = Math.floor(d / 30);
-  if (d < 365) return `${mo} ay önce`;
-  return `${Math.floor(d / 365)} yıl önce`;
+  if (d < 365) return tr.time.monthsAgo(mo);
+  return tr.time.yearsAgo(Math.floor(d / 365));
 }
 
 /** Ad soyaddan avatar baş harfleri: "Zeynep Tan" → "ZT". */

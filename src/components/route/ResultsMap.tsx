@@ -77,7 +77,7 @@ export function ResultsMap({ routes, selected, start, startName, onSelect }: Res
         <Mapbox.LineLayer
           id="result-casing"
           style={{
-            lineColor: '#ffffff',
+            lineColor: colors.white,
             lineWidth: ['case', ['==', ['get', 'selected'], 1], 10, 6],
             lineCap: 'round',
             lineJoin: 'round',

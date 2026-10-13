@@ -47,7 +47,7 @@ export default function LocationPermissionScreen() {
       <View className="flex-1 items-center justify-center gap-space-lg px-margin">
         <View className="h-28 w-28 items-center justify-center rounded-full bg-brand-soft">
           <View className="h-20 w-20 items-center justify-center rounded-full bg-brand">
-            <MaterialIcons name="place" size={40} color="#ffffff" />
+            <MaterialIcons name="place" size={40} color={colors.white} />
           </View>
         </View>
 

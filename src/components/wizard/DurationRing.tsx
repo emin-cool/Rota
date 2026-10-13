@@ -50,7 +50,7 @@ export function DurationRing({ fraction, size = 232, strokeWidth = 18, children 
           cy={knobY}
           r={strokeWidth / 2 + 2}
           fill={colors.accent.DEFAULT}
-          stroke="#ffffff"
+          stroke={colors.white}
           strokeWidth={3}
         />
       </Svg>

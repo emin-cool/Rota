@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 
+import { tr } from '@/i18n/tr';
 import { buildElevationPaths, type ElevationPoint } from '@/lib/elevation';
 
 type Props = {
@@ -22,7 +23,7 @@ export function ElevationChart({ profile, color, height = 56 }: Props) {
       onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}
       style={{ height }}
       accessibilityRole="image"
-      accessibilityLabel="Yükseklik profili"
+      accessibilityLabel={tr.common.elevationProfile}
     >
       {paths ? (
         <Svg width={width} height={height}>

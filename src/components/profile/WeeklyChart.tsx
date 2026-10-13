@@ -2,7 +2,8 @@ import { View } from 'react-native';
 
 import { Text } from '@/components/ui';
 import { formatDistance } from '@/lib/geo';
-import { barRatio, WEEKDAYS_TR } from '@/lib/profileStats';
+import { tr } from '@/i18n/tr';
+import { barRatio } from '@/lib/profileStats';
 import { colors } from '@/theme/tokens';
 
 const BAR_AREA_H = 120;
@@ -21,14 +22,14 @@ export function WeeklyChart({
       className="flex-row items-end justify-between gap-space-sm"
       accessibilityRole="image"
       accessibilityLabel={valuesM
-        .map((v, i) => `${WEEKDAYS_TR[i]}: ${formatDistance(v)}`)
+        .map((v, i) => `${tr.profile.weekdays[i]}: ${formatDistance(v)}`)
         .join(', ')}
     >
       {valuesM.map((v, i) => {
         const isPeak = i === peakIndex;
         const h = v > 0 ? Math.max(8, Math.round(barRatio(v, max) * BAR_AREA_H)) : 4;
         return (
-          <View key={WEEKDAYS_TR[i]} className="flex-1 items-center gap-space-xs">
+          <View key={tr.profile.weekdays[i]} className="flex-1 items-center gap-space-xs">
             <View style={{ height: BAR_AREA_H }} className="w-full items-center justify-end">
               {isPeak ? (
                 <View className="mb-1 rounded-md bg-accent px-1.5 py-0.5">
@@ -53,7 +54,7 @@ export function WeeklyChart({
               variant="label-sm"
               className={isPeak ? 'font-bold text-accent-deep' : 'text-ink-secondary'}
             >
-              {WEEKDAYS_TR[i]}
+              {tr.profile.weekdays[i]}
             </Text>
           </View>
         );

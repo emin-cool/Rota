@@ -141,7 +141,7 @@ export default function LiveActivityScreen() {
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
           className="h-11 w-11 items-center justify-center rounded-full"
         >
-          <MaterialIcons name="arrow-back-ios-new" size={20} color="#ffffff" />
+          <MaterialIcons name="arrow-back-ios-new" size={20} color={colors.white} />
         </Pressable>
         <Text variant="headline-sm" className="flex-1 text-white" accessibilityRole="header">
           {tr.live.title}
@@ -159,7 +159,7 @@ export default function LiveActivityScreen() {
             accessibilityLabel={gps.text}
             onLongPress={toggleSimulation}
             delayLongPress={800}
-            className="min-h-[36px] flex-row items-center gap-2 rounded-full bg-live-card px-3"
+            className="min-h-[44px] flex-row items-center gap-2 rounded-full bg-live-card px-3"
           >
             <View
               className="h-2 w-2 rounded-full"
@@ -197,7 +197,7 @@ export default function LiveActivityScreen() {
             accessibilityLiveRegion="assertive"
           >
             <View className="h-12 w-12 items-center justify-center rounded-full bg-accent">
-              <MaterialIcons name="call-split" size={26} color="#ffffff" />
+              <MaterialIcons name="call-split" size={26} color={colors.white} />
             </View>
             <View className="flex-1">
               <Text variant="headline-sm" className="text-white">
@@ -321,9 +321,9 @@ export default function LiveActivityScreen() {
             accessibilityRole="button"
             accessibilityLabel={paused ? tr.live.resume : tr.live.pause}
             onPress={() => void (paused ? trackingEngine.resume() : trackingEngine.pause())}
-            className="h-28 w-28 items-center justify-center rounded-full bg-accent active:bg-accent-deep"
+            className="h-28 w-28 items-center justify-center rounded-full bg-accent active:bg-accent-pressed"
           >
-            <MaterialIcons name={paused ? 'play-arrow' : 'pause'} size={48} color="#ffffff" />
+            <MaterialIcons name={paused ? 'play-arrow' : 'pause'} size={48} color={colors.white} />
             <Text variant="label-caps" className="text-white">
               {paused ? tr.live.resume : tr.live.pause}
             </Text>
@@ -364,7 +364,7 @@ export default function LiveActivityScreen() {
           style={{ paddingBottom: Math.max(insets.bottom, 16) + 8 }}
           accessibilityLabel={tr.live.locked}
         >
-          <MaterialIcons name="lock" size={40} color="#ffffff" />
+          <MaterialIcons name="lock" size={40} color={colors.white} />
           <Text variant="body-md" className="mb-space-md mt-space-sm text-white">
             {tr.live.locked}
           </Text>

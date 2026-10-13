@@ -71,7 +71,7 @@ export function ActivityTrackMap({ track }: Props) {
       <Mapbox.ShapeSource id="activity-track" shape={line}>
         <Mapbox.LineLayer
           id="activity-casing"
-          style={{ lineColor: '#ffffff', lineWidth: 9, lineCap: 'round', lineJoin: 'round' }}
+          style={{ lineColor: colors.white, lineWidth: 9, lineCap: 'round', lineJoin: 'round' }}
         />
         <Mapbox.LineLayer
           id="activity-line"
@@ -89,7 +89,7 @@ export function ActivityTrackMap({ track }: Props) {
           style={{
             circleRadius: 7,
             circleColor: ['get', 'color'],
-            circleStrokeColor: '#ffffff',
+            circleStrokeColor: colors.white,
             circleStrokeWidth: 3,
           }}
         />

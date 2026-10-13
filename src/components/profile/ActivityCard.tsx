@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { memo } from 'react';
 import { View } from 'react-native';
 
 import { ACTIVITY_ICON, ACTIVITY_SOFT_BG } from '@/components/route/ExploreCard';
@@ -22,7 +23,7 @@ function Metric({ label, value }: { label: string; value: string }) {
 }
 
 /** Profil "Aktivitelerim" satırı: tarih, başlık, mesafe / süre / tempo ya da yükseklik. */
-export function ActivityCard({ item }: { item: ActivityListItem }) {
+export const ActivityCard = memo(function ActivityCard({ item }: { item: ActivityListItem }) {
   const hasPace = item.activity_type !== 'bike' && item.avg_pace_sec_per_km !== null;
   return (
     <Card elevation="raised" className="gap-space-md p-space-md">
@@ -56,4 +57,4 @@ export function ActivityCard({ item }: { item: ActivityListItem }) {
       </View>
     </Card>
   );
-}
+});

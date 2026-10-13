@@ -17,6 +17,8 @@ export const tr = {
     profile: 'Profil',
   },
   common: {
+    stars: (rating: string) => `${rating} yıldız`,
+    elevationProfile: 'Yükseklik profili',
     loading: 'Yükleniyor…',
     retry: 'Tekrar dene',
     close: 'Kapat',
@@ -143,11 +145,6 @@ export const tr = {
       network: 'Rota servisine bağlanılamadı. İnternetini kontrol edip tekrar dene.',
       generic: 'Rotalar oluşturulamadı. Lütfen tekrar dene.',
     },
-  },
-  routeStub: {
-    detailTitle: 'Rota detayı',
-    wizardTitle: 'Rota Oluştur',
-    comingSoon: 'Bu ekran sonraki adımda yapılacak.',
   },
   gate: {
     profileErrorTitle: 'Profilin yüklenemedi',

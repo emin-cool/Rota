@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { memo } from 'react';
 import { Image, Pressable, View } from 'react-native';
 
 import { Card, Text } from '@/components/ui';
@@ -74,7 +75,7 @@ function RatingBadge({ route }: { route: ExploreRoute }) {
   if (route.rating_count === 0) return null;
   return (
     <View className="flex-row items-center gap-1 rounded-full bg-black/55 px-2.5 py-1">
-      <MaterialIcons name="star" size={14} color="#fff" />
+      <MaterialIcons name="star" size={14} color={colors.white} />
       <Text variant="label-sm" className="font-bold text-white">
         {formatRating(route.avg_rating)} ({route.rating_count})
       </Text>
@@ -93,24 +94,25 @@ function Meta({ icon, text }: { icon: keyof typeof MaterialIcons.glyphMap; text:
 
 type Props = {
   route: ExploreRoute;
-  onPress: () => void;
-  onToggleSave: () => void;
+  /** Kararlı (useCallback) işlevler ver: kartlar memo'lu, her render'da yeniden çizilmesin. */
+  onPress: (id: string) => void;
+  onToggleSave: (route: ExploreRoute) => void;
 };
 
 /** Keşfet listesi kartı (Stitch "Bu hafta popüler"). */
-export function ExploreCard({ route, onPress, onToggleSave }: Props) {
+export const ExploreCard = memo(function ExploreCard({ route, onPress, onToggleSave }: Props) {
   const difficulty = route.difficulty ? tr.detail.difficulty[route.difficulty] : null;
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={tr.map.routeOf(route.title, formatRating(route.avg_rating))}
-      onPress={onPress}
+      onPress={() => onPress(route.id)}
     >
       <Card elevation="raised" className="overflow-hidden">
         <View>
           <CoverImage route={route} className="h-44 w-full" />
           <View className="absolute right-3 top-3">
-            <HeartButton saved={route.saved} onPress={onToggleSave} />
+            <HeartButton saved={route.saved} onPress={() => onToggleSave(route)} />
           </View>
           <View className="absolute inset-x-3 bottom-3 flex-row items-end justify-between gap-2">
             <View className="shrink rounded-md bg-black/45 px-2 py-1">
@@ -138,22 +140,22 @@ export function ExploreCard({ route, onPress, onToggleSave }: Props) {
       </Card>
     </Pressable>
   );
-}
+});
 
 /** Yatay kaydırmalı "Editörün seçtikleri" kartı. */
-export function FeaturedCard({ route, onPress, onToggleSave }: Props) {
+export const FeaturedCard = memo(function FeaturedCard({ route, onPress, onToggleSave }: Props) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={tr.map.routeOf(route.title, formatRating(route.avg_rating))}
-      onPress={onPress}
+      onPress={() => onPress(route.id)}
       className="w-[280px]"
     >
       <Card elevation="raised" className="overflow-hidden">
         <View>
           <CoverImage route={route} className="h-32 w-full" />
           <View className="absolute right-2 top-2">
-            <HeartButton saved={route.saved} onPress={onToggleSave} />
+            <HeartButton saved={route.saved} onPress={() => onToggleSave(route)} />
           </View>
           <View className="absolute bottom-2 left-3">
             <RatingBadge route={route} />
@@ -176,4 +178,4 @@ export function FeaturedCard({ route, onPress, onToggleSave }: Props) {
       </Card>
     </Pressable>
   );
-}
+});

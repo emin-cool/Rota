@@ -64,7 +64,7 @@ export default function WizardStep6() {
             title={copy.create}
             variant="accent"
             disabled={!input}
-            leading={<MaterialIcons name="auto-awesome" size={20} color="#ffffff" />}
+            leading={<MaterialIcons name="auto-awesome" size={20} color={colors.white} />}
             onPress={() => router.push('/route-wizard/loading')}
           />
           <Text variant="label-sm" className="text-center text-ink-secondary">

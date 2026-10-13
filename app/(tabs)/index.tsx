@@ -141,7 +141,7 @@ export default function MapScreen() {
       >
         <Button
           title={tr.map.createRoute}
-          className="bg-accent active:bg-accent-deep"
+          className="bg-accent-deep active:bg-accent-pressed"
           style={shadows.record}
           onPress={startWizard}
         />

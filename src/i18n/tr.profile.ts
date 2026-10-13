@@ -1,7 +1,19 @@
 /** Profil, profil düzenleme ve ayarlar metinleri (P1.7). */
 export const trProfile = {
+  time: {
+    now: 'şimdi',
+    minutesAgo: (n: number) => `${n} dk önce`,
+    hoursAgo: (n: number) => `${n} saat önce`,
+    daysAgo: (n: number) => `${n} gün önce`,
+    weeksAgo: (n: number) => `${n} hafta önce`,
+    monthsAgo: (n: number) => `${n} ay önce`,
+    yearsAgo: (n: number) => `${n} yıl önce`,
+    today: 'Bugün',
+    yesterday: 'Dün',
+  },
   profile: {
     title: 'Profil',
+    weekdays: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
     settings: 'Ayarlar',
     edit: 'Profili Düzenle',
     level: {

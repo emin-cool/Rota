@@ -255,7 +255,7 @@ export default function WizardStep2() {
                   <MaterialIcons
                     name="my-location"
                     size={18}
-                    color={startIsCurrent ? '#ffffff' : colors.brand.DEFAULT}
+                    color={startIsCurrent ? colors.white : colors.brand.DEFAULT}
                   />
                   <Text
                     variant="label-sm"

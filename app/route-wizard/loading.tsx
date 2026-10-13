@@ -160,7 +160,7 @@ export default function WizardLoading() {
           className="absolute h-40 w-40 rounded-full bg-primary-fixed opacity-60"
         />
         <View className="h-24 w-24 items-center justify-center rounded-full bg-brand">
-          <MaterialIcons name="route" size={48} color="#ffffff" />
+          <MaterialIcons name="route" size={48} color={colors.white} />
         </View>
       </View>
       <View className="items-center gap-space-xs">
