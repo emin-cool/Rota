@@ -10,6 +10,8 @@ type Props = {
   locateDisabled?: boolean;
   onLocate: () => void;
   onResetNorth: () => void;
+  /** Verilirse kurslar kısayol düğmesi gösterilir. */
+  onCourses?: () => void;
 };
 
 function RoundButton({
@@ -48,7 +50,7 @@ function RoundButton({
 }
 
 /** Haritanın sağındaki yuvarlak kontroller: pusula ve "konumuma git". */
-export function MapControls({ heading, locateDisabled, onLocate, onResetNorth }: Props) {
+export function MapControls({ heading, locateDisabled, onLocate, onResetNorth, onCourses }: Props) {
   return (
     <View className="gap-space-sm">
       <RoundButton
@@ -63,6 +65,9 @@ export function MapControls({ heading, locateDisabled, onLocate, onResetNorth }:
         onPress={onLocate}
         disabled={locateDisabled}
       />
+      {onCourses ? (
+        <RoundButton icon="fitness-center" label={tr.courses.mapShortcut} onPress={onCourses} />
+      ) : null}
     </View>
   );
 }

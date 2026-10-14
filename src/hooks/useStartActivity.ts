@@ -16,6 +16,8 @@ type StartParams = {
   routeTitle?: string | null;
   /** Planlı rotanın `routes.id`'si (özet ekranında puanlama ve fotoğraf için). */
   routeId?: string | null;
+  /** Kurs antrenmanından başlatıldıysa `course_days.id` (P2.2). */
+  courseDayId?: string | null;
 };
 
 /** İzin ister, motoru başlatır, canlı ekrana geçer. İzin yoksa açıklayıcı uyarı gösterip false döner. */

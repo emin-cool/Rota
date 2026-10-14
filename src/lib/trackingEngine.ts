@@ -242,6 +242,8 @@ class TrackingEngine {
     routeTitle?: string | null;
     /** Planlı rotanın `routes.id`'si. */
     routeId?: string | null;
+    /** Kurs antrenmanından başlatıldıysa `course_days.id`. */
+    courseDayId?: string | null;
     /** Geliştirme: gerçek GPS yerine sahte konum akıtılacak mı? */
     simulate?: boolean;
   }): Promise<void> {
@@ -266,6 +268,7 @@ class TrackingEngine {
       route_title: params.routeTitle ?? null,
       uploaded: 0,
       route_id: params.routeId ?? null,
+      course_day_id: params.courseDayId ?? null,
       title: null,
       visibility: null,
       queued: 0,

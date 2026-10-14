@@ -1076,6 +1076,173 @@ async function main() {
       !!(await anon.rpc('refresh_featured_routes')).error,
   );
 
+  section('kurslar');
+  const cat = await A.client.from('courses').select('id, title');
+  check('Katalog okunabiliyor (4 başlangıç kursu)', (cat.data ?? []).length >= 4);
+  const anonCourses = await anon.from('courses').select('id').limit(1);
+  check('Giriş yapmamış kullanıcı kurs okuyamıyor', blocked(anonCourses));
+  check(
+    'Kurs eklenemiyor (istemci yazamaz)',
+    !!(
+      await A.client.from('courses').insert({
+        title: 'hack',
+        level: 'beginner',
+        activity_type: 'run',
+        weeks: 1,
+        sessions_per_week: 1,
+      })
+    ).error,
+  );
+  const course1 = (cat.data ?? [])[0];
+  const days1 = course1
+    ? await A.client.from('course_days').select('id').eq('course_id', course1.id)
+    : { data: [] };
+  check('Kurs günleri okunabiliyor', (days1.data ?? []).length > 0);
+  check(
+    'Kurs günü güncellenemiyor',
+    blocked(
+      await A.client
+        .from('course_days')
+        .update({ title: 'hack' })
+        .eq('id', days1.data?.[0]?.id ?? '')
+        .select('id'),
+    ),
+  );
+
+  if (course1 && days1.data?.length) {
+    const dayId = days1.data[0].id;
+    check(
+      'A programa katılabiliyor',
+      !(await A.client.from('course_enrollments').insert({ user_id: A.id, course_id: course1.id }))
+        .error,
+    );
+    check(
+      'Aynı programa ikinci kayıt reddediliyor (unique)',
+      !!(await A.client.from('course_enrollments').insert({ user_id: A.id, course_id: course1.id }))
+        .error,
+    );
+    check(
+      'B, A adına programa katılamıyor',
+      !!(await B.client.from('course_enrollments').insert({ user_id: A.id, course_id: course1.id }))
+        .error,
+    );
+    const seenByB = await B.client.from('course_enrollments').select('id').eq('user_id', A.id);
+    check("B, A'nın kaydını göremiyor", (seenByB.data ?? []).length === 0);
+    check(
+      'A, completed_days alanını doğrudan yazamıyor',
+      blocked(
+        await A.client
+          .from('course_enrollments')
+          .update({ completed_days: [dayId] })
+          .eq('user_id', A.id)
+          .select('id'),
+      ),
+    );
+
+    const courseAct = await A.client
+      .from('activities')
+      .insert({
+        user_id: A.id,
+        activity_type: 'run',
+        started_at: new Date().toISOString(),
+        duration_sec: 600,
+        distance_m: 1000,
+        visibility: 'private',
+        course_day_id: dayId,
+      })
+      .select('id')
+      .single();
+    check('Antrenman günüyle aktivite kaydedilebiliyor', !!courseAct.data && !courseAct.error);
+    const myEnroll = () =>
+      A.client
+        .from('course_enrollments')
+        .select('completed_days, completed_at')
+        .eq('course_id', course1.id)
+        .single();
+
+    check(
+      "B, A'nın aktivitesiyle günü işaretleyemiyor (A'nın ilerlemesi değişmiyor)",
+      await (async () => {
+        await B.client.rpc('complete_course_day', { p_activity_id: courseAct.data.id });
+        return ((await myEnroll()).data?.completed_days ?? []).length === 0;
+      })(),
+    );
+    check(
+      'Giriş yapmamış kullanıcı complete_course_day çağıramıyor',
+      !!(await anon.rpc('complete_course_day', { p_activity_id: courseAct.data.id })).error,
+    );
+    const done1 = await A.client.rpc('complete_course_day', { p_activity_id: courseAct.data.id });
+    check('A kendi aktivitesiyle günü tamamlıyor', !done1.error);
+    check(
+      'Gün completed_days içine eklendi',
+      ((await myEnroll()).data?.completed_days ?? []).includes(dayId),
+    );
+    await A.client.rpc('complete_course_day', { p_activity_id: courseAct.data.id });
+    check(
+      'RPC tekrar çağrılınca tekrar eklemiyor (idempotent)',
+      ((await myEnroll()).data?.completed_days ?? []).length === 1,
+    );
+    check('Kurs bitmedi: completed_at boş', (await myEnroll()).data?.completed_at === null);
+    check(
+      'A programdan ayrılabiliyor',
+      !(await A.client.from('course_enrollments').delete().eq('course_id', course1.id)).error &&
+        ((await myEnroll()).data ?? null) === null,
+    );
+  }
+
+  // Tek günlük geçici kurs: son gün tamamlanınca completed_at dolar.
+  const tmpCourse = await admin
+    .from('courses')
+    .insert({
+      title: `RLS test kursu ${rand()}`,
+      level: 'beginner',
+      activity_type: 'walk',
+      weeks: 1,
+      sessions_per_week: 1,
+    })
+    .select('id')
+    .single();
+  if (tmpCourse.data) {
+    const tmpDay = await admin
+      .from('course_days')
+      .insert({
+        course_id: tmpCourse.data.id,
+        week_no: 1,
+        day_no: 1,
+        title: 'tek gün',
+        workout_json: [{ type: 'walk', duration_sec: 600 }],
+        target_duration_min: 10,
+      })
+      .select('id')
+      .single();
+    await A.client
+      .from('course_enrollments')
+      .insert({ user_id: A.id, course_id: tmpCourse.data.id });
+    const tmpAct = await A.client
+      .from('activities')
+      .insert({
+        user_id: A.id,
+        activity_type: 'walk',
+        started_at: new Date().toISOString(),
+        duration_sec: 600,
+        distance_m: 800,
+        visibility: 'private',
+        course_day_id: tmpDay.data?.id,
+      })
+      .select('id')
+      .single();
+    await A.client.rpc('complete_course_day', { p_activity_id: tmpAct.data?.id });
+    const fin = await A.client
+      .from('course_enrollments')
+      .select('completed_at')
+      .eq('course_id', tmpCourse.data.id)
+      .single();
+    check('Son gün bitince kurs completed_at doluyor', !!fin.data?.completed_at);
+    await admin.from('courses').delete().eq('id', tmpCourse.data.id);
+  } else {
+    check('Geçici kurs oluşturulamadı', false, tmpCourse.error?.message);
+  }
+
   section('istemciye kapalı tablolar');
   const cache = await B.client.from('route_cache').select('id').limit(1);
   check('route_cache: istemci okuyamıyor', blocked(cache));

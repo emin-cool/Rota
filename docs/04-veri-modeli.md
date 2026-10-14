@@ -23,9 +23,9 @@ Tüm tablolarda `id uuid primary key default gen_random_uuid()` ve `created_at t
 | `comments` | activity_id, user_id, body |
 | `segments` | name, geom geography(LineString), distance_m, activity_type |
 | `segment_efforts` | segment_id, activity_id, user_id, elapsed_sec |
-| `courses` | title, description, level, weeks, cover_url, is_free |
+| `courses` | title (unique), description, level, activity_type, weeks, sessions_per_week, tags, cover_url, is_free, sort_order |
 | `course_days` | course_id, week_no, day_no, title, workout_json jsonb, target_duration_min, coach_tip |
-| `course_enrollments` | user_id, course_id, current_day int, completed_days int[], started_at |
+| `course_enrollments` | user_id, course_id, completed_days uuid[] (course_days.id), started_at, completed_at — unique(user_id, course_id); `completed_days` yalnızca `complete_course_day(activity_id)` RPC'siyle değişir. `activities.course_day_id` antrenmanla bağlar. |
 | `events` | host_id, route_id, title, starts_at, level, max_people |
 | `event_participants` | event_id, user_id — unique |
 | `challenges` / `badges` / `user_badges` | hedef türü, hedef değer, başlangıç/bitiş; rozet ikonu; kazanma tarihi |

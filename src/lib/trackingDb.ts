@@ -42,6 +42,8 @@ export type SessionRow = {
   description: string | null;
   /** 1 ise rota Kaydet'te herkese açılır (yalnızca kendi özel rotan). */
   share_route: number;
+  /** Kurs antrenmanından başlatıldıysa `course_days.id` (P2.2). */
+  course_day_id: string | null;
 };
 
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
@@ -95,6 +97,7 @@ const ADDED_COLUMNS: [name: string, ddl: string][] = [
   ['photos_json', 'TEXT'],
   ['description', 'TEXT'],
   ['share_route', 'INTEGER NOT NULL DEFAULT 0'],
+  ['course_day_id', 'TEXT'],
 ];
 
 async function addMissingColumns(db: SQLite.SQLiteDatabase): Promise<void> {
@@ -108,8 +111,8 @@ async function addMissingColumns(db: SQLite.SQLiteDatabase): Promise<void> {
 export async function createSession(row: SessionRow): Promise<void> {
   const db = await getDb();
   await db.runAsync(
-    `INSERT INTO sessions (id, status, activity_type, started_at, ended_at, paused_ms, pause_started_at, segment, route_json, route_title, uploaded, route_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO sessions (id, status, activity_type, started_at, ended_at, paused_ms, pause_started_at, segment, route_json, route_title, uploaded, route_id, course_day_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       row.id,
       row.status,
@@ -123,6 +126,7 @@ export async function createSession(row: SessionRow): Promise<void> {
       row.route_title,
       row.uploaded,
       row.route_id,
+      row.course_day_id,
     ],
   );
 }
