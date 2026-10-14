@@ -1,9 +1,11 @@
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
+import { AppState } from 'react-native';
 
 import {
   configureNotificationHandler,
+  ensurePushRegistered,
   getPushPermission,
   isPushSupported,
   registerPushToken,
@@ -47,10 +49,18 @@ export function usePushNotifications(active: boolean) {
       if (target) open(target);
     };
 
+    // Ayarlardan izin sonradan verildiyse, uygulamaya dönünce token'ı kaydet.
+    const appState = AppState.addEventListener('change', (s) => {
+      if (s === 'active') void ensurePushRegistered();
+    });
+
     // Uygulama bildirimle (kapalıyken) açıldıysa.
     handle(Notifications.getLastNotificationResponse());
     // Uygulama açıkken ya da arka plandayken dokunulursa.
     const sub = Notifications.addNotificationResponseReceivedListener(handle);
-    return () => sub.remove();
+    return () => {
+      sub.remove();
+      appState.remove();
+    };
   }, [active]);
 }
