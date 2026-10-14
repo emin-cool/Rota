@@ -3,6 +3,7 @@ import { trExplore } from './tr.explore';
 import { trLive } from './tr.live';
 import { trModeration } from './tr.moderation';
 import { trProfile } from './tr.profile';
+import { trPush } from './tr.push';
 import { trSocial } from './tr.social';
 import { trWizard } from './tr.wizard';
 
@@ -13,6 +14,7 @@ export const tr = {
   ...trProfile,
   ...trSocial,
   ...trModeration,
+  ...trPush,
   tabs: {
     map: 'Harita',
     explore: 'Keşfet',
@@ -26,6 +28,7 @@ export const tr = {
     loading: 'Yükleniyor…',
     retry: 'Tekrar dene',
     close: 'Kapat',
+    ok: 'Tamam',
     back: 'Geri',
     continue: 'Devam Et',
     signOut: 'Çıkış yap',

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Rota",
     "slug": "rota",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -53,6 +53,7 @@
       "@rnmapbox/maps",
       "expo-sqlite",
       "expo-sharing",
+      "expo-notifications",
       [
         "expo-image-picker",
         {

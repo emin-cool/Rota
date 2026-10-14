@@ -37,6 +37,7 @@ import {
   unblockUser,
   unfollowUser,
 } from '@/lib/socialApi';
+import { maybeAskForPush } from '@/lib/push';
 import { supabase } from '@/lib/supabase';
 import { useSessionStore } from '@/stores/sessionStore';
 import type { FeedActivity } from '@/types/database';
@@ -229,7 +230,7 @@ export function useFollowOp() {
           return removeFollower(userId, v.targetId);
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, v) => {
       for (const key of [
         'profile-card',
         'follow-list',
@@ -240,6 +241,8 @@ export function useFollowOp() {
       ]) {
         void qc.invalidateQueries({ queryKey: [key] });
       }
+      // İlk takipte bildirim iznini bağlamıyla sor (bir kez).
+      if (v.op === 'follow') void maybeAskForPush();
     },
   });
 }
