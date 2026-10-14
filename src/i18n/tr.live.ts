@@ -21,6 +21,7 @@ export const trLive = {
     target: (km: string) => `HEDEF: ${km} KM`,
     free: 'SERBEST',
     paceTag: 'TEMPO',
+    recenter: 'Konuma dön',
     stripPace: 'TEMPO /KM',
     stripDistance: 'MESAFE KM',
     stripTime: 'SÜRE',

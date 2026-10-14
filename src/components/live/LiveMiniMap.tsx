@@ -1,9 +1,11 @@
 import Mapbox from '@rnmapbox/maps';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
-import { unwrapHeading } from '@/lib/geo';
+import { tr } from '@/i18n/tr';
+import { haversineM, type LngLat, unwrapHeading } from '@/lib/geo';
+import { Text } from '@/components/ui';
 import { DEFAULT_CENTER } from '@/lib/mapConfig';
 import { colors } from '@/theme/tokens';
 
@@ -20,6 +22,19 @@ const line = (coords: [number, number][]): GeoJSON.Feature<GeoJSON.LineString> =
 /** Eğimli görünümde konum noktası ekranın alt yarısına yerleşsin (ileriyi daha çok gör). */
 const HEADING_PADDING_TOP = 180;
 const PITCH_3D = 40;
+/** Çekmece kapalıyken kapladığı yükseklik (live.tsx ile aynı); düğme bunun üstünde durur. */
+const RECENTER_BOTTOM = 132;
+/** Parmakla kaydırma bu kadar piksel uzaklaşınca kamera konumu izlemeyi bırakır. */
+const PAN_BREAK_PX = 120;
+
+/** Mapbox `onCameraChanged` olayından kullandığımız alanlar (tip paketin girişinden dışa aktarılmıyor). */
+type CameraEvent = {
+  properties: { center: number[]; zoom: number };
+  gestures: { isGestureActive: boolean };
+};
+
+const metersPerPixel = (zoom: number, lat: number) =>
+  (78271.517 * Math.cos((lat * Math.PI) / 180)) / 2 ** zoom;
 
 /**
  * Canlı ekranın karanlık haritası: planlı rota (yeşil), yürünen iz (turuncu), son konum.
@@ -35,6 +50,25 @@ export function LiveMiniMap({ route, track, current, heading, view }: LiveMiniMa
   const followsHeading = hasRoute && view !== 'north' && heading !== null;
   // Yön 359° → 1° geçerken harita ters dönmesin: önceki değere en kısa dönüşle bağla.
   // (Render sırasında state ayarlama kalıbı: yalnızca yön değişince bir kez daha çizilir.)
+  // Kullanıcı yakınlaştırınca zoom korunur; kaydırınca kamera konumu izlemeyi bırakır ("Konuma dön" ile devam).
+  const [follow, setFollow] = useState(true);
+  const [userZoom, setUserZoom] = useState<number | null>(null);
+  const [interacting, setInteracting] = useState(false);
+  const onCameraChanged = (e: CameraEvent) => {
+    if (!e.gestures.isGestureActive) return;
+    const { zoom, center: c } = e.properties;
+    setInteracting(true);
+    setUserZoom((prev) => (prev !== null && Math.abs(prev - zoom) < 0.02 ? prev : zoom));
+    if (follow && c.length >= 2) {
+      const limitM = metersPerPixel(zoom, c[1]!) * PAN_BREAK_PX;
+      if (haversineM(center, [c[0]!, c[1]!] as LngLat) > limitM) setFollow(false);
+    }
+  };
+  const recenter = () => {
+    setFollow(true);
+    setInteracting(false);
+  };
+
   const [cam, setCam] = useState<{ input: number | null; value: number }>({
     input: null,
     value: 0,
@@ -56,14 +90,17 @@ export function LiveMiniMap({ route, track, current, heading, view }: LiveMiniMa
         scaleBarEnabled={false}
         logoEnabled={false}
         attributionEnabled={false}
-        scrollEnabled={false}
-        zoomEnabled={false}
+        scrollEnabled
+        zoomEnabled
         rotateEnabled={false}
         pitchEnabled={false}
+        onCameraChanged={onCameraChanged}
+        onMapIdle={() => setInteracting(false)}
       >
         <Mapbox.Camera
-          centerCoordinate={center}
-          zoomLevel={followsHeading ? 16.2 : 15.2}
+          // Parmak haritadayken ya da kullanıcı kaydırmışken konum komutu gönderilmez (hareketi bölmesin).
+          centerCoordinate={follow && !interacting ? center : undefined}
+          zoomLevel={userZoom ?? (followsHeading ? 16.2 : 15.2)}
           heading={cameraHeading}
           pitch={pitch}
           padding={{
@@ -119,6 +156,20 @@ export function LiveMiniMap({ route, track, current, heading, view }: LiveMiniMa
           </Mapbox.MarkerView>
         ) : null}
       </Mapbox.MapView>
+      {!follow ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={tr.live.recenter}
+          onPress={recenter}
+          className="absolute right-3 min-h-[44px] flex-row items-center gap-2 rounded-full bg-black/70 px-4"
+          style={{ bottom: RECENTER_BOTTOM }}
+        >
+          <MaterialIcons name="my-location" size={20} color={colors.white} />
+          <Text variant="label-caps" className="text-white">
+            {tr.live.recenter}
+          </Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
