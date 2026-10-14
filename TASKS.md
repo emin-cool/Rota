@@ -27,7 +27,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [x] P2.1a Takip (gizli hesap istekleri), akış, alkış, yorum, kişi arama, başkasının profili, rota paylaşma (sunucu kuralları test-rls 85/85; tablette doğrulama bekliyor)
 - [x] P2.1b Push bildirimleri (takip, alkış, yorum) + öne çıkan rota otomasyonu (pg_cron): iOS (TestFlight 1.1.0 (3)) ve Android (APK 1.1.0) gerçek cihazlarda doğrulandı (14 Ekim 2026). Dokununca yönlendirme ve Ayarlar anahtarları ayrıca teyit edilebilir.
 - [x] P2.1c Engelle / bildir (iki yönlü engel, bildirme, engellenenler listesi; test-rls 118/118; tablette doğrulama bekliyor). Dış testçi/mağaza öncesi ayrıca: kullanım koşulları URL'si, `reports` tablosuna bakma süreci (docs/07 §4b)
-- [x] P2.2a Kurslar: katalog (4 ücretsiz program), kurs detayı, antrenman günü, katıl/ayrıl, "bu antrenman için rota bul", gün→aktivite bağı ve otomatik tamamlama (kod hazır; `db:push`, `test-rls` ve cihazda doğrulama bekliyor)
+- [x] P2.2a Kurslar: katalog (4 ücretsiz program), kurs detayı, antrenman günü, katıl/ayrıl, "bu antrenman için rota bul", gün→aktivite bağı ve otomatik tamamlama (`db:push` + `test-rls` geçti, `eas update` ile yayında, cihazda uçtan uca doğrulandı — 15 Ekim 2026)
 - [ ] P2.2b Sesli aralık yönlendirme (canlı takipte "Şimdi koş!" / "Yürüyüşe geç"), hatırlatıcı bildirim, bitirme rozeti
 - [ ] P2.3 Etkinlikler, meydan okumalar, hava durumu, segmentler, canlı konum paylaşımı
 
