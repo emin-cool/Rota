@@ -147,3 +147,14 @@ Bu sürümden sonra 1.0.0 binary'lere `eas update` GİTMEZ; gerekirse 1.0.0 içi
 - Ayarlar'dan ilgili anahtarı kapat → o tür bildirim gelmesin. Çıkış yapınca bildirim gelmesin.
 - Gizli hesapta istek ve kabul bildirimi. Engellenen kullanıcıdan bildirim gelmez.
 - Sorun ayıklama: Supabase → Edge Functions → send-push → Logs; Expo `https://expo.dev/notifications` aracı.
+
+### F) Öne çıkan rota otomasyonu (pg_cron)
+`refresh_featured_routes()` her gün 03:00 UTC'de çalışır: **herkese açık**, puanı **>= 4,3** ve tamamlanması **>= 20** olan rotaları
+`is_featured = true` yapar. Yalnızca ekler, hiç kaldırmaz (30 seed rota elle öne çıkarıldı, puansız; öyle kalmalı).
+- Kurulum: `npm run db:push` (`20261016200000_featured_routes_cron.sql`). `pg_cron` eklentisi izin hatası verirse
+  Supabase → Database → Extensions → **pg_cron**'u aç, sonra `npm run db:push`'u tekrarla.
+- Kontrol (SQL Editor): `select jobname, schedule, active from cron.job;` → `refresh-featured-routes | 0 3 * * * | true`.
+  Son çalışmalar: `select status, start_time from cron.job_run_details order by start_time desc limit 5;`
+- Elle çalıştırma: `select public.refresh_featured_routes();` (kaç rota eklendiğini döner).
+- Bir rotayı öne çıkarmaktan çıkarmak için elle: `update routes set is_featured = false where id = '...'` (otomasyon ölçütü
+  yeniden karşılıyorsa bir sonraki çalışmada tekrar öne çıkar).

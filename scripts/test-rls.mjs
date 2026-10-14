@@ -852,7 +852,11 @@ async function main() {
     .eq('follower_id', Q.id)
     .eq('following_id', A.id)
     .select('status');
-  check('A isteği kabul edebiliyor', !acceptReq.error && acceptReq.data?.length === 1, acceptReq.error?.message);
+  check(
+    'A isteği kabul edebiliyor',
+    !acceptReq.error && acceptReq.data?.length === 1,
+    acceptReq.error?.message,
+  );
   check(
     "İstek kabul edilince Q için 'follow_accepted' bildirimi üretiyor",
     (await notifs(Q.id, A.id, 'follow_accepted')).length === 1,
@@ -1006,6 +1010,70 @@ async function main() {
   check(
     'Giriş yapmamış kullanıcı tercih okuyamıyor',
     blocked(await anon.from('notification_settings').select('user_id').limit(1)),
+  );
+
+  // ------------------------------------------------------------------ öne çıkan rota otomasyonu (P2.1b)
+  section('öne çıkan rota otomasyonu (refresh_featured_routes)');
+  const mkFeat = async (title, patch) => {
+    const r = await admin
+      .from('routes')
+      .insert({
+        creator_id: A.id,
+        title: `RLS featured ${title}`,
+        activity_type: 'walk',
+        route_type: 'a_b',
+        geom: LINE,
+        start_point: POINT,
+        distance_m: 1500,
+        is_public: true,
+        ...patch,
+      })
+      .select('id')
+      .single();
+    if (r.error) throw new Error(`featured test rotası eklenemedi: ${JSON.stringify(r.error)}`);
+    created.routes.push(r.data.id);
+    return r.data.id;
+  };
+  const featOk = await mkFeat('ok', { avg_rating: 4.6, completion_count: 25 });
+  const featEdge = await mkFeat('sinir', { avg_rating: 4.3, completion_count: 20 });
+  const featLowRating = await mkFeat('dusuk puan', { avg_rating: 4.2, completion_count: 50 });
+  const featLowDone = await mkFeat('az tamamlanma', { avg_rating: 4.9, completion_count: 19 });
+  const featPrivate = await mkFeat('ozel', {
+    avg_rating: 5.0,
+    completion_count: 99,
+    is_public: false,
+  });
+  const featManual = await mkFeat('elle', {
+    is_featured: true,
+    avg_rating: 0,
+    completion_count: 0,
+  });
+
+  const run = await admin.rpc('refresh_featured_routes');
+  check('refresh_featured_routes service role ile çalışıyor', !run.error, run.error?.message);
+  check(
+    'En az 2 rota öne çıkarıldı (ölçütü karşılayan ikisi)',
+    typeof run.data === 'number' && run.data >= 2,
+    JSON.stringify(run.data),
+  );
+  const featOf = async (id) =>
+    (await admin.from('routes').select('is_featured').eq('id', id).single()).data?.is_featured;
+  check('Puan 4,6 ve 25 tamamlanma: öne çıktı', (await featOf(featOk)) === true);
+  check('Tam sınırda (4,3 ve 20): öne çıktı', (await featOf(featEdge)) === true);
+  check('Puan 4,2: öne çıkmadı', (await featOf(featLowRating)) === false);
+  check('19 tamamlanma: öne çıkmadı', (await featOf(featLowDone)) === false);
+  check('Özel rota yüksek sayaçla bile öne çıkmadı', (await featOf(featPrivate)) === false);
+  check('Elle öne çıkarılmış (puansız) rota kaldırılmadı', (await featOf(featManual)) === true);
+  const run2 = await admin.rpc('refresh_featured_routes');
+  check(
+    'İkinci çalıştırma yeni rota eklemiyor (tekrar güvenli)',
+    !run2.error && run2.data === 0,
+    JSON.stringify(run2.data ?? run2.error),
+  );
+  check(
+    'İstemci refresh_featured_routes çağıramıyor',
+    !!(await A.client.rpc('refresh_featured_routes')).error &&
+      !!(await anon.rpc('refresh_featured_routes')).error,
   );
 
   section('istemciye kapalı tablolar');
