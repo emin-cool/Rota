@@ -25,7 +25,7 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 
 ## Faz 2 — Sosyal ve Kurslar
 - [x] P2.1a Takip (gizli hesap istekleri), akış, alkış, yorum, kişi arama, başkasının profili, rota paylaşma (sunucu kuralları test-rls 85/85; tablette doğrulama bekliyor)
-- [ ] P2.1b Push bildirimleri (yeni takipçi, alkış, yorum): kod hazır (docs/07 §6), sunucu kurulumu + Firebase + yeni build + iki cihazla test bekliyor. Öne çıkan rota otomasyonu (pg_cron): kod hazır (docs/07 §6F), `db:push` + test-rls bekliyor.
+- [x] P2.1b Push bildirimleri (takip, alkış, yorum) + öne çıkan rota otomasyonu (pg_cron): iOS'ta takip bildirimi gerçek cihazda doğrulandı (14 Ekim 2026, TestFlight 1.1.0 (3)). Android APK, alkış/yorum ve dokununca yönlendirme henüz cihazda denenmedi.
 - [x] P2.1c Engelle / bildir (iki yönlü engel, bildirme, engellenenler listesi; test-rls 118/118; tablette doğrulama bekliyor). Dış testçi/mağaza öncesi ayrıca: kullanım koşulları URL'si, `reports` tablosuna bakma süreci (docs/07 §4b)
 - [ ] P2.2 Kurslar ve sesli aralık yönlendirme
 - [ ] P2.3 Etkinlikler, meydan okumalar, hava durumu, segmentler, canlı konum paylaşımı
