@@ -81,6 +81,10 @@ export const trProfile = {
     privacyZoneHint:
       'Evinin çevresindeki başlangıç ve bitiş noktaları paylaşılan haritada gizlenir.',
     sectionAccount: 'Hesap',
+    sectionAbout: 'Yasal ve destek',
+    terms: 'Kullanım Koşulları',
+    privacyPolicy: 'Gizlilik Politikası',
+    support: 'Destek ve iletişim',
     account: (email: string) => email,
     signOut: 'Çıkış yap',
     signOutConfirmTitle: 'Çıkış yapılsın mı?',

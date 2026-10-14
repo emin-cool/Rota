@@ -53,8 +53,11 @@ export const tr = {
     continueEmail: 'E-posta ile Devam Et',
     noAccount: 'Hesabın yok mu?',
     hasAccount: 'Zaten hesabın var mı?',
-    legal:
-      "Devam ederek Rota'nın Kullanım Koşulları ve Gizlilik Politikası'nı kabul etmiş olursun.",
+    legalPrefix: "Devam ederek Rota'nın ",
+    legalTerms: 'Kullanım Koşulları',
+    legalAnd: ' ve ',
+    legalPrivacy: 'Gizlilik Politikası',
+    legalSuffix: "'nı kabul etmiş olursun.",
     showPassword: 'Şifreyi göster',
     hidePassword: 'Şifreyi gizle',
     checkEmail:

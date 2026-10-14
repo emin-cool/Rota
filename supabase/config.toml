@@ -420,3 +420,7 @@ verify_jwt = false
 
 [functions.delete-account]
 verify_jwt = false
+
+# Database Webhook çağırır; kimlik doğrulamayı fonksiyon kendisi yapar (x-webhook-secret).
+[functions.notify-report]
+verify_jwt = false

@@ -9,6 +9,7 @@ import { Button, Card, HeadlineMd, Text } from '@/components/ui';
 import { usePrivacyZone } from '@/hooks/useProfileQueries';
 import { tr } from '@/i18n/tr';
 import { signOut } from '@/lib/auth';
+import { openLegalUrl, openSupportMail, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/legal';
 import { DEFAULT_RUN_PACE_SEC, formatPace, PACE_MAX_SEC, PACE_MIN_SEC } from '@/lib/pace';
 import { isMonitoringEnabled, reportError } from '@/lib/monitoring';
 import { deleteMyAccount } from '@/lib/profileApi';
@@ -254,6 +255,43 @@ export default function SettingsScreen() {
             </View>
             <MaterialIcons name="chevron-right" size={24} color={colors.ink.muted} />
           </Card>
+        </Pressable>
+
+        <SectionTitle>{tr.settings.sectionAbout}</SectionTitle>
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel={tr.settings.terms}
+          onPress={() => openLegalUrl(TERMS_URL)}
+          className="min-h-[48px] justify-center px-space-xs"
+        >
+          <Text variant="body-lg" className="font-bold text-brand">
+            {tr.settings.terms}
+          </Text>
+          
+        </Pressable>
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel={tr.settings.privacyPolicy}
+          onPress={() => openLegalUrl(PRIVACY_URL)}
+          className="min-h-[48px] justify-center px-space-xs"
+        >
+          <Text variant="body-lg" className="font-bold text-brand">
+            {tr.settings.privacyPolicy}
+          </Text>
+          
+        </Pressable>
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel={tr.settings.support}
+          onPress={openSupportMail}
+          className="min-h-[48px] justify-center px-space-xs"
+        >
+          <Text variant="body-lg" className="font-bold text-brand">
+            {tr.settings.support}
+          </Text>
+          <Text variant="label-sm" className="text-ink-secondary">
+            {SUPPORT_EMAIL}
+          </Text>
         </Pressable>
 
         <SectionTitle>{tr.settings.sectionAccount}</SectionTitle>
