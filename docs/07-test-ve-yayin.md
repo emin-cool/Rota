@@ -107,4 +107,5 @@ Yeni `reports` satırı → Database Webhook → Edge Function `notify-report` �
 - [ ] Android arka plan konum ve ön plan servisi beyanı (Play Console), iOS arka plan konum gerekçesi
 - [ ] Paylaşım görselindeki yolun gizlilik bölgesine göre kırpılması (şu an kırpma yalnızca sunucuda)
 - [ ] "Takipçiler" görünürlüğü `follows` tablosu (P2.1) ile gerçek hale gelsin
+- [ ] **E-posta doğrulamasını (Confirm email) tekrar aç.** Test için kapalı. Önce özel SMTP bağla (Supabase varsayılan göndericisi saatte birkaç e-posta ile sınırlı): Resend'de alan adı doğrula (rota.info) → Supabase → Authentication → Emails → SMTP Settings (`smtp.resend.com`, kullanıcı `resend`, şifre = API anahtarı) → Authentication → Sign In / Providers → Email → Confirm email AÇ → kendi hesabınla kayıt olup doğrulama e-postasını dene. Kapalıyken herkes başkasının e-postasıyla hesap açabilir.
 - [ ] Mağaza görselleri, açıklama, yaş derecelendirmesi
