@@ -95,8 +95,8 @@ Yeni `reports` satırı → Database Webhook → Edge Function `notify-report` �
 1. resend.com'da, **abdullahkal887@gmail.com ile** hesap aç (ücretsiz plan; alan adı doğrulaması olmadan yalnızca hesap sahibinin adresine gönderilir). API Keys → anahtar oluştur.
 2. Secret'lar (değerleri sohbete yazma): `npx supabase secrets set RESEND_API_KEY=... REPORT_WEBHOOK_SECRET=<uzun rastgele metin> REPORT_NOTIFY_EMAIL=abdullahkal887@gmail.com`
 3. `npx supabase functions deploy notify-report --use-api --no-verify-jwt`
-4. Supabase → Database → Webhooks → Create: tablo `reports`, olay **Insert**, tür HTTP Request (POST), URL `https://<proje-ref>.supabase.co/functions/v1/notify-report`, header `x-webhook-secret: <aynı secret>`.
-5. Test: uygulamadan bir içeriği bildir → e-posta gelmeli (spam klasörüne de bak).
+4. Supabase → **Integrations → Database Webhooks** (önce **Install integration**, `pg_net` kurar) → Webhooks → Create a new hook: tablo `reports`, olay **Insert**, tür HTTP Request / POST, URL `https://<proje-ref>.supabase.co/functions/v1/notify-report`. Header ekle: **ad** kutusuna `x-webhook-secret`, **değer** kutusuna secret (şifreyi ad kutusuna yapıştırma; 401 verir).
+5. Test: uygulamadan başka birinin içeriğini bildir → e-posta gelmeli (spam klasörüne de bak). Gelmezse Edge Functions → notify-report → Logs: 401 = secret uyuşmuyor, 502 = Resend anahtarı. **Doğrulandı (14 Ekim 2026).**
 
 ## 5. Herkese açık yayından ÖNCE yapılacaklar (kapalı testte gerek yok)
 - [ ] **Fotoğraf ve avatar depolarını imzalı adrese çevir (C maddesi).** Şu an `route-photos` ve `avatars` bucket'ları herkese açık okuma; yollar
