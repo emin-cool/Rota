@@ -16,6 +16,27 @@ export function haversineM(a: LngLat, b: LngLat): number {
   return 2 * EARTH_RADIUS_M * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
+/** a'dan b'ye gidiş yönü: 0 = kuzey, 90 = doğu (derece, 0–360). */
+export function bearingDeg(a: LngLat, b: LngLat): number {
+  const lat1 = toRad(a[1]);
+  const lat2 = toRad(b[1]);
+  const dLng = toRad(b[0] - a[0]);
+  const y = Math.sin(dLng) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
+/**
+ * Yeni yönü önceki değere en kısa dönüşle bağlar (359° → 1° geçişinde harita 358° ters dönmesin).
+ * Dönen değer 0–360 dışına çıkabilir; kamera için sorun değildir.
+ */
+export function unwrapHeading(prev: number, next: number): number {
+  let delta = (next - prev) % 360;
+  if (delta > 180) delta -= 360;
+  if (delta < -180) delta += 360;
+  return prev + delta;
+}
+
 /** Çizginin toplam uzunluğu (metre). */
 export function lineLengthM(coords: LngLat[]): number {
   let total = 0;

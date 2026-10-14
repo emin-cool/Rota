@@ -11,6 +11,7 @@ import {
   estimateArrival,
   isAcceptable,
   kmMarksCrossed,
+  routeHeadingAt,
   smoothPoints,
   toTrackPoint,
   updateOffRoute,
@@ -66,6 +67,8 @@ export type EngineSnapshot = {
   etaMs: number | null;
   offRoute: boolean;
   offRouteM: number | null;
+  /** Kullanıcının rota üzerindeki yerinde rotanın gidiş yönü (derece, 0 = kuzey); rota yoksa null. */
+  routeHeading: number | null;
   voiceEnabled: boolean;
   simulating: boolean;
 };
@@ -91,6 +94,7 @@ const IDLE: EngineSnapshot = {
   etaMs: null,
   offRoute: false,
   offRouteM: null,
+  routeHeading: null,
   voiceEnabled: true,
   simulating: false,
 };
@@ -113,6 +117,7 @@ class TrackingEngine {
   private segmentIndex = 0;
   private offRouteState: OffRouteState = { consecutive: 0, off: false };
   private offRouteM: number | null = null;
+  private routeHeading: number | null = null;
   private remainingM: number | null = null;
   private accuracy: number | null = null;
   private lastDistance = 0;
@@ -161,6 +166,7 @@ class TrackingEngine {
           : null,
       offRoute: this.offRouteState.off,
       offRouteM: this.offRouteM,
+      routeHeading: this.routeHeading,
       voiceEnabled: this.voice,
       simulating: this.simulating,
     };
@@ -198,6 +204,8 @@ class TrackingEngine {
     this.cumulative = this.route ? cumulativeLengths(this.route) : [];
     this.segmentIndex = 0;
     this.remainingM = this.route ? lineLengthM(this.route) : null;
+    // İlk konum gelene kadar harita rotanın başlangıç yönüne baksın.
+    this.routeHeading = this.route ? routeHeadingAt(this.route, this.cumulative, 0) : null;
   }
 
   /** Bellekteki noktalardan yumuşatılmış seriyi, izi ve rota ilerlemesini yeniden kurar. */
@@ -222,6 +230,7 @@ class TrackingEngine {
         this.cumulative[this.cumulative.length - 1]! - progress.progressM,
       );
       this.offRouteM = progress.distanceToRouteM;
+      this.routeHeading = routeHeadingAt(this.route, this.cumulative, progress.progressM);
       if (announce)
         this.offRouteState = updateOffRoute(this.offRouteState, progress.distanceToRouteM);
     }
@@ -365,6 +374,7 @@ class TrackingEngine {
     this.remainingM = null;
     this.offRouteState = { consecutive: 0, off: false };
     this.offRouteM = null;
+    this.routeHeading = null;
     this.accuracy = null;
     this.simulating = false;
     this.rebuild();

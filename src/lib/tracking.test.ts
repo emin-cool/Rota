@@ -14,6 +14,8 @@ import {
   isAcceptable,
   kmMarksCrossed,
   maxSpeedMs,
+  pointAlongRoute,
+  routeHeadingAt,
   smoothPoints,
   spokenDistance,
   spokenDuration,
@@ -259,5 +261,40 @@ describe('biçimleme ve konuşma', () => {
   it('yardımcı: haversine ile uyumlu test verisi', () => {
     const [a, b] = walk(2, 10, 1);
     expect(haversineM([a!.lng, a!.lat], [b!.lng, b!.lat])).toBeCloseTo(10, 0);
+  });
+});
+
+describe('rota gidiş yönü', () => {
+  // Önce doğuya (~1 km), sonra kuzeye (~1 km) giden L biçimli rota.
+  const route: LngLat[] = [
+    [29.0, 41.0],
+    [29.012, 41.0],
+    [29.012, 41.009],
+  ];
+  const cum = cumulativeLengths(route);
+
+  it('pointAlongRoute: başta, sonda ve ortada', () => {
+    expect(pointAlongRoute(route, cum, 0)).toEqual(route[0]);
+    expect(pointAlongRoute(route, cum, 99_999)).toEqual(route[2]);
+    const mid = pointAlongRoute(route, cum, cum[1]! / 2);
+    expect(mid[0]).toBeCloseTo(29.006, 4);
+    expect(mid[1]).toBeCloseTo(41.0, 4);
+  });
+
+  it('ilk bacakta doğuya bakar', () => {
+    expect(routeHeadingAt(route, cum, 200)!).toBeCloseTo(90, 0);
+  });
+
+  it('ikinci bacakta kuzeye bakar', () => {
+    expect(routeHeadingAt(route, cum, cum[1]! + 200)!).toBeCloseTo(0, 0);
+  });
+
+  it('rotanın sonunda son bacağın yönünü korur', () => {
+    expect(routeHeadingAt(route, cum, cum[2]!)!).toBeCloseTo(0, 0);
+    expect(routeHeadingAt(route, cum, cum[2]! + 500)!).toBeCloseTo(0, 0);
+  });
+
+  it('tek noktalı rotada null', () => {
+    expect(routeHeadingAt([[29, 41]], [0], 0)).toBeNull();
   });
 });

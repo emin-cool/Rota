@@ -1,7 +1,7 @@
 import { distPointToSegmentM } from '../../supabase/functions/_shared/geo.ts';
 
 import { tr } from '@/i18n/tr';
-import { haversineM, type LngLat } from '@/lib/geo';
+import { bearingDeg, haversineM, type LngLat } from '@/lib/geo';
 import type { ActivityType } from '@/types/routes';
 
 /** Canlı takip hesapları (saf fonksiyonlar). Sabitler CLAUDE.md "Sabitler" bölümünden. */
@@ -216,6 +216,44 @@ export function cumulativeLengths(route: LngLat[]): number[] {
   for (let i = 1; i < route.length; i++)
     out.push(out[i - 1]! + haversineM(route[i - 1]!, route[i]!));
   return out;
+}
+
+/** Rota boyunca `distanceM` kadar ilerideki nokta (rota dışına taşarsa uçlara kırpılır). */
+export function pointAlongRoute(route: LngLat[], cumulative: number[], distanceM: number): LngLat {
+  const total = cumulative[cumulative.length - 1] ?? 0;
+  const d = Math.min(Math.max(distanceM, 0), total);
+  for (let i = 1; i < route.length; i++) {
+    if (d <= cumulative[i]!) {
+      const segLen = cumulative[i]! - cumulative[i - 1]!;
+      const t = segLen > 0 ? (d - cumulative[i - 1]!) / segLen : 0;
+      const a = route[i - 1]!;
+      const b = route[i]!;
+      return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+    }
+  }
+  return route[route.length - 1]!;
+}
+
+/**
+ * Kullanıcının rota üzerindeki yeri (`progressM`) için gidiş yönü (derece, 0 = kuzey):
+ * rotada `lookAheadM` ilerideki noktaya bakılır. GPS sapmasından bağımsızdır, çünkü yön
+ * ölçülen konumdan değil planlı çizgiden gelir. Rotanın son `lookAheadM` metresinde
+ * ileride yeterli çizgi kalmadığı için son kısmın yönü tutulur.
+ */
+export function routeHeadingAt(
+  route: LngLat[],
+  cumulative: number[],
+  progressM: number,
+  lookAheadM = 30,
+): number | null {
+  if (route.length < 2) return null;
+  const total = cumulative[cumulative.length - 1] ?? 0;
+  if (total <= 0) return null;
+  const from = Math.min(progressM, Math.max(0, total - lookAheadM));
+  const a = pointAlongRoute(route, cumulative, from);
+  const b = pointAlongRoute(route, cumulative, Math.min(total, from + lookAheadM));
+  if (haversineM(a, b) < 1) return null;
+  return bearingDeg(a, b);
 }
 
 /**
