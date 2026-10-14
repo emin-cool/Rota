@@ -42,3 +42,4 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [ ] **HERKESE AÇIK YAYINDAN ÖNCE: fotoğraf/avatar depolarını imzalı adrese çevir** (bucket özel + `createSignedUrls`; docs/07-test-ve-yayin.md §5). Ayrıca gizlilik politikası, paylaşım görselinde gizlilik bölgesi kırpması, mağaza beyanları.
 - [ ] Dış test öncesi: kullanım koşulları + gizlilik politikası yazıldı (docs/legal); GitHub Pages açılacak, `notify-report` kurulacak (docs/07 §4b)
 - [x] Canlı takip: harita ön planda, rotalı kayıtta rota yönüne dönük (3B / düz / kuzey), altta tempo·mesafe·süre şeridi + yukarı çekilen detay çekmecesi (cihazda doğrulama bekliyor: dışarıda yürüyüş)
+- [ ] **HERKESE AÇIK YAYINDAN ÖNCE: Supabase 'Confirm email' tekrar aç** (önce Resend SMTP + alan adı; docs/07 §5)
