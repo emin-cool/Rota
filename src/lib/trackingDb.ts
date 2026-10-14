@@ -243,3 +243,4 @@ export async function setSetting(key: string, value: string): Promise<void> {
 
 /** Ayar anahtarları. Ayarlar ekranı (P1.7) aynı anahtarları kullanacak. */
 export const SETTING_VOICE = 'voice_enabled';
+export const SETTING_LIVE_MAP_VIEW = 'live_map_view';

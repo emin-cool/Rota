@@ -1,4 +1,5 @@
 import {
+  bearingDeg,
   formatDistance,
   formatDuration,
   formatRating,
@@ -6,6 +7,7 @@ import {
   lineLengthM,
   lineMidpoint,
   type LngLat,
+  unwrapHeading,
 } from './geo';
 
 describe('haversineM', () => {
@@ -58,5 +60,35 @@ describe('biçimleme', () => {
   it('puan', () => {
     expect(formatRating(4.7)).toBe('4,7');
     expect(formatRating(5)).toBe('5,0');
+  });
+});
+
+describe('bearingDeg', () => {
+  const o: LngLat = [29, 41];
+  it('kuzey, doğu, güney, batı', () => {
+    expect(bearingDeg(o, [29, 41.01])).toBeCloseTo(0, 0);
+    expect(bearingDeg(o, [29.01, 41])).toBeCloseTo(90, 0);
+    expect(bearingDeg(o, [29, 40.99])).toBeCloseTo(180, 0);
+    expect(bearingDeg(o, [28.99, 41])).toBeCloseTo(270, 0);
+  });
+  it('kuzeydoğu yaklaşık 45° civarında', () => {
+    const b = bearingDeg(o, [29.01, 41.01]);
+    expect(b).toBeGreaterThan(35);
+    expect(b).toBeLessThan(55);
+  });
+});
+
+describe('unwrapHeading', () => {
+  it('küçük farkı olduğu gibi ekler', () => {
+    expect(unwrapHeading(90, 100)).toBe(100);
+  });
+  it('359° → 1° geçişinde en kısa yolu seçer', () => {
+    expect(unwrapHeading(359, 1)).toBe(361);
+  });
+  it('1° → 359° geçişinde geriye döner', () => {
+    expect(unwrapHeading(1, 359)).toBe(-1);
+  });
+  it('180° farkta tutarlı bir yön seçer', () => {
+    expect(Math.abs(unwrapHeading(0, 180))).toBe(180);
   });
 });

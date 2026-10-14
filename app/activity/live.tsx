@@ -1,22 +1,34 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import GorhomBottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import * as Battery from 'expo-battery';
 import { useKeepAwake } from 'expo-keep-awake';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HoldButton } from '@/components/live/HoldButton';
 import { LiveMiniMap } from '@/components/live/LiveMiniMap';
+import { isLiveMapView, LIVE_MAP_VIEWS, type LiveMapView } from '@/components/live/liveMapTypes';
 import { Text } from '@/components/ui';
 import { tr } from '@/i18n/tr';
 import { DEFAULT_CENTER } from '@/lib/mapConfig';
 import { elapsedSeconds, formatElapsed, formatKmClock, formatPaceClock } from '@/lib/tracking';
+import { getSetting, SETTING_LIVE_MAP_VIEW, setSetting } from '@/lib/trackingDb';
 import { trackingEngine, useActivity } from '@/stores/activityStore';
 import { colors } from '@/theme/tokens';
 
 type IconName = keyof typeof MaterialIcons.glyphMap;
+
+/** Çekmece kapalıyken yalnızca tutamaç + tempo/mesafe/süre şeridi görünür. */
+const SHEET_SNAP_POINTS = [116, '62%'];
+
+const VIEW_ICON: Record<LiveMapView, IconName> = {
+  heading3d: 'navigation',
+  headingFlat: 'navigation',
+  north: 'explore',
+};
 
 function gpsLabel(accuracy: number | null): { text: string; ok: boolean } {
   const g = tr.live.gps;
@@ -68,6 +80,24 @@ function StatCard({
   );
 }
 
+function StripValue({ value, label }: { value: string; label: string }) {
+  return (
+    <View className="flex-1 items-center">
+      <Text
+        variant="headline-sm"
+        className="text-white"
+        style={{ fontSize: 26, lineHeight: 32, fontVariant: ['tabular-nums'] }}
+        accessibilityLabel={`${label}: ${value}`}
+      >
+        {value}
+      </Text>
+      <Text variant="label-caps" className="text-primary-fixed-dim">
+        {label}
+      </Text>
+    </View>
+  );
+}
+
 export default function LiveActivityScreen() {
   useKeepAwake(); // canlı ekran açıkken ekran kapanmasın (kayıt zaten kilit ekranında da sürer)
   const insets = useSafeAreaInsets();
@@ -76,11 +106,29 @@ export default function LiveActivityScreen() {
 
   const [now, setNow] = useState(() => Date.now());
   const [locked, setLocked] = useState(false);
+  const [mapView, setMapView] = useState<LiveMapView>('heading3d');
+  const [sheetIndex, setSheetIndex] = useState(0);
+  const sheetRef = useRef<GorhomBottomSheet>(null);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
+
+  // Son seçilen harita görünümünü hatırla.
+  useEffect(() => {
+    void getSetting(SETTING_LIVE_MAP_VIEW)
+      .then((v) => {
+        if (isLiveMapView(v)) setMapView(v);
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const cycleMapView = () => {
+    const next = LIVE_MAP_VIEWS[(LIVE_MAP_VIEWS.indexOf(mapView) + 1) % LIVE_MAP_VIEWS.length]!;
+    setMapView(next);
+    void setSetting(SETTING_LIVE_MAP_VIEW, next).catch(() => undefined);
+  };
 
   // Kayıt yoksa (bitti/silindi) ana ekrana dön.
   const { status } = snap;
@@ -129,182 +177,256 @@ export default function LiveActivityScreen() {
       ? new Date(snap.etaMs).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
       : null;
 
+  const expanded = sheetIndex > 0;
+  const toggleSheet = () => sheetRef.current?.snapToIndex(expanded ? 0 : 1);
+  const viewName = tr.live.mapView[mapView];
+
   return (
-    <View className="flex-1 bg-live-bg" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-live-bg">
       <StatusBar style="light" />
 
-      {/* Üst bar */}
-      <View className="h-14 flex-row items-center px-space-sm">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={tr.wizard.back}
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
-          className="h-11 w-11 items-center justify-center rounded-full"
-        >
-          <MaterialIcons name="arrow-back-ios-new" size={20} color={colors.white} />
-        </Pressable>
-        <Text variant="headline-sm" className="flex-1 text-white" accessibilityRole="header">
-          {tr.live.title}
-        </Text>
-      </View>
-
-      <ScrollView
-        contentContainerClassName="gap-space-md px-margin pb-space-md"
-        showsVerticalScrollIndicator={false}
-      >
-        {/* GPS ve pil */}
-        <View className="flex-row items-center justify-between">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={gps.text}
-            onLongPress={toggleSimulation}
-            delayLongPress={800}
-            className="min-h-[44px] flex-row items-center gap-2 rounded-full bg-live-card px-3"
-          >
-            <View
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: gps.ok ? colors.live.ok : colors.live.alert }}
-            />
-            <Text
-              variant="label-caps"
-              style={{ color: gps.ok ? colors.live.ok : colors.live.alert }}
-            >
-              {gps.text}
-            </Text>
-          </Pressable>
-          {batteryLevel >= 0 ? (
-            <View className="min-h-[36px] flex-row items-center gap-1 rounded-full bg-live-card px-3">
-              <MaterialIcons name="battery-std" size={18} color={colors.live.ok} />
-              <Text variant="label-caps" className="text-white">
-                {tr.live.battery(Math.round(batteryLevel * 100))}
-              </Text>
-            </View>
-          ) : null}
+      {/* Harita alanı: harita tüm alanı kaplar, üstünde bilgi katmanları ve alt çekmece durur */}
+      <View className="flex-1">
+        <View className="absolute inset-0">
+          <LiveMiniMap
+            route={snap.route}
+            track={snap.track}
+            current={current}
+            heading={snap.routeHeading}
+            view={mapView}
+          />
         </View>
 
-        {snap.simulating ? (
-          <View className="rounded-lg bg-live-card-green px-space-md py-2">
-            <Text variant="label-caps" className="text-primary-fixed">
-              {tr.live.simulateOn}
-            </Text>
-          </View>
-        ) : null}
-
-        {/* Rotadan çıkma uyarısı */}
-        {snap.offRoute ? (
-          <View
-            className="flex-row items-center gap-space-md rounded-xl bg-live-alert-bg p-space-md"
-            accessibilityLiveRegion="assertive"
-          >
-            <View className="h-12 w-12 items-center justify-center rounded-full bg-accent">
-              <MaterialIcons name="call-split" size={26} color={colors.white} />
-            </View>
-            <View className="flex-1">
-              <Text variant="headline-sm" className="text-white">
-                {tr.live.offRoute}
+        {/* Üst katman: geri, GPS, pil, rota bilgisi, sapma uyarısı */}
+        <View
+          pointerEvents="box-none"
+          className="absolute left-0 right-0 top-0 gap-space-sm px-space-sm"
+          style={{ paddingTop: insets.top + 8 }}
+        >
+          <View className="flex-row items-center gap-space-sm">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={tr.wizard.back}
+              onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+              className="h-11 w-11 items-center justify-center rounded-full bg-black/70"
+            >
+              <MaterialIcons name="arrow-back-ios-new" size={20} color={colors.white} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={gps.text}
+              onLongPress={toggleSimulation}
+              delayLongPress={800}
+              className="min-h-[44px] flex-row items-center gap-2 rounded-full bg-black/70 px-3"
+            >
+              <View
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: gps.ok ? colors.live.ok : colors.live.alert }}
+              />
+              <Text
+                variant="label-caps"
+                style={{ color: gps.ok ? colors.live.ok : colors.live.alert }}
+              >
+                {gps.text}
               </Text>
-              <Text variant="body-md" className="text-live-alert-soft">
-                {tr.live.offRouteHint}
-              </Text>
-            </View>
-            {snap.offRouteM !== null ? (
-              <View className="rounded-full bg-black/30 px-3 py-1.5">
-                <Text variant="label-sm" className="font-bold text-live-alert-soft">
-                  {tr.live.offRouteBy(Math.round(snap.offRouteM))}
+            </Pressable>
+            <View className="flex-1" />
+            {batteryLevel >= 0 ? (
+              <View className="min-h-[36px] flex-row items-center gap-1 rounded-full bg-black/70 px-3">
+                <MaterialIcons name="battery-std" size={18} color={colors.live.ok} />
+                <Text variant="label-caps" className="text-white">
+                  {tr.live.battery(Math.round(batteryLevel * 100))}
                 </Text>
               </View>
             ) : null}
           </View>
-        ) : null}
 
-        {/* Geçen süre */}
-        <View className="items-center gap-space-sm rounded-xl border border-live-border bg-live-card-deep px-space-md py-space-lg">
-          <View className="flex-row items-center gap-1">
-            <MaterialIcons name="timer" size={16} color={colors['primary-fixed-dim']} />
-            <Text variant="label-caps" className="text-primary-fixed">
-              {tr.live.elapsed}
-            </Text>
-          </View>
-          <Text
-            variant="display-hero"
-            className="text-white"
-            accessibilityLabel={`${tr.live.elapsed}: ${formatElapsed(elapsed)}`}
-            style={{ fontSize: 56, lineHeight: 64, fontVariant: ['tabular-nums'] }}
-          >
-            {formatElapsed(elapsed)}
-          </Text>
-          <View className="flex-row items-center gap-2">
-            <View
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: paused ? colors.accent.DEFAULT : colors.live.ok }}
-            />
-            <Text variant="body-md" className="text-primary-fixed-dim">
-              {paused ? tr.live.paused : tr.live.recording}
-            </Text>
-          </View>
-        </View>
-
-        {/* Mesafe ve tempo */}
-        <View className="flex-row gap-space-md">
-          <StatCard
-            icon="straighten"
-            tag={
-              hasRoute
-                ? tr.live.target(formatKmClock(snap.routeTotalM!).replace(/,00$/, ''))
-                : tr.live.free
-            }
-            value={formatKmClock(snap.stats.distanceM)}
-            label={tr.live.distance}
-          />
-          <StatCard
-            icon="speed"
-            tag={tr.live.paceTag}
-            value={formatPaceClock(snap.stats.avgPaceSecPerKm)}
-            label={tr.live.avgPace}
-          />
-        </View>
-        <View className="flex-row gap-space-md">
-          <StatCard
-            icon="bolt"
-            value={formatPaceClock(snap.stats.currentPaceSecPerKm)}
-            label={tr.live.currentPace}
-          />
-          <StatCard
-            icon="terrain"
-            value={`+${Math.round(snap.stats.ascentM)}`}
-            unit="m"
-            label={tr.live.ascent}
-          />
-        </View>
-
-        {/* Mini harita şeridi */}
-        <View className="h-[210px] overflow-hidden rounded-xl border border-live-border bg-live-card-deep">
-          <LiveMiniMap route={snap.route} track={snap.track} current={current} />
-          <View className="absolute left-3 top-3 flex-row items-center gap-2 rounded-lg bg-black/70 px-3 py-2">
-            <MaterialIcons name="navigation" size={16} color={colors.accent.DEFAULT} />
-            <Text variant="label-caps" className="text-white" numberOfLines={1}>
-              {tr.live.trackName(session?.route_title ?? tr.live.free)}
-            </Text>
-          </View>
-          {hasRoute && snap.remainingM !== null ? (
-            <View className="absolute bottom-3 left-3 flex-row items-center gap-3 rounded-lg bg-black/70 px-3 py-2">
-              <MaterialIcons name="flag" size={16} color={colors.live.ok} />
-              <Text variant="body-md" className="font-bold text-white">
-                {tr.live.remaining(formatKmClock(snap.remainingM))}
+          {snap.simulating ? (
+            <View className="self-start rounded-lg bg-live-card-green px-space-md py-2">
+              <Text variant="label-caps" className="text-primary-fixed">
+                {tr.live.simulateOn}
               </Text>
-              {arrival ? (
-                <Text variant="label-sm" className="text-primary-fixed-dim">
-                  {tr.live.arrival(arrival)}
+            </View>
+          ) : null}
+
+          {hasRoute ? (
+            <View className="flex-row items-start justify-between gap-space-sm">
+              <View className="flex-shrink gap-2">
+                <View className="flex-row items-center gap-2 self-start rounded-lg bg-black/70 px-3 py-2">
+                  <MaterialIcons name="navigation" size={16} color={colors.accent.DEFAULT} />
+                  <Text variant="label-caps" className="text-white" numberOfLines={1}>
+                    {tr.live.trackName(session?.route_title ?? tr.live.free)}
+                  </Text>
+                </View>
+                {snap.remainingM !== null ? (
+                  <View className="flex-row items-center gap-3 self-start rounded-lg bg-black/70 px-3 py-2">
+                    <MaterialIcons name="flag" size={16} color={colors.live.ok} />
+                    <Text variant="body-md" className="font-bold text-white">
+                      {tr.live.remaining(formatKmClock(snap.remainingM))}
+                    </Text>
+                    {arrival ? (
+                      <Text variant="label-sm" className="text-primary-fixed-dim">
+                        {tr.live.arrival(arrival)}
+                      </Text>
+                    ) : null}
+                  </View>
+                ) : null}
+              </View>
+
+              {/* Harita görünümü: 3B yön → düz yön → kuzey yukarı */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={tr.live.mapView.label(viewName)}
+                onPress={cycleMapView}
+                className="min-h-[44px] min-w-[44px] flex-row items-center gap-1 rounded-full bg-black/70 px-3"
+              >
+                <MaterialIcons name={VIEW_ICON[mapView]} size={20} color={colors.white} />
+                <Text variant="label-caps" className="text-white">
+                  {viewName}
                 </Text>
+              </Pressable>
+            </View>
+          ) : null}
+
+          {/* Rotadan çıkma uyarısı */}
+          {snap.offRoute ? (
+            <View
+              className="flex-row items-center gap-space-md rounded-xl bg-live-alert-bg p-space-md"
+              accessibilityLiveRegion="assertive"
+            >
+              <View className="h-12 w-12 items-center justify-center rounded-full bg-accent">
+                <MaterialIcons name="call-split" size={26} color={colors.white} />
+              </View>
+              <View className="flex-1">
+                <Text variant="headline-sm" className="text-white">
+                  {tr.live.offRoute}
+                </Text>
+                <Text variant="body-md" className="text-live-alert-soft">
+                  {tr.live.offRouteHint}
+                </Text>
+              </View>
+              {snap.offRouteM !== null ? (
+                <View className="rounded-full bg-black/30 px-3 py-1.5">
+                  <Text variant="label-sm" className="font-bold text-live-alert-soft">
+                    {tr.live.offRouteBy(Math.round(snap.offRouteM))}
+                  </Text>
+                </View>
               ) : null}
             </View>
           ) : null}
         </View>
-      </ScrollView>
 
-      {/* Kontroller */}
+        {/* Alt çekmece: kapalıyken tempo · mesafe · süre, yukarı çekince tüm detaylar */}
+        <GorhomBottomSheet
+          ref={sheetRef}
+          index={0}
+          snapPoints={SHEET_SNAP_POINTS}
+          enablePanDownToClose={false}
+          onChange={setSheetIndex}
+          backgroundStyle={{
+            backgroundColor: colors.live['card-deep'],
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+          }}
+          handleComponent={() => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={expanded ? tr.live.detailsClose : tr.live.detailsOpen}
+              onPress={toggleSheet}
+              className="h-11 items-center justify-center"
+            >
+              <MaterialIcons
+                name={expanded ? 'keyboard-arrow-down' : 'keyboard-arrow-up'}
+                size={32}
+                color={colors['primary-fixed-dim']}
+              />
+            </Pressable>
+          )}
+        >
+          <BottomSheetScrollView
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24, gap: 16 }}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Her zaman görünen şerit */}
+            <View className="flex-row items-center">
+              <StripValue
+                value={formatPaceClock(
+                  snap.stats.currentPaceSecPerKm ?? snap.stats.avgPaceSecPerKm,
+                )}
+                label={tr.live.stripPace}
+              />
+              <StripValue
+                value={formatKmClock(snap.stats.distanceM)}
+                label={tr.live.stripDistance}
+              />
+              <StripValue value={formatElapsed(elapsed)} label={tr.live.stripTime} />
+            </View>
+
+            {/* Detaylar (çekmece açılınca) */}
+            <View className="items-center gap-space-sm rounded-xl border border-live-border bg-live-card px-space-md py-space-lg">
+              <View className="flex-row items-center gap-1">
+                <MaterialIcons name="timer" size={16} color={colors['primary-fixed-dim']} />
+                <Text variant="label-caps" className="text-primary-fixed">
+                  {tr.live.elapsed}
+                </Text>
+              </View>
+              <Text
+                variant="display-hero"
+                className="text-white"
+                accessibilityLabel={`${tr.live.elapsed}: ${formatElapsed(elapsed)}`}
+                style={{ fontSize: 56, lineHeight: 64, fontVariant: ['tabular-nums'] }}
+              >
+                {formatElapsed(elapsed)}
+              </Text>
+              <View className="flex-row items-center gap-2">
+                <View
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: paused ? colors.accent.DEFAULT : colors.live.ok }}
+                />
+                <Text variant="body-md" className="text-primary-fixed-dim">
+                  {paused ? tr.live.paused : tr.live.recording}
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row gap-space-md">
+              <StatCard
+                icon="straighten"
+                tag={
+                  hasRoute
+                    ? tr.live.target(formatKmClock(snap.routeTotalM!).replace(/,00$/, ''))
+                    : tr.live.free
+                }
+                value={formatKmClock(snap.stats.distanceM)}
+                label={tr.live.distance}
+              />
+              <StatCard
+                icon="speed"
+                tag={tr.live.paceTag}
+                value={formatPaceClock(snap.stats.avgPaceSecPerKm)}
+                label={tr.live.avgPace}
+              />
+            </View>
+            <View className="flex-row gap-space-md">
+              <StatCard
+                icon="bolt"
+                value={formatPaceClock(snap.stats.currentPaceSecPerKm)}
+                label={tr.live.currentPace}
+              />
+              <StatCard
+                icon="terrain"
+                value={`+${Math.round(snap.stats.ascentM)}`}
+                unit="m"
+                label={tr.live.ascent}
+              />
+            </View>
+          </BottomSheetScrollView>
+        </GorhomBottomSheet>
+      </View>
+
+      {/* Kontroller: çekmecenin dışında, hep altta sabit */}
       <View
-        className="gap-space-md px-margin pt-space-sm"
+        className="gap-space-md bg-live-bg px-margin pt-space-sm"
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}
       >
         <View className="flex-row items-center justify-between">
