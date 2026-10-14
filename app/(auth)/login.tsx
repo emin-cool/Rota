@@ -17,6 +17,7 @@ import {
   signInWithGoogle,
   signUpWithEmail,
 } from '@/lib/auth';
+import { openLegalUrl, PRIVACY_URL, TERMS_URL } from '@/lib/legal';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { colors } from '@/theme/tokens';
 
@@ -262,7 +263,25 @@ export default function LoginScreen() {
         </View>
 
         <Text variant="label-sm" className="px-space-md text-center text-ink-muted">
-          {tr.auth.legal}
+          {tr.auth.legalPrefix}
+          <Text
+            variant="label-sm"
+            accessibilityRole="link"
+            className="font-bold text-brand underline"
+            onPress={() => openLegalUrl(TERMS_URL)}
+          >
+            {tr.auth.legalTerms}
+          </Text>
+          {tr.auth.legalAnd}
+          <Text
+            variant="label-sm"
+            accessibilityRole="link"
+            className="font-bold text-brand underline"
+            onPress={() => openLegalUrl(PRIVACY_URL)}
+          >
+            {tr.auth.legalPrivacy}
+          </Text>
+          {tr.auth.legalSuffix}
         </Text>
       </ScrollView>
     </KeyboardAvoidingView>

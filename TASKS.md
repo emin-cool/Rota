@@ -40,3 +40,4 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [ ] **Sentry hesabı + DSN:** docs/07-test-ve-yayin.md §1. `.env`'e `EXPO_PUBLIC_SENTRY_DSN`, `node scripts/eas-env-push.mjs`, yeni build (Sentry native modül), Ayarlar başlığına uzun basarak test hatası.
 - [ ] **Kapalı test build'leri:** Android APK (`preview`) ve iOS TestFlight (docs/07-test-ve-yayin.md §2–3).
 - [ ] **HERKESE AÇIK YAYINDAN ÖNCE: fotoğraf/avatar depolarını imzalı adrese çevir** (bucket özel + `createSignedUrls`; docs/07-test-ve-yayin.md §5). Ayrıca gizlilik politikası, paylaşım görselinde gizlilik bölgesi kırpması, mağaza beyanları.
+- [ ] Dış test öncesi: kullanım koşulları + gizlilik politikası yazıldı (docs/legal); GitHub Pages açılacak, `notify-report` kurulacak (docs/07 §4b)

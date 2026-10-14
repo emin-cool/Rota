@@ -86,17 +86,24 @@ Uygulamada kullanıcı içeriği var (yorum, aktivite notu, fotoğraf, profil ad
 | İçeriği/kullanıcıyı **bildirme** | ✅ "⋯" menüsü (aktivite, yorum, rota yorumu, profil); sebep + isteğe bağlı açıklama |
 | Kullanıcıyı **engelleme** | ✅ iki yönlü gizleme, takip kopar; Ayarlar → Engellenen kullanıcılar |
 | Bildirimlere **24 saat içinde müdahale** | ⚠️ süreç sende: Supabase → Table Editor → `reports` (status = open). İncelenince `status`'u `reviewed/actioned/dismissed` yap. İçeriği silmek için ilgili tablodan satırı sil (yorum: `comments`, aktivite: `activities`), kullanıcıyı kalıcı uzaklaştırmak için Authentication → Users → sil |
-| **Kullanım koşulları** (EULA) — uygunsuz içeriğe hoşgörü yok maddesi | ❌ yazılacak: URL + kayıt ekranında "Kullanım Koşulları'nı kabul ediyorum" bağlantısı (`tr.auth.legal`) |
-| Mağaza formunda **iletişim bilgisi** | ❌ destek e-postası belirle |
+| **Kullanım koşulları** (EULA) — uygunsuz içeriğe hoşgörü yok maddesi | ✅ `docs/legal/kullanim-kosullari.html`; kayıt ekranında ve Ayarlar'da bağlantı (`src/lib/legal.ts`). **Yayın:** GitHub → Settings → Pages → Branch `main`, klasör `/docs` → adres `https://emin-cool.github.io/Rota/legal/` |
+| **Gizlilik politikası** | ✅ `docs/legal/gizlilik-politikasi.html` (konum, fotoğraf, Sentry, hesap silme, gizlilik bölgesi, KVKK) |
+| Mağaza formunda **iletişim bilgisi** | ✅ geçici: abdullahkal887@gmail.com (`src/lib/legal.ts` + `docs/legal/*.html`). rota.info adresi açılınca üç yerde değiştir |
 
-Bildirimlerden haberdar olmak için istersen küçük bir Edge Function + e-posta (ör. yeni `reports` satırı → e-posta) eklenebilir; şimdilik elle bakılır.
+### Rapor e-postası (notify-report)
+Yeni `reports` satırı → Database Webhook → Edge Function `notify-report` → Resend e-postası. Kurulum (bir kez):
+1. resend.com'da, **abdullahkal887@gmail.com ile** hesap aç (ücretsiz plan; alan adı doğrulaması olmadan yalnızca hesap sahibinin adresine gönderilir). API Keys → anahtar oluştur.
+2. Secret'lar (değerleri sohbete yazma): `npx supabase secrets set RESEND_API_KEY=... REPORT_WEBHOOK_SECRET=<uzun rastgele metin> REPORT_NOTIFY_EMAIL=abdullahkal887@gmail.com`
+3. `npx supabase functions deploy notify-report --use-api --no-verify-jwt`
+4. Supabase → Database → Webhooks → Create: tablo `reports`, olay **Insert**, tür HTTP Request (POST), URL `https://<proje-ref>.supabase.co/functions/v1/notify-report`, header `x-webhook-secret: <aynı secret>`.
+5. Test: uygulamadan bir içeriği bildir → e-posta gelmeli (spam klasörüne de bak).
 
 ## 5. Herkese açık yayından ÖNCE yapılacaklar (kapalı testte gerek yok)
 - [ ] **Fotoğraf ve avatar depolarını imzalı adrese çevir (C maddesi).** Şu an `route-photos` ve `avatars` bucket'ları herkese açık okuma; yollar
       tahmin edilemez UUID ama adresi bilen herkes görür (özel rotadaki fotoğraf dahil). Yapılacak: bucket'ı özel yap, SELECT politikasını
       `can_see_route` / sahibi koşuluna bağla, istemci `createSignedUrl` kullansın (rota detayında fotoğraf başına ek istek → toplu `createSignedUrls`),
       `route_photos.url` yerine dosya yolunu sakla (migration + mevcut kayıtları dönüştür).
-- [ ] Gizlilik politikası ve kullanım koşulları (URL) — mağaza formları ister; Sentry ve arka plan konum açıklansın
+- [x] Gizlilik politikası ve kullanım koşulları (URL) — yazıldı (§4b); Pages'i açınca mağaza formlarına bu adresler girilecek
 - [ ] Android arka plan konum ve ön plan servisi beyanı (Play Console), iOS arka plan konum gerekçesi
 - [ ] Paylaşım görselindeki yolun gizlilik bölgesine göre kırpılması (şu an kırpma yalnızca sunucuda)
 - [ ] "Takipçiler" görünürlüğü `follows` tablosu (P2.1) ile gerçek hale gelsin
