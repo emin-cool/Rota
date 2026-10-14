@@ -158,15 +158,13 @@ async function main() {
     "B, A'nın aktivitesini silemiyor",
     blocked(await B.client.from('activities').delete().eq('id', actPublic.id).select('id')),
   );
-  const spoof = await B.client
-    .from('activities')
-    .insert({
-      user_id: A.id,
-      activity_type: 'walk',
-      started_at: new Date().toISOString(),
-      duration_sec: 1,
-      distance_m: 1,
-    });
+  const spoof = await B.client.from('activities').insert({
+    user_id: A.id,
+    activity_type: 'walk',
+    started_at: new Date().toISOString(),
+    duration_sec: 1,
+    distance_m: 1,
+  });
   check('B, A adına aktivite ekleyemiyor', !!spoof.error);
   check(
     'Giriş yapmamış kullanıcı aktivite okuyamıyor',
@@ -576,6 +574,198 @@ async function main() {
   check(
     'Giriş yapmamış kullanıcı follows okuyamıyor',
     blocked(await anon.from('follows').select('follower_id').limit(1)),
+  );
+
+  // ------------------------------------------------------------------ moderasyon (P2.1c)
+  section('moderasyon: engelle ve bildir');
+  // Hazırlık: C, A'nın herkese açık aktivitesine yorum yazıyor (C, A'yı takip ediyor)
+  const cc = await C.client
+    .from('comments')
+    .insert({ activity_id: actPublic.id, user_id: C.id, body: 'engel öncesi yorum' })
+    .select('id')
+    .single();
+  check('Hazırlık: C yorum yazabiliyor', !cc.error, cc.error?.message);
+  const commentOfC = cc.data?.id;
+
+  // 1) A, C'yi engelliyor
+  check(
+    "C, A adına engel ekleyemiyor (A'nın blocker_id'siyle)",
+    !!(await C.client.from('blocks').insert({ blocker_id: A.id, blocked_id: B.id })).error,
+  );
+  check(
+    'A, kendini engelleyemiyor',
+    !!(await A.client.from('blocks').insert({ blocker_id: A.id, blocked_id: A.id })).error,
+  );
+  const blk = await A.client.from('blocks').insert({ blocker_id: A.id, blocked_id: C.id });
+  check("A, C'yi engelleyebiliyor", !blk.error, blk.error?.message);
+  check(
+    "Engellenen C, A'nın herkese açık aktivitesini artık göremiyor",
+    !(await seesAct(C, actPublic.id)),
+  );
+  check(
+    'Engelleme takip ilişkisini koparıyor (C → A)',
+    (await C.client.from('follows').select('status').eq('following_id', A.id)).data?.length === 0,
+  );
+  check(
+    "Engellenen C, A'yı takip edemiyor",
+    !!(await C.client.from('follows').insert({ follower_id: C.id, following_id: A.id })).error,
+  );
+  check(
+    "Engellenen C, A'nın aktivitesine alkış atamıyor",
+    !!(await C.client.from('kudos').insert({ activity_id: actPublic.id, user_id: C.id })).error,
+  );
+  check(
+    "Engellenen C, A'nın aktivitesine yorum yazamıyor",
+    !!(
+      await C.client
+        .from('comments')
+        .insert({ activity_id: actPublic.id, user_id: C.id, body: 'x' })
+    ).error,
+  );
+  const aList = await A.client.rpc('activity_comments', { p_id: actPublic.id });
+  check(
+    "A'nın yorum listesinde engellediği C'nin yorumu yok",
+    !(aList.data ?? []).some((c) => c.id === commentOfC),
+  );
+  const bList = await B.client.rpc('activity_comments', { p_id: actPublic.id });
+  check(
+    "Üçüncü kişi B, C'nin yorumunu hâlâ görüyor (engel yalnızca A ile C arasında)",
+    (bList.data ?? []).some((c) => c.id === commentOfC),
+  );
+  check(
+    "profile_card: A'yı engelleyen taraf için C'nin kartı yok, C'yi engelleyen A için blocked_by_me=true",
+    ((await C.client.rpc('profile_card', { p_user: A.id })).data ?? []).length === 0 &&
+      (await A.client.rpc('profile_card', { p_user: C.id })).data?.[0]?.blocked_by_me === true,
+  );
+  check(
+    'search_profiles: iki yönde de birbirini bulamıyorlar',
+    !((await A.client.rpc('search_profiles', { p_query: 'rlsc' })).data ?? []).some(
+      (r) => r.user_id === C.id,
+    ) &&
+      !((await C.client.rpc('search_profiles', { p_query: 'rlsa' })).data ?? []).some(
+        (r) => r.user_id === A.id,
+      ),
+  );
+  const mineBlocked = await A.client.rpc('blocked_users');
+  check(
+    "blocked_users: A engellediği C'yi görüyor",
+    (mineBlocked.data ?? []).some((u) => u.user_id === C.id),
+  );
+  check(
+    'Engellenen C, engellendiğini blocks tablosundan göremiyor',
+    blocked(await C.client.from('blocks').select('blocker_id').eq('blocked_id', C.id)),
+  );
+  check(
+    "C, A'nın engelini kaldıramıyor",
+    blocked(
+      await C.client
+        .from('blocks')
+        .delete()
+        .eq('blocker_id', A.id)
+        .eq('blocked_id', C.id)
+        .select('blocker_id'),
+    ),
+  );
+  const feedA = await A.client.rpc('feed_activities', { p_scope: 'one', p_id: actPublic.id });
+  check(
+    "A'nın aktivitesinde engelli C'nin yorumu sayıya katılmıyor",
+    feedA.data?.[0]?.comment_count === 0,
+    JSON.stringify(feedA.data?.[0]?.comment_count),
+  );
+
+  // 2) Engeli kaldır
+  await A.client.from('blocks').delete().eq('blocker_id', A.id).eq('blocked_id', C.id);
+  check(
+    "Engel kalkınca C, A'nın herkese açık aktivitesini yine görüyor",
+    await seesAct(C, actPublic.id),
+  );
+  check(
+    'blocked_users: engel kalkınca liste boş',
+    ((await A.client.rpc('blocked_users')).data ?? []).length === 0,
+  );
+
+  // 3) Rota yorumları engelli yazardan gizlenir
+  if (pub.data && reviewId) {
+    await B.client.from('blocks').insert({ blocker_id: B.id, blocked_id: A.id });
+    const rl = await B.client.rpc('route_reviews_list', { p_id: pub.data.id });
+    check(
+      "route_reviews_list: B, engellediği A'nın yorumunu görmüyor",
+      !(rl.data ?? []).some((r) => r.user_id === A.id),
+    );
+    await B.client.from('blocks').delete().eq('blocker_id', B.id).eq('blocked_id', A.id);
+    const rl2 = await B.client.rpc('route_reviews_list', { p_id: pub.data.id });
+    check(
+      'route_reviews_list: engel kalkınca yorum geri geliyor',
+      (rl2.data ?? []).some((r) => r.user_id === A.id),
+    );
+  }
+
+  // 4) Bildirme
+  const rep = (u, type, id, reason = 'spam', details = null) =>
+    u.client.rpc('report_content', {
+      p_type: type,
+      p_target: id,
+      p_reason: reason,
+      p_details: details,
+    });
+  check(
+    "B, A'nın aktivitesini bildirebiliyor",
+    !(await rep(B, 'activity', actPublic.id, 'inappropriate', 'deneme')).error,
+  );
+  check(
+    "B, C'nin yorumunu bildirebiliyor",
+    !(await rep(B, 'comment', commentOfC, 'harassment')).error,
+  );
+  check("B, A'nın profilini bildirebiliyor", !(await rep(B, 'profile', A.id, 'other')).error);
+  if (pub.data && reviewId) {
+    check(
+      "B, A'nın rota yorumunu bildirebiliyor",
+      !(await rep(B, 'review', reviewId, 'spam')).error,
+    );
+  }
+  check(
+    'B, görmediği ("private") aktiviteyi bildiremiyor',
+    !!(await rep(B, 'activity', actPrivate.id)).error,
+  );
+  check('A, kendi aktivitesini bildiremiyor', !!(await rep(A, 'activity', actPublic.id)).error);
+  check('Geçersiz sebep reddediliyor', !!(await rep(B, 'activity', actPublic.id, 'uydurma')).error);
+  check('Geçersiz tür reddediliyor', !!(await rep(B, 'bilinmeyen', actPublic.id)).error);
+  check(
+    'İstemci reports tablosuna doğrudan yazamıyor',
+    !!(
+      await B.client
+        .from('reports')
+        .insert({
+          reporter_id: B.id,
+          target_type: 'activity',
+          target_id: actPublic.id,
+          reason: 'spam',
+        })
+    ).error,
+  );
+  check(
+    'İstemci reports tablosunu okuyamıyor',
+    blocked(await B.client.from('reports').select('id').limit(1)),
+  );
+  check(
+    'Giriş yapmamış kullanıcı bildiremiyor',
+    !!(
+      await anon.rpc('report_content', {
+        p_type: 'activity',
+        p_target: actPublic.id,
+        p_reason: 'spam',
+      })
+    ).error,
+  );
+  const stored = await admin
+    .from('reports')
+    .select('reported_user_id, reporter_id, details')
+    .eq('reporter_id', B.id);
+  check(
+    'Bildirimler sunucuda doğru sahibiyle kayıtlı (sahibi istemciden gelmiyor)',
+    (stored.data ?? []).some((r) => r.reported_user_id === A.id && r.details === 'deneme') &&
+      (stored.data ?? []).some((r) => r.reported_user_id === C.id),
+    JSON.stringify(stored.data),
   );
 
   section('istemciye kapalı tablolar');

@@ -341,6 +341,7 @@ export type ProfileCard = {
   route_count: number;
   follow_state: FollowState;
   can_view: boolean;
+  blocked_by_me: boolean;
 };
 
 export type PersonRow = {
@@ -350,6 +351,11 @@ export type PersonRow = {
   avatar_url: string | null;
   follow_state: FollowState;
 };
+
+export type BlockedUser = Omit<PersonRow, 'follow_state'>;
+
+export type ReportType = 'activity' | 'comment' | 'profile' | 'review';
+export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'dangerous' | 'other';
 
 export type FollowRequest = Omit<PersonRow, 'follow_state'> & { requested_at: string };
 
@@ -407,6 +413,11 @@ export type Database = {
         Pick<FollowRow, 'follower_id' | 'following_id'>,
         Pick<FollowRow, 'status'>
       >;
+      blocks: Table<
+        { blocker_id: string; blocked_id: string; created_at: string },
+        { blocker_id: string; blocked_id: string },
+        never
+      >;
       kudos: Table<KudosRow, Pick<KudosRow, 'activity_id' | 'user_id'>, never>;
       comments: Table<CommentRow, Pick<CommentRow, 'activity_id' | 'user_id' | 'body'>, never>;
       saved_routes: Table<SavedRouteRow, Pick<SavedRouteRow, 'user_id' | 'route_id'>, never>;
@@ -455,6 +466,16 @@ export type Database = {
       };
       search_profiles: { Args: { p_query: string; p_limit?: number }; Returns: PersonRow[] };
       follow_requests: { Args: { p_limit?: number; p_offset?: number }; Returns: FollowRequest[] };
+      blocked_users: { Args: Record<string, never>; Returns: BlockedUser[] };
+      report_content: {
+        Args: {
+          p_type: ReportType;
+          p_target: string;
+          p_reason: ReportReason;
+          p_details?: string | null;
+        };
+        Returns: undefined;
+      };
       my_privacy_zone_info: { Args: Record<string, never>; Returns: PrivacyZoneInfo[] };
       my_privacy_zone: { Args: Record<string, never>; Returns: unknown };
     };

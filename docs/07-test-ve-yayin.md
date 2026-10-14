@@ -77,6 +77,20 @@ Geri alma: `npx eas-cli update:rollback --channel production` (önceki güncelle
 - [ ] 30 seed rota Keşfet ve haritada görünüyor
 - [ ] Test hesabıyla hesap silme
 
+## 4b. Kullanıcı içeriği moderasyonu (Apple 1.2) — dış test ve mağaza öncesi
+
+Uygulamada kullanıcı içeriği var (yorum, aktivite notu, fotoğraf, profil adı). Apple şunları ister; durumları:
+
+| Şart | Durum |
+|---|---|
+| İçeriği/kullanıcıyı **bildirme** | ✅ "⋯" menüsü (aktivite, yorum, rota yorumu, profil); sebep + isteğe bağlı açıklama |
+| Kullanıcıyı **engelleme** | ✅ iki yönlü gizleme, takip kopar; Ayarlar → Engellenen kullanıcılar |
+| Bildirimlere **24 saat içinde müdahale** | ⚠️ süreç sende: Supabase → Table Editor → `reports` (status = open). İncelenince `status`'u `reviewed/actioned/dismissed` yap. İçeriği silmek için ilgili tablodan satırı sil (yorum: `comments`, aktivite: `activities`), kullanıcıyı kalıcı uzaklaştırmak için Authentication → Users → sil |
+| **Kullanım koşulları** (EULA) — uygunsuz içeriğe hoşgörü yok maddesi | ❌ yazılacak: URL + kayıt ekranında "Kullanım Koşulları'nı kabul ediyorum" bağlantısı (`tr.auth.legal`) |
+| Mağaza formunda **iletişim bilgisi** | ❌ destek e-postası belirle |
+
+Bildirimlerden haberdar olmak için istersen küçük bir Edge Function + e-posta (ör. yeni `reports` satırı → e-posta) eklenebilir; şimdilik elle bakılır.
+
 ## 5. Herkese açık yayından ÖNCE yapılacaklar (kapalı testte gerek yok)
 - [ ] **Fotoğraf ve avatar depolarını imzalı adrese çevir (C maddesi).** Şu an `route-photos` ve `avatars` bucket'ları herkese açık okuma; yollar
       tahmin edilemez UUID ama adresi bilen herkes görür (özel rotadaki fotoğraf dahil). Yapılacak: bucket'ı özel yap, SELECT politikasını

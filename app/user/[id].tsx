@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo } from 'react';
-import { ActivityIndicator, FlatList, Pressable, Share, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Pressable, Share, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActivityFeedCard } from '@/components/social/ActivityFeedCard';
@@ -17,6 +17,7 @@ import {
   Text,
 } from '@/components/ui';
 import {
+  useBlockOp,
   useFollowOp,
   useProfileCard,
   useToggleKudos,
@@ -26,6 +27,8 @@ import { tr } from '@/i18n/tr';
 import { formatCount } from '@/lib/social';
 import { formatTotalKm } from '@/lib/profileStats';
 import { useSessionStore } from '@/stores/sessionStore';
+import { MoreButton } from '@/components/social/ModerationSheet';
+import { useModerationStore } from '@/stores/moderationStore';
 import { colors } from '@/theme/tokens';
 import type { FeedActivity } from '@/types/database';
 
@@ -55,6 +58,7 @@ export default function UserProfileScreen() {
   const activities = useUserActivities(id, canView);
   const { mutate: mutateKudos } = useToggleKudos();
   const followOp = useFollowOp();
+  const blockOp = useBlockOp();
 
   // Kendi profiline gelinirse profil sekmesine yönlendir.
   useEffect(() => {
@@ -99,7 +103,21 @@ export default function UserProfileScreen() {
         <MaterialIcons name="arrow-back-ios-new" size={20} color={colors.ink.DEFAULT} />
       </Pressable>
       <HeadlineMd>{tr.userProfile.title}</HeadlineMd>
-      <View className="h-11 w-11" />
+      {card.data && card.data.user_id !== myId ? (
+        <MoreButton
+          label={tr.moderation.more}
+          onPress={() =>
+            useModerationStore.getState().open({
+              type: 'profile',
+              targetId: card.data!.user_id,
+              ownerId: card.data!.user_id,
+              ownerName: card.data!.display_name,
+            })
+          }
+        />
+      ) : (
+        <View className="h-11 w-11" />
+      )}
     </View>
   );
 
@@ -183,8 +201,30 @@ export default function UserProfileScreen() {
           />
           <Count value={p.route_count} label={tr.userProfile.routes} />
         </View>
-        <FollowButton targetId={p.user_id} targetName={p.display_name} state={p.follow_state} />
-        {p.follow_state === 'requested_me' ? (
+        {p.blocked_by_me ? (
+          <View className="gap-space-sm rounded-lg bg-surface-container-low p-space-md">
+            <Text variant="body-md" className="font-bold">
+              {tr.moderation.blockedByMeTitle}
+            </Text>
+            <Text variant="label-sm" className="text-ink-secondary">
+              {tr.moderation.blockedByMeBody}
+            </Text>
+            <Button
+              title={tr.moderation.unblock}
+              variant="secondary"
+              loading={blockOp.isPending}
+              onPress={() =>
+                blockOp.mutate(
+                  { op: 'unblock', targetId: p.user_id },
+                  { onError: () => Alert.alert(tr.moderation.unblockError) },
+                )
+              }
+            />
+          </View>
+        ) : (
+          <FollowButton targetId={p.user_id} targetName={p.display_name} state={p.follow_state} />
+        )}
+        {!p.blocked_by_me && p.follow_state === 'requested_me' ? (
           <Button
             title={tr.follow.decline}
             variant="secondary"

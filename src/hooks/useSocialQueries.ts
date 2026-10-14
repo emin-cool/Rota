@@ -17,10 +17,12 @@ import {
 import {
   acceptRequest,
   addComment,
+  blockUser,
   COMMENTS_PAGE,
   deleteComment,
   FEED_PAGE,
   fetchActivity,
+  fetchBlockedUsers,
   fetchComments,
   fetchFeed,
   fetchFollowList,
@@ -32,6 +34,7 @@ import {
   removeFollower,
   searchProfiles,
   setKudos,
+  unblockUser,
   unfollowUser,
 } from '@/lib/socialApi';
 import { supabase } from '@/lib/supabase';
@@ -279,4 +282,43 @@ export function useNewPosts(newestSeen: string | null) {
   }, [userId]);
 
   return { count, reset: () => setCount(0) };
+}
+
+export function useBlockedUsers() {
+  const userId = useMyId();
+  return useQuery({
+    queryKey: ['blocked-users', userId],
+    enabled: !!userId,
+    gcTime: 0,
+    queryFn: fetchBlockedUsers,
+  });
+}
+
+/** Engelle / engeli kaldır: sonrasında içerik içeren tüm sosyal sorgular tazelenir. */
+export function useBlockOp() {
+  const qc = useQueryClient();
+  const userId = useMyId();
+  return useMutation({
+    mutationFn: async (v: { op: 'block' | 'unblock'; targetId: string }) => {
+      if (!userId) throw new Error('no-session');
+      if (v.op === 'block') await blockUser(userId, v.targetId);
+      else await unblockUser(userId, v.targetId);
+    },
+    onSuccess: () => {
+      for (const key of [
+        'feed',
+        'activity',
+        'comments',
+        'profile-card',
+        'follow-list',
+        'follow-requests',
+        'social-counts',
+        'people-search',
+        'blocked-users',
+        'route-reviews',
+      ]) {
+        void qc.invalidateQueries({ queryKey: [key] });
+      }
+    },
+  });
 }

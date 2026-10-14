@@ -7,9 +7,11 @@ import { Avatar, Card, Text } from '@/components/ui';
 import { tr } from '@/i18n/tr';
 import { ratingBarPercent, timeAgo } from '@/lib/explore';
 import { formatRating } from '@/lib/geo';
+import { useModerationStore } from '@/stores/moderationStore';
 import { colors } from '@/theme/tokens';
 import type { RatingSummary, ReviewListItem } from '@/types/database';
 
+import { MoreButton } from '../social/ModerationSheet';
 import { StarRow } from './StarRow';
 
 /** Puan özeti: büyük ortalama, 5 çubuklu dağılım ve en çok kullanılan etiketler. */
@@ -92,6 +94,19 @@ export const ReviewItem = memo(function ReviewItem({ review }: { review: ReviewL
         <Text variant="label-sm" className="text-ink-secondary">
           {timeAgo(review.created_at)}
         </Text>
+        {review.mine ? null : (
+          <MoreButton
+            label={tr.moderation.more}
+            onPress={() =>
+              useModerationStore.getState().open({
+                type: 'review',
+                targetId: review.id,
+                ownerId: review.user_id,
+                ownerName: review.display_name ?? '',
+              })
+            }
+          />
+        )}
       </View>
       <StarRow rating={review.rating} size={16} />
       {review.comment ? <Text variant="body-md">{review.comment}</Text> : null}
