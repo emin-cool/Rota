@@ -69,6 +69,17 @@ export async function registerPushToken(): Promise<void> {
   }
 }
 
+/**
+ * İzin verilmiş ama bu cihazın token'ı henüz kaydedilmemişse kaydeder. İzin telefonun sistem ayarlarından
+ * sonradan verildiğinde de (uygulamaya dönünce) token oluşsun diye öne gelince çağrılır; her seferinde ağ
+ * isteği atmamak için yalnızca yerel kayıtta token yoksa çalışır.
+ */
+export async function ensurePushRegistered(): Promise<void> {
+  if ((await getPushPermission()) !== 'granted') return;
+  if (await getSetting(SETTING_PUSH_TOKEN)) return;
+  await registerPushToken();
+}
+
 /** Sistem izin penceresini açar; verilirse token'ı kaydeder. */
 export async function requestPushPermission(): Promise<PushPermission> {
   if (!isPushSupported()) return 'unavailable';
