@@ -733,14 +733,12 @@ async function main() {
   check(
     'İstemci reports tablosuna doğrudan yazamıyor',
     !!(
-      await B.client
-        .from('reports')
-        .insert({
-          reporter_id: B.id,
-          target_type: 'activity',
-          target_id: actPublic.id,
-          reason: 'spam',
-        })
+      await B.client.from('reports').insert({
+        reporter_id: B.id,
+        target_type: 'activity',
+        target_id: actPublic.id,
+        reason: 'spam',
+      })
     ).error,
   );
   check(
@@ -766,6 +764,248 @@ async function main() {
     (stored.data ?? []).some((r) => r.reported_user_id === A.id && r.details === 'deneme') &&
       (stored.data ?? []).some((r) => r.reported_user_id === C.id),
     JSON.stringify(stored.data),
+  );
+
+  // ------------------------------------------------------------------ push bildirimleri (P2.1b)
+  section('push bildirimleri: tetikleyiciler, token ve tercihler');
+  const P = await makeUser('p');
+  const Q = await makeUser('q');
+  const notifs = async (recipient, actor, type) =>
+    (
+      await admin
+        .from('notifications')
+        .select('id, activity_id')
+        .eq('recipient_id', recipient)
+        .eq('actor_id', actor)
+        .eq('type', type)
+    ).data ?? [];
+
+  // Hazırlık: A herkese açık hesap; P, A'yı takip etmiyor.
+  await admin.from('profiles').update({ is_private: false }).eq('user_id', A.id);
+  await admin.from('follows').delete().eq('follower_id', P.id).eq('following_id', A.id);
+
+  // 1) Alkış → aktivite sahibine bildirim
+  const kP = await P.client.from('kudos').insert({ activity_id: actPublic.id, user_id: P.id });
+  check('Hazırlık: P herkese açık aktiviteyi alkışlayabiliyor', !kP.error, kP.error?.message);
+  const nk = await notifs(A.id, P.id, 'kudos');
+  check(
+    'Alkış, aktivite sahibi A için bildirim üretiyor (aktivite kimliğiyle)',
+    nk.length === 1 && nk[0].activity_id === actPublic.id,
+    JSON.stringify(nk),
+  );
+  await P.client.from('kudos').delete().eq('activity_id', actPublic.id).eq('user_id', P.id);
+  await P.client.from('kudos').insert({ activity_id: actPublic.id, user_id: P.id });
+  check(
+    'Alkışı geri alıp tekrar atmak ikinci bildirim üretmiyor (spam yok)',
+    (await notifs(A.id, P.id, 'kudos')).length === 1,
+  );
+
+  // 2) Yorum → her yorum yeni bildirim
+  await P.client
+    .from('comments')
+    .insert({ activity_id: actPublic.id, user_id: P.id, body: 'bildirim testi 1' });
+  await P.client
+    .from('comments')
+    .insert({ activity_id: actPublic.id, user_id: P.id, body: 'bildirim testi 2' });
+  check(
+    'Her yorum A için ayrı bildirim üretiyor',
+    (await notifs(A.id, P.id, 'comment')).length === 2,
+  );
+
+  // 3) Kendi aktivitene alkış/yorum → bildirim yok
+  await A.client.from('kudos').insert({ activity_id: actPublic.id, user_id: A.id });
+  await A.client
+    .from('comments')
+    .insert({ activity_id: actPublic.id, user_id: A.id, body: 'kendi yorumum' });
+  check(
+    'Kendi aktivitene alkış/yorum bildirim üretmiyor',
+    (await notifs(A.id, A.id, 'kudos')).length === 0 &&
+      (await notifs(A.id, A.id, 'comment')).length === 0,
+  );
+
+  // 4) Takip (açık hesap) → 'follow'; bırak-takip et dedupe
+  const fP = await P.client.from('follows').insert({ follower_id: P.id, following_id: A.id });
+  check("Hazırlık: P, A'yı takip edebiliyor", !fP.error, fP.error?.message);
+  check(
+    "Takip, A için 'follow' bildirimi üretiyor",
+    (await notifs(A.id, P.id, 'follow')).length === 1,
+  );
+  await P.client.from('follows').delete().eq('follower_id', P.id).eq('following_id', A.id);
+  await P.client.from('follows').insert({ follower_id: P.id, following_id: A.id });
+  check(
+    'Takibi bırakıp tekrar takip etmek ikinci bildirim üretmiyor',
+    (await notifs(A.id, P.id, 'follow')).length === 1,
+  );
+
+  // 5) Gizli hesap: istek bildirimi, sonra kabul bildirimi
+  await admin.from('profiles').update({ is_private: true }).eq('user_id', A.id);
+  const fQ = await Q.client.from('follows').insert({ follower_id: Q.id, following_id: A.id });
+  check('Hazırlık: Q gizli hesaba istek gönderebiliyor', !fQ.error, fQ.error?.message);
+  check(
+    "Gizli hesaba takip, 'follow_request' bildirimi üretiyor",
+    (await notifs(A.id, Q.id, 'follow_request')).length === 1 &&
+      (await notifs(A.id, Q.id, 'follow')).length === 0,
+  );
+  const acceptReq = await A.client
+    .from('follows')
+    .update({ status: 'accepted' })
+    .eq('follower_id', Q.id)
+    .eq('following_id', A.id)
+    .select('status');
+  check('A isteği kabul edebiliyor', !acceptReq.error && acceptReq.data?.length === 1, acceptReq.error?.message);
+  check(
+    "İstek kabul edilince Q için 'follow_accepted' bildirimi üretiyor",
+    (await notifs(Q.id, A.id, 'follow_accepted')).length === 1,
+  );
+  await admin.from('profiles').update({ is_private: false }).eq('user_id', A.id);
+
+  // 6) notifications: yalnızca alıcı okur, istemci yazamaz
+  check(
+    'A kendi bildirimlerini okuyabiliyor',
+    ((await A.client.from('notifications').select('id').eq('recipient_id', A.id)).data ?? [])
+      .length >= 4,
+  );
+  check(
+    "P, A'nın bildirimlerini okuyamıyor",
+    blocked(await P.client.from('notifications').select('id').eq('recipient_id', A.id)),
+  );
+  check(
+    'İstemci notifications tablosuna yazamıyor',
+    !!(
+      await P.client
+        .from('notifications')
+        .insert({ recipient_id: A.id, actor_id: P.id, type: 'follow' })
+    ).error,
+  );
+  const aNotif = (await notifs(A.id, P.id, 'follow'))[0];
+  check(
+    'İstemci notifications satırını güncelleyemiyor/silemiyor',
+    blocked(
+      await A.client
+        .from('notifications')
+        .update({ pushed_at: new Date().toISOString() })
+        .eq('id', aNotif.id)
+        .select('id'),
+    ) && blocked(await A.client.from('notifications').delete().eq('id', aNotif.id).select('id')),
+  );
+  check(
+    'İstemci enqueue_notification fonksiyonunu çağıramıyor',
+    !!(
+      await P.client.rpc('enqueue_notification', {
+        p_recipient: A.id,
+        p_actor: P.id,
+        p_type: 'follow',
+      })
+    ).error,
+  );
+
+  // 7) push_tokens
+  const TOKEN = `ExponentPushToken[rls-${rand()}${rand()}]`;
+  check(
+    'P token kaydedebiliyor',
+    !(await P.client.rpc('register_push_token', { p_token: TOKEN, p_platform: 'ios' })).error,
+  );
+  check(
+    "P kendi token'ını okuyabiliyor",
+    ((await P.client.from('push_tokens').select('token')).data ?? []).some(
+      (t) => t.token === TOKEN,
+    ),
+  );
+  check(
+    "A, P'nin token'ını okuyamıyor",
+    !((await A.client.from('push_tokens').select('token')).data ?? []).some(
+      (t) => t.token === TOKEN,
+    ),
+  );
+  check(
+    'İstemci push_tokens tablosuna doğrudan yazamıyor',
+    !!(
+      await P.client
+        .from('push_tokens')
+        .insert({ token: `ExponentPushToken[x-${rand()}]`, user_id: P.id, platform: 'ios' })
+    ).error,
+  );
+  check(
+    'Geçersiz platform reddediliyor',
+    !!(await P.client.rpc('register_push_token', { p_token: TOKEN, p_platform: 'web' })).error,
+  );
+  check(
+    'Çok kısa token reddediliyor',
+    !!(await P.client.rpc('register_push_token', { p_token: 'kisa', p_platform: 'ios' })).error,
+  );
+  check(
+    'Giriş yapmamış kullanıcı token kaydedemiyor',
+    !!(await anon.rpc('register_push_token', { p_token: TOKEN, p_platform: 'ios' })).error,
+  );
+  // Aynı cihazda hesap değişti: token yeni kullanıcıya geçer, eskisi artık bildirim almaz.
+  check(
+    'Aynı cihazda hesap değişince token yeni kullanıcıya geçiyor',
+    !(await A.client.rpc('register_push_token', { p_token: TOKEN, p_platform: 'android' })).error &&
+      ((await admin.from('push_tokens').select('user_id').eq('token', TOKEN)).data ?? [])[0]
+        ?.user_id === A.id,
+  );
+  check(
+    "P artık o token'ı görmüyor",
+    !((await P.client.from('push_tokens').select('token')).data ?? []).some(
+      (t) => t.token === TOKEN,
+    ),
+  );
+  check(
+    "P, A'nın token'ını silemiyor",
+    blocked(await P.client.from('push_tokens').delete().eq('token', TOKEN).select('token')),
+  );
+  check(
+    "A kendi token'ını silebiliyor",
+    !(await A.client.from('push_tokens').delete().eq('token', TOKEN).select('token')).error &&
+      ((await admin.from('push_tokens').select('token').eq('token', TOKEN)).data ?? []).length ===
+        0,
+  );
+  // Kullanıcı başına en fazla 5 token: eskiler temizlenir.
+  for (let i = 0; i < 7; i++) {
+    await P.client.rpc('register_push_token', {
+      p_token: `ExponentPushToken[bulk-${i}-${rand()}${rand()}]`,
+      p_platform: 'ios',
+    });
+  }
+  check(
+    'Kullanıcı başına en fazla 5 token tutuluyor',
+    ((await admin.from('push_tokens').select('token').eq('user_id', P.id)).data ?? []).length <= 5,
+  );
+
+  // 8) notification_settings
+  check(
+    'P kendi bildirim tercihini kaydedebiliyor (upsert)',
+    !(
+      await P.client
+        .from('notification_settings')
+        .upsert({ user_id: P.id, kudos: false }, { onConflict: 'user_id' })
+    ).error,
+  );
+  const ps = await P.client
+    .from('notification_settings')
+    .select('follows, kudos, comments')
+    .eq('user_id', P.id)
+    .single();
+  check(
+    'Tercih saklandı, diğerleri varsayılan açık',
+    ps.data?.kudos === false && ps.data?.follows === true && ps.data?.comments === true,
+    JSON.stringify(ps.data),
+  );
+  check(
+    'P, A adına tercih yazamıyor',
+    !!(
+      await P.client
+        .from('notification_settings')
+        .upsert({ user_id: A.id, kudos: false }, { onConflict: 'user_id' })
+    ).error,
+  );
+  check(
+    "A, P'nin tercihini okuyamıyor",
+    blocked(await A.client.from('notification_settings').select('user_id').eq('user_id', P.id)),
+  );
+  check(
+    'Giriş yapmamış kullanıcı tercih okuyamıyor',
+    blocked(await anon.from('notification_settings').select('user_id').limit(1)),
   );
 
   section('istemciye kapalı tablolar');

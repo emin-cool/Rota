@@ -35,6 +35,7 @@ import { lineLengthM, type LngLat } from '@/lib/geo';
 import { REVIEW_TAGS } from '@/lib/reviewTags';
 import { deleteSession, getSession, loadPoints, updateSession } from '@/lib/trackingDb';
 import type { SessionRow } from '@/lib/trackingDb';
+import { maybeAskForPush } from '@/lib/push';
 import { supabase } from '@/lib/supabase';
 import { useSessionStore } from '@/stores/sessionStore';
 import { colors } from '@/theme/tokens';
@@ -239,7 +240,10 @@ export default function ActivitySummaryScreen() {
       if (userId) await processUploadQueue(userId);
       const after = await getSession(session.id);
       finished.current = true;
-      Alert.alert(after?.uploaded ? tr.summary.savedOnline : tr.summary.savedOffline);
+      // İlk kayıttan sonra bildirim iznini bağlamıyla sor (iki uyarı üst üste binmesin diye "Tamam"dan sonra).
+      Alert.alert(after?.uploaded ? tr.summary.savedOnline : tr.summary.savedOffline, undefined, [
+        { text: tr.common.ok, onPress: () => void maybeAskForPush() },
+      ]);
       router.replace('/');
       return true;
     } catch {

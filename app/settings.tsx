@@ -6,6 +6,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, Switch, View } from 'r
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Card, HeadlineMd, Text } from '@/components/ui';
+import { NotificationSettingsSection } from '@/components/settings/NotificationSettingsSection';
 import { usePrivacyZone } from '@/hooks/useProfileQueries';
 import { tr } from '@/i18n/tr';
 import { signOut } from '@/lib/auth';
@@ -189,6 +190,8 @@ export default function SettingsScreen() {
           />
         </Card>
 
+        <NotificationSettingsSection />
+
         <SectionTitle>{tr.settings.sectionPrivacy}</SectionTitle>
         <Card className="flex-row items-center gap-space-md p-space-md">
           <View className="flex-1">
@@ -267,7 +270,6 @@ export default function SettingsScreen() {
           <Text variant="body-lg" className="font-bold text-brand">
             {tr.settings.terms}
           </Text>
-          
         </Pressable>
         <Pressable
           accessibilityRole="link"
@@ -278,7 +280,6 @@ export default function SettingsScreen() {
           <Text variant="body-lg" className="font-bold text-brand">
             {tr.settings.privacyPolicy}
           </Text>
-          
         </Pressable>
         <Pressable
           accessibilityRole="link"

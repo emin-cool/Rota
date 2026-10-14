@@ -5,6 +5,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
 
 import { tr } from '@/i18n/tr';
+import { unregisterPushToken } from '@/lib/push';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 
 // Android'de OAuth tarayıcısından dönüşü tamamlamak için gerekli.
@@ -114,5 +115,6 @@ export async function signInWithApple(): Promise<boolean> {
 }
 
 export async function signOut() {
+  await unregisterPushToken(); // oturum kapanmadan: bu cihaz önceki hesabın bildirimini almasın
   await supabase.auth.signOut();
 }

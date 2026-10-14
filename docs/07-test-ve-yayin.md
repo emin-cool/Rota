@@ -108,3 +108,41 @@ Yeni `reports` satırı → Database Webhook → Edge Function `notify-report` �
 - [ ] Paylaşım görselindeki yolun gizlilik bölgesine göre kırpılması (şu an kırpma yalnızca sunucuda)
 - [ ] "Takipçiler" görünürlüğü `follows` tablosu (P2.1) ile gerçek hale gelsin
 - [ ] Mağaza görselleri, açıklama, yaş derecelendirmesi
+
+## 6. Push bildirimleri (P2.1b) — kurulum
+
+Akış: `follows` / `kudos` / `comments` tetikleyicileri `notifications` tablosuna satır yazar → Database Webhook → Edge Function
+`send-push` → Expo Push Service → telefon. Metinde içerik yok, yalnızca "X aktivitene yorum yaptı" gibi bilgi gider.
+Tercihler: Ayarlar → Bildirimler (takip / alkış / yorum). İzin, ilk takip ya da ilk aktivite kaydı sonrası bir kez sorulur.
+Aynı aktivite için alkış/yorum push'u 10 dakikada en fazla 1, bir kullanıcıya 10 dakikada en fazla 10 push gider.
+
+### A) Sunucu (bir kez)
+1. `npm run db:push` (`20261016100000_push_notifications.sql`), ardından `node scripts/test-rls.mjs` hepsi yeşil olmalı.
+2. Secret (değeri sohbete yazma): `npx supabase secrets set "PUSH_WEBHOOK_SECRET=<uzun rastgele metin>"` (§4b'deki gibi üretip panoya al).
+3. `npx supabase functions deploy send-push --use-api --no-verify-jwt`
+4. Supabase → Integrations → Database Webhooks → Create: tablo **public.notifications**, olay **Insert**, HTTP Request / POST,
+   URL `https://<proje-ref>.supabase.co/functions/v1/send-push`, header **ad** `x-webhook-secret`, **değer** secret.
+
+### B) Android: Firebase (FCM)
+1. console.firebase.google.com → proje oluştur → Android uygulaması ekle, paket adı **com.rota.app** → `google-services.json` indir.
+2. Repo herkese açık olduğu için dosyayı git'e KOYMA (`.gitignore`'da). EAS'a dosya sırrı olarak yükle:
+   `npx eas-cli env:create --environment production --name GOOGLE_SERVICES_JSON --type file --value ./google-services.json --visibility sensitive`
+   (`app.config.js` bunu `android.googleServicesFile`'a bağlar; bayrak adları için `npx eas-cli env:create --help`).
+3. Firebase → Proje ayarları → Hizmet hesapları → **Yeni özel anahtar oluştur** (FCM V1). `npx eas-cli credentials` →
+   Android → production → Google Service Account → *Push Notifications (FCM V1)* anahtarını yükle. Dosyayı paylaşma, git'e koyma.
+
+### C) iOS
+APNs anahtarını EAS üretir: iOS build sırasında Apple hesabınla giriş yapıp push yeteneği için izin ver.
+
+### D) Yeni build (native modül eklendi: `expo-notifications`)
+`app.json` `version` **1.1.0**'a yükseltildi (runtimeVersion = appVersion; eski 1.0.0 binary'ler yeni JS'i almaz, bozulmaz).
+`npx eas-cli build --platform ios --profile production`, `npx eas-cli submit --platform ios --profile production --latest`
+ve Android için `--platform android`. Yeni sürüm numarası TestFlight'ta yeni bir Beta App Review isteyebilir.
+Bu sürümden sonra 1.0.0 binary'lere `eas update` GİTMEZ; gerekirse 1.0.0 için ayrı düzeltme build'i gerekir.
+
+### E) Test (iki telefon / iki hesap)
+- A ve B hesabı, ikisi de yeni build'de bildirim izni vermiş. B, A'yı takip etsin / alkışlasın / yorum yapsın → A'ya push gelmeli.
+- Bildirime dokununca: takip → B'nin profili, istek → Takip istekleri, alkış/yorum → aktivite. Uygulama kapalıyken de.
+- Ayarlar'dan ilgili anahtarı kapat → o tür bildirim gelmesin. Çıkış yapınca bildirim gelmesin.
+- Gizli hesapta istek ve kabul bildirimi. Engellenen kullanıcıdan bildirim gelmez.
+- Sorun ayıklama: Supabase → Edge Functions → send-push → Logs; Expo `https://expo.dev/notifications` aracı.

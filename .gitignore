@@ -49,3 +49,8 @@ yarn-error.*
 ~$*
 .osm-import-progress.json
 .seed-cache.json
+
+# Firebase / Google (push) istemci dosyaları: repo herkese açık, EAS dosya sırrı olarak yüklenir
+google-services.json
+GoogleService-Info.plist
+*-firebase-adminsdk-*.json

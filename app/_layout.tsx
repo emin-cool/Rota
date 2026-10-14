@@ -13,6 +13,7 @@ import { ProfileGate } from '@/components/ProfileGate';
 import { ModerationSheet } from '@/components/social/ModerationSheet';
 // Arka plan konum görevi modül yüklenirken tanımlanmak zorundadır.
 import '@/lib/trackingTask';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useUploadQueue } from '@/hooks/useUploadQueue';
 import { initMonitoring, setMonitoringUser, wrapRoot } from '@/lib/monitoring';
 import { useSessionStore } from '@/stores/sessionStore';
@@ -36,6 +37,7 @@ function RootLayout() {
   const userId = useSessionStore((s) => s.session?.user.id ?? null);
   useEffect(() => setMonitoringUser(userId), [userId]);
   useUploadQueue();
+  usePushNotifications(!!session && !!profile?.onboarding_completed);
 
   const ready = (fontsLoaded || !!fontError) && initialized;
 

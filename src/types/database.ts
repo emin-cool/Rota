@@ -268,6 +268,16 @@ export type FollowRow = {
   created_at: string;
 };
 export type KudosRow = { activity_id: string; user_id: string; created_at: string };
+export type NotificationSettingsRow = {
+  user_id: string;
+  follows: boolean;
+  kudos: boolean;
+  comments: boolean;
+  updated_at: string;
+};
+export type NotificationSettingsUpdate = Partial<
+  Pick<NotificationSettingsRow, 'follows' | 'kudos' | 'comments'>
+>;
 export type CommentRow = {
   id: string;
   activity_id: string;
@@ -420,6 +430,11 @@ export type Database = {
       >;
       kudos: Table<KudosRow, Pick<KudosRow, 'activity_id' | 'user_id'>, never>;
       comments: Table<CommentRow, Pick<CommentRow, 'activity_id' | 'user_id' | 'body'>, never>;
+      notification_settings: Table<
+        NotificationSettingsRow,
+        Pick<NotificationSettingsRow, 'user_id'> & NotificationSettingsUpdate,
+        NotificationSettingsUpdate
+      >;
       saved_routes: Table<SavedRouteRow, Pick<SavedRouteRow, 'user_id' | 'route_id'>, never>;
       route_cache: Table<RouteCacheRow, never, never>;
     };
@@ -474,6 +489,10 @@ export type Database = {
           p_reason: ReportReason;
           p_details?: string | null;
         };
+        Returns: undefined;
+      };
+      register_push_token: {
+        Args: { p_token: string; p_platform: 'ios' | 'android' };
         Returns: undefined;
       };
       my_privacy_zone_info: { Args: Record<string, never>; Returns: PrivacyZoneInfo[] };
