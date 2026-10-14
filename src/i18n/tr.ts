@@ -1,4 +1,5 @@
 /** Arayüz metinleri (Türkçe). İleride çok dil için `en.ts` ile aynı şekli taşıyacak. */
+import { trCourses } from './tr.courses';
 import { trExplore } from './tr.explore';
 import { trLive } from './tr.live';
 import { trModeration } from './tr.moderation';
@@ -9,6 +10,7 @@ import { trWizard } from './tr.wizard';
 
 export const tr = {
   ...trWizard,
+  ...trCourses,
   ...trLive,
   ...trExplore,
   ...trProfile,

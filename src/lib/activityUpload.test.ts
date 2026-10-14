@@ -12,9 +12,15 @@ const mockCalls: string[] = [];
 const mockResults: Record<string, { error: { code?: string; message?: string } | null }> = {};
 const mockUpdateArgs: unknown[] = [];
 const mockFailActivityIds = new Set<string>();
+const mockRpc = jest.fn(
+  async (..._args: unknown[]): Promise<{ error: { message: string } | null }> => ({
+    error: null,
+  }),
+);
 
 jest.mock('@/lib/supabase', () => ({
   supabase: {
+    rpc: (...args: unknown[]) => mockRpc(...args),
     from: (table: string) => ({
       insert: async (row: unknown) => {
         mockCalls.push(`${table}.insert`);
@@ -74,6 +80,7 @@ const row = (over: Partial<SessionRow> = {}): SessionRow => ({
   photos_json: null,
   description: null,
   share_route: 0,
+  course_day_id: null,
   ...over,
 });
 
@@ -83,6 +90,8 @@ beforeEach(() => {
   mockFailActivityIds.clear();
   for (const k of Object.keys(mockResults)) delete mockResults[k];
   mockUpdateSession.mockClear();
+  mockRpc.mockClear();
+  mockRpc.mockResolvedValue({ error: null });
   mockListQueued.mockReset();
   mockListQueued.mockResolvedValue([]);
   globalThis.fetch = jest.fn(async () => ({
@@ -149,6 +158,24 @@ describe('uploadSession', () => {
       'route_reviews.insert',
     ]);
     expect(mockUpdateSession).toHaveBeenLastCalledWith('sess-1', { uploaded: 1, queued: 0 });
+  });
+
+  it('kurs antrenmanından geldiyse aktiviteye bağlanır ve gün tamamlanır', async () => {
+    await uploadSession(row({ course_day_id: 'day-1' }), 'u1');
+    expect(mockUpdateArgs[0]).toMatchObject({ id: 'sess-1', course_day_id: 'day-1' });
+    expect(mockRpc).toHaveBeenCalledWith('complete_course_day', { p_activity_id: 'sess-1' });
+    expect(mockUpdateSession).toHaveBeenLastCalledWith('sess-1', { uploaded: 1, queued: 0 });
+  });
+
+  it('kurs günü işaretlenemezse kayıt yüklendi sayılmaz (kuyrukta kalır)', async () => {
+    mockRpc.mockResolvedValue({ error: { message: 'ağ' } });
+    await expect(uploadSession(row({ course_day_id: 'day-1' }), 'u1')).rejects.toBeDefined();
+    expect(mockUpdateSession).not.toHaveBeenCalledWith('sess-1', { uploaded: 1, queued: 0 });
+  });
+
+  it('kurs antrenmanı olmayan kayıtta RPC çağrılmaz', async () => {
+    await uploadSession(row(), 'u1');
+    expect(mockRpc).not.toHaveBeenCalled();
   });
 
   it("aktivite id'si yerel oturum kimliğidir (yeniden denemede çift kayıt olmasın)", async () => {

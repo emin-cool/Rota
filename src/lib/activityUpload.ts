@@ -45,6 +45,7 @@ async function insertActivity(row: SessionRow, userId: string): Promise<void> {
     id: row.id,
     user_id: userId,
     route_id: row.route_id,
+    course_day_id: row.course_day_id,
     activity_type: row.activity_type,
     started_at: new Date(row.started_at).toISOString(),
     duration_sec: s.durationSec,
@@ -141,9 +142,21 @@ async function uploadReview(row: SessionRow, userId: string): Promise<void> {
   await saveReview(userId, row.route_id, review);
 }
 
-/** Sırayla: aktivite → fotoğraflar → yorum. Hata atarsa kayıt kuyrukta kalır. */
+/**
+ * Kurs antrenmanından geldiyse günü tamamlandı işaretler (idempotent RPC). Hata atarsa kayıt
+ * kuyrukta kalır; aktivite insert'i tekrar denemede 23505'i yutar, yani yeniden denemek güvenlidir.
+ * Kayıtlı olmadığın kursun günü RPC'de sessiz no-op'tur.
+ */
+async function completeCourseDay(row: SessionRow): Promise<void> {
+  if (!row.course_day_id) return;
+  const { error } = await supabase.rpc('complete_course_day', { p_activity_id: row.id });
+  if (error) throw error;
+}
+
+/** Sırayla: aktivite → kurs günü → fotoğraflar → yorum. Hata atarsa kayıt kuyrukta kalır. */
 export async function uploadSession(row: SessionRow, userId: string): Promise<void> {
   await insertActivity(row, userId);
+  await completeCourseDay(row);
   await shareRoute(row, userId);
   await uploadPhotos(row, userId);
   await uploadReview(row, userId);

@@ -15,6 +15,7 @@ import { useNearbyRoutes } from '@/hooks/useNearbyRoutes';
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { tr } from '@/i18n/tr';
 import { DEFAULT_CENTER, FALLBACK_RADIUS_M, NEARBY_RADIUS_M } from '@/lib/mapConfig';
+import { useCourseSessionStore } from '@/stores/courseSessionStore';
 import { useSessionStore } from '@/stores/sessionStore';
 import { useWizardStore } from '@/stores/wizardStore';
 import { shadows } from '@/theme/tokens';
@@ -69,6 +70,7 @@ export default function MapScreen() {
   const startWizard = () => {
     // Her yeni sihirbaz, profil tercihlerinden (aktivite, tempo) temiz başlar.
     useWizardStore.getState().reset(profile);
+    useCourseSessionStore.getState().clear();
     router.push('/route-wizard/step-1');
   };
 
@@ -131,6 +133,7 @@ export default function MapScreen() {
           locateDisabled={!location.coords}
           onLocate={() => mapRef.current?.recenter()}
           onResetNorth={() => mapRef.current?.resetNorth()}
+          onCourses={() => router.push('/courses')}
         />
       </View>
 

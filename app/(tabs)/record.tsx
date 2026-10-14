@@ -9,6 +9,7 @@ import { useStartActivity } from '@/hooks/useStartActivity';
 import { tr } from '@/i18n/tr';
 import { elapsedSeconds, formatElapsed } from '@/lib/tracking';
 import { trackingEngine, useActivity } from '@/stores/activityStore';
+import { useCourseSessionStore } from '@/stores/courseSessionStore';
 import { useSessionStore } from '@/stores/sessionStore';
 import { useWizardStore } from '@/stores/wizardStore';
 import { colors } from '@/theme/tokens';
@@ -49,6 +50,7 @@ export default function RecordScreen() {
 
   const openWizard = () => {
     useWizardStore.getState().reset(profile);
+    useCourseSessionStore.getState().clear();
     router.push('/route-wizard/step-1');
   };
 

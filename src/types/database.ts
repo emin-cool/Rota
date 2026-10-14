@@ -99,6 +99,55 @@ export type ActivityRow = {
   visibility: Visibility;
   title: string | null;
   description: string | null;
+  course_day_id: string | null;
+  created_at: string;
+};
+
+export type CourseLevel = 'beginner' | 'intermediate' | 'advanced';
+
+export type CourseRow = {
+  id: string;
+  title: string;
+  description: string;
+  level: CourseLevel;
+  activity_type: ActivityType;
+  weeks: number;
+  sessions_per_week: number;
+  tags: string[];
+  cover_url: string | null;
+  is_free: boolean;
+  sort_order: number;
+  created_at: string;
+};
+
+/** `workout_json` içindeki tek faz (docs/04): aralıkta `repeat` + `rest`. */
+export type WorkoutPhaseType = 'warmup' | 'run' | 'walk' | 'ride' | 'cooldown';
+export type WorkoutPhase = {
+  type: WorkoutPhaseType;
+  duration_sec: number;
+  repeat?: number;
+  rest?: { type: WorkoutPhaseType; duration_sec: number };
+};
+
+export type CourseDayRow = {
+  id: string;
+  course_id: string;
+  week_no: number;
+  day_no: number;
+  title: string;
+  workout_json: WorkoutPhase[];
+  target_duration_min: number;
+  coach_tip: string | null;
+  created_at: string;
+};
+
+export type CourseEnrollmentRow = {
+  id: string;
+  user_id: string;
+  course_id: string;
+  completed_days: string[];
+  started_at: string;
+  completed_at: string | null;
   created_at: string;
 };
 
@@ -435,6 +484,13 @@ export type Database = {
         Pick<NotificationSettingsRow, 'user_id'> & NotificationSettingsUpdate,
         NotificationSettingsUpdate
       >;
+      courses: Table<CourseRow, never, never>;
+      course_days: Table<CourseDayRow, never, never>;
+      course_enrollments: Table<
+        CourseEnrollmentRow,
+        Pick<CourseEnrollmentRow, 'user_id' | 'course_id'>,
+        never
+      >;
       saved_routes: Table<SavedRouteRow, Pick<SavedRouteRow, 'user_id' | 'route_id'>, never>;
       route_cache: Table<RouteCacheRow, never, never>;
     };
@@ -445,6 +501,7 @@ export type Database = {
         Returns: NearbyRoute[];
       };
       explore_routes: { Args: ExploreArgs; Returns: ExploreRoute[] };
+      complete_course_day: { Args: { p_activity_id: string }; Returns: undefined };
       route_districts: { Args: Record<string, never>; Returns: string[] };
       route_detail: { Args: { p_id: string }; Returns: RouteDetail[] };
       route_rating_summary: { Args: { p_id: string }; Returns: RatingSummary };

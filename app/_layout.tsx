@@ -83,6 +83,9 @@ function RootLayout() {
               <Stack.Screen name="follow-list" />
               <Stack.Screen name="follow-requests" />
               <Stack.Screen name="blocked-users" />
+              <Stack.Screen name="courses/index" />
+              <Stack.Screen name="courses/[id]" />
+              <Stack.Screen name="courses/day/[id]" />
               <Stack.Screen name="route-wizard" />
               <Stack.Screen name="route-results" />
               <Stack.Screen name="activity/live" />

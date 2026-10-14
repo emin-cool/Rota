@@ -195,6 +195,24 @@ export default function ProfileScreen() {
           </Pressable>
         ))}
       </View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={tr.courses.myCourses}
+        onPress={() => router.push('/courses')}
+      >
+        <Card className="min-h-[56px] flex-row items-center gap-space-md px-space-md">
+          <MaterialIcons name="fitness-center" size={22} color={colors.brand.DEFAULT} />
+          <View className="flex-1">
+            <Text variant="body-lg" className="font-bold">
+              {tr.courses.myCourses}
+            </Text>
+            <Text variant="label-sm" className="text-ink-secondary">
+              {tr.courses.myCoursesHint}
+            </Text>
+          </View>
+          <MaterialIcons name="chevron-right" size={22} color={colors.ink.muted} />
+        </Card>
+      </Pressable>
       {(social.data?.pending_requests ?? 0) > 0 ? (
         <Pressable
           accessibilityRole="button"
