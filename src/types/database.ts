@@ -151,6 +151,18 @@ export type CourseEnrollmentRow = {
   created_at: string;
 };
 
+export type BadgeRow = {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  icon: string;
+  course_id: string | null;
+  created_at: string;
+};
+
+export type UserBadgeRow = { user_id: string; badge_id: string; earned_at: string };
+
 export type SavedRouteRow = {
   id: string;
   user_id: string;
@@ -491,6 +503,8 @@ export type Database = {
         Pick<CourseEnrollmentRow, 'user_id' | 'course_id'>,
         never
       >;
+      badges: Table<BadgeRow, never, never>;
+      user_badges: Table<UserBadgeRow, never, never>;
       saved_routes: Table<SavedRouteRow, Pick<SavedRouteRow, 'user_id' | 'route_id'>, never>;
       route_cache: Table<RouteCacheRow, never, never>;
     };
@@ -501,7 +515,7 @@ export type Database = {
         Returns: NearbyRoute[];
       };
       explore_routes: { Args: ExploreArgs; Returns: ExploreRoute[] };
-      complete_course_day: { Args: { p_activity_id: string }; Returns: undefined };
+      complete_course_day: { Args: { p_activity_id: string }; Returns: boolean };
       route_districts: { Args: Record<string, never>; Returns: string[] };
       route_detail: { Args: { p_id: string }; Returns: RouteDetail[] };
       route_rating_summary: { Args: { p_id: string }; Returns: RatingSummary };

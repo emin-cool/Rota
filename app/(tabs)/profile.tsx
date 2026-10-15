@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActivityCard } from '@/components/profile/ActivityCard';
@@ -17,6 +17,8 @@ import {
   Skeleton,
   Text,
 } from '@/components/ui';
+import { BadgeTile } from '@/components/courses/CourseParts';
+import { useMyBadges } from '@/hooks/useCourseQueries';
 import { useMyActivities, useMyStats, useScopedRoutes, useWeekly } from '@/hooks/useProfileQueries';
 import { useToggleSaved } from '@/hooks/useRouteQueries';
 import { useSocialCounts } from '@/hooks/useSocialQueries';
@@ -72,6 +74,7 @@ export default function ProfileScreen() {
 
   const stats = useMyStats();
   const social = useSocialCounts();
+  const badges = useMyBadges();
   const openActivity = useCallback(
     (id: string) => router.push({ pathname: '/activity/[id]', params: { id } }),
     [],
@@ -213,6 +216,26 @@ export default function ProfileScreen() {
           <MaterialIcons name="chevron-right" size={22} color={colors.ink.muted} />
         </Card>
       </Pressable>
+      {(badges.data?.length ?? 0) > 0 || badges.isError ? (
+        <Card className="gap-space-sm p-space-md">
+          <Text variant="body-lg" className="font-bold">
+            {tr.badges.profileSection}
+          </Text>
+          {badges.isError ? (
+            <Text variant="label-sm" className="text-ink-secondary">
+              {tr.badges.errorLoad}
+            </Text>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View className="flex-row gap-space-md">
+                {badges.data?.map(({ badge }) => (
+                  <BadgeTile key={badge.id} badge={badge} />
+                ))}
+              </View>
+            </ScrollView>
+          )}
+        </Card>
+      ) : null}
       {(social.data?.pending_requests ?? 0) > 0 ? (
         <Pressable
           accessibilityRole="button"

@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Card, HeadlineMd, Text } from '@/components/ui';
 import { tr } from '@/i18n/tr';
 import { colors } from '@/theme/tokens';
-import type { ActivityType, CourseRow } from '@/types/database';
+import type { ActivityType, BadgeRow, CourseRow } from '@/types/database';
 
 export const ACTIVITY_ICON: Record<ActivityType, keyof typeof MaterialIcons.glyphMap> = {
   walk: 'directions-walk',
@@ -108,6 +108,27 @@ export function ProgressBar({ percent }: { percent: number }) {
       className="h-2 overflow-hidden rounded-full bg-brand-soft"
     >
       <View className="h-2 rounded-full bg-brand" style={{ width: `${percent}%` }} />
+    </View>
+  );
+}
+
+/** Kurs bitirme rozeti: ikon + kurs adı. */
+export function BadgeTile({ badge }: { badge: BadgeRow }) {
+  const icon = (
+    badge.icon in MaterialIcons.glyphMap ? badge.icon : 'emoji-events'
+  ) as keyof typeof MaterialIcons.glyphMap;
+  return (
+    <View
+      accessible
+      accessibilityLabel={`${badge.title}. ${badge.description}`}
+      className="w-[96px] items-center gap-space-xs"
+    >
+      <View className="h-14 w-14 items-center justify-center rounded-full bg-accent-soft">
+        <MaterialIcons name={icon} size={28} color={colors.accent.deep} />
+      </View>
+      <Text variant="label-sm" className="text-center" numberOfLines={3}>
+        {badge.title}
+      </Text>
     </View>
   );
 }

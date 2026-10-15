@@ -23,6 +23,9 @@ function open(target: PushTarget) {
     case 'follow-requests':
       router.push('/follow-requests');
       break;
+    case 'course-day':
+      router.push({ pathname: '/courses/day/[id]', params: { id: target.courseDayId } });
+      break;
   }
 }
 

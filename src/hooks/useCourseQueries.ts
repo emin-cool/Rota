@@ -8,6 +8,7 @@ import {
   fetchCourseDay,
   fetchCourseDays,
   fetchCourses,
+  fetchMyBadges,
   fetchMyEnrollments,
   leaveCourse,
 } from '@/lib/coursesApi';
@@ -74,5 +75,15 @@ export function useEnrollmentOp() {
       else await leaveCourse(userId, courseId);
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ['enrollments', userId] }),
+  });
+}
+
+/** Kazandığım rozetler; antrenman bitince `['my-badges']` geçersiz kılınır. */
+export function useMyBadges() {
+  const userId = useMyId();
+  return useQuery({
+    queryKey: ['my-badges', userId],
+    enabled: !!userId,
+    queryFn: fetchMyBadges,
   });
 }

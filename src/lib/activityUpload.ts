@@ -1,4 +1,5 @@
 import { summarize, toLineEwkt } from '@/lib/activitySummary';
+import { emitCourseDayCompleted } from '@/lib/courseEvents';
 import { reportError } from '@/lib/monitoring';
 import { supabase } from '@/lib/supabase';
 import { listQueuedUploads, loadPoints, updateSession, type SessionRow } from '@/lib/trackingDb';
@@ -149,8 +150,9 @@ async function uploadReview(row: SessionRow, userId: string): Promise<void> {
  */
 async function completeCourseDay(row: SessionRow): Promise<void> {
   if (!row.course_day_id) return;
-  const { error } = await supabase.rpc('complete_course_day', { p_activity_id: row.id });
+  const { data, error } = await supabase.rpc('complete_course_day', { p_activity_id: row.id });
   if (error) throw error;
+  emitCourseDayCompleted({ courseFinished: data === true });
 }
 
 /** Sırayla: aktivite → kurs günü → fotoğraflar → yorum. Hata atarsa kayıt kuyrukta kalır. */

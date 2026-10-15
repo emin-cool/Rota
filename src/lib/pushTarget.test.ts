@@ -12,6 +12,15 @@ describe('parsePushTarget', () => {
     });
   });
 
+  it('kurs günü ekranını çözer', () => {
+    expect(parsePushTarget({ screen: 'course-day', courseDayId: ID })).toEqual({
+      screen: 'course-day',
+      courseDayId: ID,
+    });
+    expect(parsePushTarget({ screen: 'course-day', courseDayId: '../x' })).toBeNull();
+    expect(parsePushTarget({ screen: 'course-day' })).toBeNull();
+  });
+
   it('UUID olmayan kimlikleri reddeder (yol enjeksiyonu olmasın)', () => {
     expect(parsePushTarget({ screen: 'user', userId: '../settings' })).toBeNull();
     expect(parsePushTarget({ screen: 'activity', activityId: 'abc' })).toBeNull();

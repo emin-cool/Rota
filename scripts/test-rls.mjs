@@ -1231,7 +1231,56 @@ async function main() {
       })
       .select('id')
       .single();
-    await A.client.rpc('complete_course_day', { p_activity_id: tmpAct.data?.id });
+    const tmpBadge = await admin
+      .from('badges')
+      .insert({
+        code: `rls-test-${rand()}`,
+        title: 'RLS test rozeti',
+        course_id: tmpCourse.data.id,
+      })
+      .select('id')
+      .single();
+    const myBadges = (client) =>
+      client
+        .from('user_badges')
+        .select('badge_id')
+        .eq('badge_id', tmpBadge.data?.id ?? '');
+    check('Kurs bitmeden rozet yok', ((await myBadges(A.client)).data ?? []).length === 0);
+    const finishCall = await A.client.rpc('complete_course_day', {
+      p_activity_id: tmpAct.data?.id,
+    });
+    check('Kurs bu çağrıyla bitince RPC true dönüyor', finishCall.data === true);
+    check("Bitirme rozeti A'ya verildi", ((await myBadges(A.client)).data ?? []).length === 1);
+    check("B, A'nın rozetini göremiyor", ((await myBadges(B.client)).data ?? []).length === 0);
+    const again = await A.client.rpc('complete_course_day', { p_activity_id: tmpAct.data?.id });
+    check(
+      'Tekrar çağrı false döner ve rozeti çoğaltmaz',
+      again.data === false && ((await myBadges(A.client)).data ?? []).length === 1,
+    );
+    check(
+      'Rozet kataloğu okunabiliyor',
+      (
+        (
+          await A.client
+            .from('badges')
+            .select('id')
+            .eq('id', tmpBadge.data?.id ?? '')
+        ).data ?? []
+      ).length === 1,
+    );
+    check(
+      'A kendine rozet ekleyemiyor',
+      !!(await A.client.from('user_badges').insert({ user_id: A.id, badge_id: tmpBadge.data?.id }))
+        .error,
+    );
+    check(
+      'Rozet kataloğuna yazılamıyor',
+      !!(await A.client.from('badges').insert({ code: 'hack', title: 'hack' })).error,
+    );
+    check(
+      'Giriş yapmamış kullanıcı rozet okuyamıyor',
+      blocked(await anon.from('badges').select('id').limit(1)),
+    );
     const fin = await A.client
       .from('course_enrollments')
       .select('completed_at')

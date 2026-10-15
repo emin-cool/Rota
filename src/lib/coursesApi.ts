@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { CourseDayRow, CourseEnrollmentRow, CourseRow } from '@/types/database';
+import type { BadgeRow, CourseDayRow, CourseEnrollmentRow, CourseRow } from '@/types/database';
 
 export async function fetchCourses(): Promise<CourseRow[]> {
   const { data, error } = await supabase
@@ -60,4 +60,35 @@ export async function leaveCourse(userId: string, courseId: string): Promise<voi
     .eq('user_id', userId)
     .eq('course_id', courseId);
   if (error) throw error;
+}
+
+/** Bugün (yerel gün) bir kurs antrenmanı kaydedildi mi? Hatırlatıcı bugünü atlasın diye. */
+export async function hasCourseWorkoutToday(userId: string, now = new Date()): Promise<boolean> {
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const { count, error } = await supabase
+    .from('activities')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .not('course_day_id', 'is', null)
+    .gte('started_at', startOfToday.toISOString());
+  if (error) throw error;
+  return (count ?? 0) > 0;
+}
+
+/** Kazandığım rozetler (kurs başlığıyla), yeniden eskiye. */
+export async function fetchMyBadges(): Promise<{ badge: BadgeRow; earnedAt: string }[]> {
+  const { data, error } = await supabase
+    .from('user_badges')
+    .select('earned_at, badge_id')
+    .order('earned_at', { ascending: false });
+  if (error) throw error;
+  const ids = (data ?? []).map((r) => r.badge_id);
+  if (ids.length === 0) return [];
+  const badges = await supabase.from('badges').select('*').in('id', ids);
+  if (badges.error) throw badges.error;
+  const byId = new Map((badges.data ?? []).map((b) => [b.id, b]));
+  return (data ?? []).flatMap((r) => {
+    const badge = byId.get(r.badge_id);
+    return badge ? [{ badge, earnedAt: r.earned_at }] : [];
+  });
 }

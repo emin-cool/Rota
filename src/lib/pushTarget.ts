@@ -4,7 +4,8 @@
 export type PushTarget =
   | { screen: 'user'; userId: string }
   | { screen: 'follow-requests' }
-  | { screen: 'activity'; activityId: string };
+  | { screen: 'activity'; activityId: string }
+  | { screen: 'course-day'; courseDayId: string };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -20,6 +21,8 @@ export function parsePushTarget(data: unknown): PushTarget | null {
       return { screen: 'follow-requests' };
     case 'activity':
       return isUuid(d.activityId) ? { screen: 'activity', activityId: d.activityId } : null;
+    case 'course-day':
+      return isUuid(d.courseDayId) ? { screen: 'course-day', courseDayId: d.courseDayId } : null;
     default:
       return null;
   }
