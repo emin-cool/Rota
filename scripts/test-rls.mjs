@@ -104,9 +104,19 @@ async function main() {
       })
       .select('id')
       .single();
-  const actPrivate = (await mkAct('private')).data;
-  const actFollowers = (await mkAct('followers')).data;
-  const actPublic = (await mkAct('public')).data;
+  // Hazırlık eklemesi başarısız olursa nedenini göster (aksi halde "null.id" gibi anlamsız bir hata çıkar).
+  const mustAct = async (visibility) => {
+    const res = await mkAct(visibility);
+    if (res.error || !res.data) {
+      throw new Error(
+        `hazırlık aktivitesi (${visibility}) eklenemedi: ${JSON.stringify(res.error)}`,
+      );
+    }
+    return res.data;
+  };
+  const actPrivate = await mustAct('private');
+  const actFollowers = await mustAct('followers');
+  const actPublic = await mustAct('public');
 
   await A.client.from('saved_routes').insert({ user_id: A.id, route_id: privateRouteId });
   const setZone = await A.client.rpc('set_privacy_zone', {
