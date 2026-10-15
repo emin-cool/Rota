@@ -140,5 +140,22 @@ export const trLive = {
     yourPace: (pace: string) => `Tempon ${pace}.`,
     remaining: (dist: string) => `Kalan ${dist}.`,
     offRoute: 'Rotadan çıktın.',
+    workout: {
+      warmup: (dur: string) => `Isınma başlıyor. ${dur}.`,
+      run: 'Şimdi koş!',
+      runRepeat: (n: number) => `${n}. tekrar. Şimdi koş!`,
+      restWalk: 'Yürüyüşe geç.',
+      mainWalk: 'Tempolu yürüyüş başlıyor.',
+      ride: 'Sürüş başlıyor.',
+      cooldown: 'Soğuma başlıyor. Tempoyu yavaşça düşür.',
+      done: 'Antrenman tamamlandı. Harika iş!',
+    },
+  },
+  workout: {
+    remaining: (time: string) => `${time} kalan`,
+    repeat: (i: number, n: number) => `${i}/${n}`,
+    next: (label: string) => `Sıradaki: ${label}`,
+    done: 'Antrenman tamamlandı',
+    doneHint: 'İstersen serbest devam edebilir ya da kaydı bitirebilirsin.',
   },
 } as const;

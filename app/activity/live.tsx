@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HoldButton } from '@/components/live/HoldButton';
 import { LiveMiniMap } from '@/components/live/LiveMiniMap';
+import { WorkoutStrip } from '@/components/live/WorkoutStrip';
 import { isLiveMapView, LIVE_MAP_VIEWS, type LiveMapView } from '@/components/live/liveMapTypes';
 import { Text } from '@/components/ui';
 import { tr } from '@/i18n/tr';
@@ -240,6 +241,10 @@ export default function LiveActivityScreen() {
               </View>
             ) : null}
           </View>
+
+          {session?.workout_json ? (
+            <WorkoutStrip workoutJson={session.workout_json} elapsedSec={elapsed} />
+          ) : null}
 
           {snap.simulating ? (
             <View className="self-start rounded-lg bg-live-card-green px-space-md py-2">

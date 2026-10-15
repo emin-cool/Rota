@@ -8,6 +8,7 @@ import {
   buildKmAnnouncement,
   computeStats,
   cumulativeLengths,
+  elapsedSeconds,
   estimateArrival,
   isAcceptable,
   kmMarksCrossed,
@@ -32,6 +33,15 @@ import {
   type SessionRow,
 } from '@/lib/trackingDb';
 import { startUpdates, stopUpdates } from '@/lib/trackingLocation';
+import {
+  buildStepAnnouncement,
+  buildTimeline,
+  buildWorkoutDoneAnnouncement,
+  parseWorkout,
+  stepAt,
+  type TimelineStep,
+} from '@/lib/workoutTimeline';
+import type { WorkoutPhase } from '@/types/database';
 import type { ActivityType } from '@/types/routes';
 import { tr } from '@/i18n/tr';
 
@@ -127,6 +137,12 @@ class TrackingEngine {
   private simulating = false;
   private simTimer: ReturnType<typeof setInterval> | null = null;
   private simLateralM = 0;
+  /** Kurs antrenmanı: açılmış adım listesi (yoksa null → sesli aralık yönlendirme kapalı). */
+  private timeline: TimelineStep[] | null = null;
+  /** Son anons edilen adım; adım değişince yenisi söylenir. */
+  private workoutStep = -1;
+  private workoutDone = false;
+  private workoutTimer: ReturnType<typeof setInterval> | null = null;
   private hydrating: Promise<void> | null = null;
   private listeners = new Set<() => void>();
   private snapshot: EngineSnapshot = IDLE;
@@ -188,6 +204,7 @@ class TrackingEngine {
       this.session = open;
       this.points = await loadPoints(open.id);
       this.loadRoute(open.route_json);
+      this.loadWorkout(open.workout_json, true);
       this.recomputeDerived(false);
       this.lastMarkDistance = Math.floor(this.lastDistance / 1000) * 1000;
       this.lastMarkMoving = this.snapshotStatsMoving();
@@ -244,6 +261,8 @@ class TrackingEngine {
     routeId?: string | null;
     /** Kurs antrenmanından başlatıldıysa `course_days.id`. */
     courseDayId?: string | null;
+    /** Antrenman planı; verilirse sesli aralık yönlendirme açılır. */
+    workout?: WorkoutPhase[] | null;
     /** Geliştirme: gerçek GPS yerine sahte konum akıtılacak mı? */
     simulate?: boolean;
   }): Promise<void> {
@@ -269,6 +288,7 @@ class TrackingEngine {
       uploaded: 0,
       route_id: params.routeId ?? null,
       course_day_id: params.courseDayId ?? null,
+      workout_json: params.workout?.length ? JSON.stringify(params.workout) : null,
       title: null,
       visibility: null,
       queued: 0,
@@ -302,6 +322,7 @@ class TrackingEngine {
       this.rebuild();
       throw new Error(`konum servisi: ${e instanceof Error ? e.message : String(e)}`);
     }
+    this.loadWorkout(row.workout_json, false);
     this.rebuild();
   }
 
@@ -368,6 +389,7 @@ class TrackingEngine {
   }
 
   private clearState() {
+    this.stopWorkout();
     this.session = null;
     this.points = [];
     this.smoothed = [];
@@ -395,6 +417,7 @@ class TrackingEngine {
   async ingest(locations: LocationLike[]): Promise<void> {
     const s = this.session;
     if (!s || s.status !== 'recording' || locations.length === 0) return;
+    this.checkWorkout(); // zamanlayıcı arka planda gecikirse konum güncellemesi tetiklesin
 
     const latestRaw = locations[locations.length - 1]!;
     this.accuracy = latestRaw.coords.accuracy;
@@ -436,6 +459,62 @@ class TrackingEngine {
       this.lastMarkMoving = stats.movingSec;
     }
     this.rebuild();
+  }
+
+  // ------------------------------------------------------------------ antrenman (sesli aralık)
+
+  /**
+   * Kurs antrenmanı planını kurar ve saniyelik zamanlayıcıyı başlatır. `silent`: uygulama
+   * yeniden açıldığında (hydrate) o anki adım tekrar anons edilmesin.
+   */
+  private loadWorkout(json: string | null, silent: boolean) {
+    this.stopWorkout();
+    const workout: WorkoutPhase[] | null = parseWorkout(json);
+    if (!workout) return;
+    this.timeline = buildTimeline(workout);
+    if (silent) {
+      const pos = stepAt(this.timeline, this.workoutElapsedSec());
+      this.workoutStep = pos?.index ?? -1;
+      this.workoutDone = pos === null;
+    }
+    this.workoutTimer = setInterval(() => this.checkWorkout(), 1000);
+    if (!silent) this.checkWorkout();
+  }
+
+  private stopWorkout() {
+    if (this.workoutTimer) clearInterval(this.workoutTimer);
+    this.workoutTimer = null;
+    this.timeline = null;
+    this.workoutStep = -1;
+    this.workoutDone = false;
+  }
+
+  private workoutElapsedSec(): number {
+    const s = this.session;
+    if (!s) return 0;
+    return elapsedSeconds({
+      startedAt: s.started_at,
+      now: Date.now(),
+      pausedMs: s.paused_ms,
+      pauseStartedAt: s.pause_started_at,
+    });
+  }
+
+  /** Adım değiştiyse yönlendirmeyi söyler. Duraklatılmışken süre ilerlemediği için sessizdir. */
+  private checkWorkout() {
+    const timeline = this.timeline;
+    if (!timeline || this.workoutDone || this.session?.status !== 'recording') return;
+    const pos = stepAt(timeline, this.workoutElapsedSec());
+    if (!pos) {
+      this.workoutDone = true;
+      if (this.voice) this.speak(buildWorkoutDoneAnnouncement());
+      if (this.workoutTimer) clearInterval(this.workoutTimer);
+      this.workoutTimer = null;
+      return;
+    }
+    if (pos.index === this.workoutStep) return;
+    this.workoutStep = pos.index;
+    if (this.voice) this.speak(buildStepAnnouncement(pos.step));
   }
 
   private speak(text: string) {
