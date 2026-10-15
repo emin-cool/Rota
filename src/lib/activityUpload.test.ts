@@ -5,6 +5,7 @@ import {
   saveReview,
   uploadSession,
 } from './activityUpload';
+import { onCourseDayCompleted } from './courseEvents';
 import type { SessionRow } from './trackingDb';
 
 // --- Sahte Supabase istemcisi: çağrıları kaydeder, sonuçlar testten ayarlanır ---------------------
@@ -172,6 +173,15 @@ describe('uploadSession', () => {
     mockRpc.mockResolvedValue({ error: { message: 'ağ' } });
     await expect(uploadSession(row({ course_day_id: 'day-1' }), 'u1')).rejects.toBeDefined();
     expect(mockUpdateSession).not.toHaveBeenCalledWith('sess-1', { uploaded: 1, queued: 0 });
+  });
+
+  it('kurs bu çağrıyla bittiyse arayüze haber verir (rozet)', async () => {
+    mockRpc.mockResolvedValue({ data: true, error: null } as never);
+    const events: boolean[] = [];
+    const off = onCourseDayCompleted((e) => events.push(e.courseFinished));
+    await uploadSession(row({ course_day_id: 'day-1' }), 'u1');
+    off();
+    expect(events).toEqual([true]);
   });
 
   it('kurs antrenmanı olmayan kayıtta RPC çağrılmaz', async () => {

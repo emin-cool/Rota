@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ACTIVITY_ICON,
   ACTIVITY_SOFT_BG,
+  BadgeTile,
   CourseError,
   CourseHeader,
   ProgressBar,
@@ -16,6 +17,7 @@ import {
   useCourse,
   useCourseDays,
   useEnrollmentOp,
+  useMyBadges,
   useMyEnrollments,
 } from '@/hooks/useCourseQueries';
 import { tr } from '@/i18n/tr';
@@ -31,6 +33,8 @@ export default function CourseDetailScreen() {
   const days = useCourseDays(id);
   const enrollments = useMyEnrollments();
   const op = useEnrollmentOp();
+  const badges = useMyBadges();
+  const earnedBadge = badges.data?.find((b) => b.badge.course_id === id)?.badge ?? null;
 
   const enrollment = enrollments.data?.find((e) => e.course_id === id) ?? null;
   const completed = useMemo(() => new Set(enrollment?.completed_days ?? []), [enrollment]);
@@ -122,6 +126,14 @@ export default function CourseDetailScreen() {
                 </Text>
               </View>
               <ProgressBar percent={percent} />
+              {earnedBadge ? (
+                <View className="items-center gap-space-xs py-space-sm">
+                  <BadgeTile badge={earnedBadge} />
+                  <Text variant="label-sm" className="text-center text-ink-secondary">
+                    {tr.badges.earnedBody}
+                  </Text>
+                </View>
+              ) : null}
               {next ? (
                 <Button
                   title={tr.courses.goToWorkout}

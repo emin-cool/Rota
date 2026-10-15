@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ProfileGate } from '@/components/ProfileGate';
+import { CourseReminderSync } from '@/components/courses/CourseReminderSync';
 import { ModerationSheet } from '@/components/social/ModerationSheet';
 // Arka plan konum görevi modül yüklenirken tanımlanmak zorundadır.
 import '@/lib/trackingTask';
@@ -93,6 +94,7 @@ function RootLayout() {
             </Stack.Protected>
           </Stack>
           <ModerationSheet />
+          <CourseReminderSync />
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

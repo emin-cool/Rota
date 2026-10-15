@@ -6,6 +6,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, Switch, View } from 'r
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Card, HeadlineMd, Text } from '@/components/ui';
+import { CourseReminderSection } from '@/components/settings/CourseReminderSection';
 import { NotificationSettingsSection } from '@/components/settings/NotificationSettingsSection';
 import { usePrivacyZone } from '@/hooks/useProfileQueries';
 import { tr } from '@/i18n/tr';
@@ -191,6 +192,8 @@ export default function SettingsScreen() {
         </Card>
 
         <NotificationSettingsSection />
+
+        <CourseReminderSection />
 
         <SectionTitle>{tr.settings.sectionPrivacy}</SectionTitle>
         <Card className="flex-row items-center gap-space-md p-space-md">
