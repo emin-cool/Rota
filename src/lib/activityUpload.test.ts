@@ -81,6 +81,7 @@ const row = (over: Partial<SessionRow> = {}): SessionRow => ({
   description: null,
   share_route: 0,
   course_day_id: null,
+  workout_json: null,
   ...over,
 });
 

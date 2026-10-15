@@ -19,7 +19,7 @@ import { useStartActivity } from '@/hooks/useStartActivity';
 import { tr } from '@/i18n/tr';
 import { formatKmValue, routeTitle } from '@/lib/wizard';
 import { insertGeneratedRoute, saveGeneratedRoute, unsaveRoute } from '@/lib/routes';
-import { freshCourseDayId, useCourseSessionStore } from '@/stores/courseSessionStore';
+import { freshCourseContext, useCourseSessionStore } from '@/stores/courseSessionStore';
 import { useResultsStore } from '@/stores/resultsStore';
 import { useSessionStore } from '@/stores/sessionStore';
 import { routeColor } from '@/theme/routeColors';
@@ -110,12 +110,14 @@ export default function RouteResultsScreen() {
         routeId = null;
       }
     }
+    const course = freshCourseContext();
     await startActivity({
       activityType: input.activityType,
       route: routes[i]!.geojson.coordinates,
       routeTitle: routeTitleText,
       routeId,
-      courseDayId: freshCourseDayId(),
+      courseDayId: course?.courseDayId ?? null,
+      workout: course?.workout ?? null,
     });
     useCourseSessionStore.getState().clear();
   };

@@ -84,13 +84,13 @@ export default function CourseDayScreen() {
   const findRoute = () => {
     useWizardStore.getState().reset(profile);
     useWizardStore.getState().patch(wizardPatchForDay(activityType, d));
-    useCourseSessionStore.getState().set(d.id);
+    useCourseSessionStore.getState().set({ courseDayId: d.id, workout: d.workout_json });
     router.push('/route-wizard/step-1');
   };
 
   const startFree = () => {
     useCourseSessionStore.getState().clear();
-    void start({ activityType, courseDayId: d.id });
+    void start({ activityType, courseDayId: d.id, workout: d.workout_json });
   };
 
   return (

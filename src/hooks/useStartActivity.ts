@@ -7,6 +7,7 @@ import { reportError } from '@/lib/monitoring';
 import type { LngLat } from '@/lib/geo';
 import { ActiveSessionError, trackingEngine } from '@/lib/trackingEngine';
 import { ensureTrackingPermission } from '@/lib/trackingLocation';
+import type { WorkoutPhase } from '@/types/database';
 import type { ActivityType } from '@/types/routes';
 
 type StartParams = {
@@ -18,6 +19,8 @@ type StartParams = {
   routeId?: string | null;
   /** Kurs antrenmanından başlatıldıysa `course_days.id` (P2.2). */
   courseDayId?: string | null;
+  /** Antrenman planı (sesli aralık yönlendirme için); `course_days.workout_json`. */
+  workout?: WorkoutPhase[] | null;
 };
 
 /** İzin ister, motoru başlatır, canlı ekrana geçer. İzin yoksa açıklayıcı uyarı gösterip false döner. */
