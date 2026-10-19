@@ -45,6 +45,12 @@ export const errors = {
       'Rota servisine şu an ulaşılamıyor. Lütfen daha sonra tekrar dene.',
       502,
     ),
+  weatherUnavailable: () =>
+    new AppError(
+      'upstream_unavailable',
+      'Hava durumu şu an alınamıyor. Birazdan tekrar dene.',
+      502,
+    ),
   noRoutes: () =>
     new AppError(
       'no_routes',

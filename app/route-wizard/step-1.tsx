@@ -5,6 +5,8 @@ import { View } from 'react-native';
 import { RouteSuggestionCard, SegmentChoice, SelectCard } from '@/components/wizard/controls';
 import { WizardScaffold } from '@/components/wizard/WizardScaffold';
 import { HeadlineMd, Text } from '@/components/ui';
+import { WeatherWarningCard } from '@/components/weather/WeatherWarningCard';
+import { useLocalWeather } from '@/hooks/useWeather';
 import { useWizardNearby } from '@/hooks/useWizardNearby';
 import { tr } from '@/i18n/tr';
 import { formatRating } from '@/lib/geo';
@@ -31,6 +33,7 @@ export default function WizardStep1() {
   const setActivity = useWizardStore((s) => s.setActivity);
   const patch = useWizardStore((s) => s.patch);
   const { routes } = useWizardNearby();
+  const weather = useLocalWeather();
   const today = todaysPick(routes);
   const copy = tr.wizard.step1;
 
@@ -43,6 +46,7 @@ export default function WizardStep1() {
       onNext={() => router.push('/route-wizard/step-2')}
     >
       <View className="gap-space-md">
+        <WeatherWarningCard weather={weather.data?.weather} activity={activityType} />
         {ACTIVITIES.map(({ key, icon }) => (
           <SelectCard
             key={key}

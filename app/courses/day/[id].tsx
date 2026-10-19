@@ -8,6 +8,8 @@ import { ACTIVITY_ICON, CourseError, CourseHeader } from '@/components/courses/C
 import { Button, Card, HeadlineMd, Skeleton, Text } from '@/components/ui';
 import { useCourse, useCourseDay, useCourseDays, useMyEnrollments } from '@/hooks/useCourseQueries';
 import { useStartActivity } from '@/hooks/useStartActivity';
+import { useNowSec } from '@/hooks/useNowSec';
+import { useLocalWeather } from '@/hooks/useWeather';
 import { tr } from '@/i18n/tr';
 import {
   effortSplit,
@@ -19,6 +21,7 @@ import {
 import { useCourseSessionStore } from '@/stores/courseSessionStore';
 import { useSessionStore } from '@/stores/sessionStore';
 import { useWizardStore } from '@/stores/wizardStore';
+import { hoursFrom, workoutHint } from '@/lib/weather';
 import { colors } from '@/theme/tokens';
 import type { WorkoutPhase, WorkoutPhaseType } from '@/types/database';
 
@@ -39,6 +42,8 @@ export default function CourseDayScreen() {
   const course = useCourse(day.data?.course_id);
   const days = useCourseDays(day.data?.course_id);
   const enrollments = useMyEnrollments();
+  const weather = useLocalWeather();
+  const nowSec = useNowSec();
   const profile = useSessionStore((s) => s.profile);
   const { start, starting } = useStartActivity();
 
@@ -76,6 +81,8 @@ export default function CourseDayScreen() {
   }
 
   const d = day.data;
+  const upcoming = weather.data ? hoursFrom(weather.data.weather.hourly, nowSec, 6) : [];
+  const weatherHint = upcoming.length > 0 ? workoutHint(upcoming) : null;
   const activityType = course.data?.activity_type ?? 'walk';
   const split = effortSplit(d.workout_json);
   const totalMin = Math.round(workoutTotalSec(d.workout_json) / 60);
@@ -112,6 +119,15 @@ export default function CourseDayScreen() {
           </Text>
           <HeadlineMd>{d.title}</HeadlineMd>
         </View>
+
+        {weatherHint ? (
+          <View className="flex-row items-center gap-space-sm" accessibilityLabel={weatherHint}>
+            <MaterialIcons name="wb-sunny" size={18} color={colors.accent.deep} />
+            <Text variant="label-sm" className="flex-1 text-ink-secondary">
+              {weatherHint}
+            </Text>
+          </View>
+        ) : null}
 
         <Card className="gap-space-sm p-space-md">
           <View className="flex-row items-center justify-between">

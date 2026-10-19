@@ -6,11 +6,13 @@ import { trModeration } from './tr.moderation';
 import { trProfile } from './tr.profile';
 import { trPush } from './tr.push';
 import { trSocial } from './tr.social';
+import { trWeather } from './tr.weather';
 import { trWizard } from './tr.wizard';
 
 export const tr = {
   ...trWizard,
   ...trCourses,
+  ...trWeather,
   ...trLive,
   ...trExplore,
   ...trProfile,

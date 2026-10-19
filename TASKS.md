@@ -30,7 +30,8 @@ Claude Code her adımı bitirince ilgili maddeyi `[x]` yapar. Promptlar: `prompt
 - [x] P2.2a Kurslar: katalog (4 ücretsiz program), kurs detayı, antrenman günü, katıl/ayrıl, "bu antrenman için rota bul", gün→aktivite bağı ve otomatik tamamlama (`db:push` + `test-rls` geçti, `eas update` ile yayında, cihazda uçtan uca doğrulandı — 15 Ekim 2026)
 - [x] P2.2b Sesli aralık yönlendirme (canlı takipte "Şimdi koş!" / "Yürüyüşe geç", faz şeridi): `eas update` ile yayında, cihazda doğrulandı (16 Ekim 2026)
 - [ ] P2.2c Kurs hatırlatıcı bildirimi, bitirme rozeti
-- [ ] P2.3 Etkinlikler, meydan okumalar, hava durumu, segmentler, canlı konum paylaşımı
+- [x] Hava durumu (P2.3'ün parçası): Edge Function `weather` (Open-Meteo, önbellekli), harita çipi + ayrıntı sayfası, uyarılar, aktiviteye göre en uygun saat, sihirbaz uyarı kartı, antrenman günü ipucu (kod hazır; `db:push`, `weather` deploy ve cihazda doğrulama bekliyor). **Yayın öncesi: Open-Meteo ticari lisans/sağlayıcı kararı.**
+- [ ] P2.3 kalan: etkinlikler, meydan okumalar, segmentler, canlı konum paylaşımı
 
 ## Faz 3 — Yayın
 - [ ] P3.1 Mağaza hazırlığı ve yayın

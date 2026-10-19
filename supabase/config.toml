@@ -425,6 +425,10 @@ verify_jwt = false
 [functions.notify-report]
 verify_jwt = false
 
+# JWT'yi fonksiyon kendisi doğrular (auth.getUser).
+[functions.weather]
+verify_jwt = false
+
 # Database Webhook (notifications INSERT) çağırır; kimlik doğrulamayı fonksiyon kendisi yapar (x-webhook-secret).
 [functions.send-push]
 verify_jwt = false

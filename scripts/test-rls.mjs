@@ -1307,6 +1307,16 @@ async function main() {
   check('route_cache: istemci okuyamıyor', blocked(cache));
   const osm = await B.client.from('osm_features').select('osm_id').limit(1);
   check('osm_features: istemci okuyamıyor', blocked(osm));
+  const wcache = await B.client.from('weather_cache').select('cell_key').limit(1);
+  check('weather_cache: istemci okuyamıyor', blocked(wcache));
+  check(
+    'weather_cache: istemci yazamıyor',
+    !!(
+      await B.client
+        .from('weather_cache')
+        .insert({ cell_key: '0.00:0.00', provider: 'x', payload: {} })
+    ).error,
+  );
   const log = await B.client.from('route_generation_log').select('id').limit(1);
   check('route_generation_log: istemci okuyamıyor', blocked(log));
   const anonRoutes = await anon.from('routes').select('id').limit(1);
