@@ -270,7 +270,15 @@ export function relaxSuggestions(a: WizardAnswers): RelaxSuggestion[] {
 export type PoiCounts = Record<RoutePoi['type'], number>;
 
 export function countPois(pois: RoutePoi[]): PoiCounts {
-  const counts: PoiCounts = { water: 0, toilet: 0, cafe: 0, bench: 0, transit: 0 };
+  const counts: PoiCounts = {
+    water: 0,
+    toilet: 0,
+    cafe: 0,
+    pharmacy: 0,
+    market: 0,
+    hospital: 0,
+    transit: 0,
+  };
   for (const p of pois) counts[p.type] += 1;
   return counts;
 }

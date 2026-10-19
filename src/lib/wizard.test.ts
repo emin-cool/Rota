@@ -200,7 +200,15 @@ describe('sonuç yardımcıları', () => {
         { type: 'water', coord: [1, 2] },
         { type: 'cafe', coord: [1, 3] },
       ]),
-    ).toEqual({ water: 2, toilet: 0, cafe: 1, bench: 0, transit: 0 });
+    ).toEqual({
+      water: 2,
+      toilet: 0,
+      cafe: 1,
+      pharmacy: 0,
+      market: 0,
+      hospital: 0,
+      transit: 0,
+    });
   });
   it('başlık ve zorluk', () => {
     expect(routeTitle({ activityType: 'walk', routeType: 'loop' }, 'Emirgan')).toBe(

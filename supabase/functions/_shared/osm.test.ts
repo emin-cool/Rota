@@ -6,6 +6,7 @@ import {
   featureToRow,
   fetchOsmFeatures,
   parseOverpass,
+  POI_CENTER_PART,
   poisNearRoute,
   type OverpassResponse,
 } from './osm.ts';
@@ -35,6 +36,13 @@ describe('classify', () => {
     expect(classify({ amenity: 'drinking_water' }).poiType).toBe('water');
     expect(classify({ amenity: 'toilets' }).poiType).toBe('toilet');
     expect(classify({ highway: 'bus_stop' }).poiType).toBe('transit');
+    expect(classify({ amenity: 'pharmacy' }).poiType).toBe('pharmacy');
+    expect(classify({ amenity: 'hospital' }).poiType).toBe('hospital');
+    expect(classify({ shop: 'supermarket' }).poiType).toBe('market');
+    expect(classify({ shop: 'convenience' }).poiType).toBe('market');
+    expect(classify({ shop: 'clothes' }).poiType).toBeUndefined();
+    // Bank artık POI değil.
+    expect(classify({ amenity: 'bench' }).poiType).toBeUndefined();
   });
 });
 
@@ -47,7 +55,9 @@ describe('buildOverpassQuery', () => {
       'landuse"="forest',
       'historic',
       'primary|trunk|motorway',
-      'drinking_water|toilets|cafe|bench',
+      'drinking_water|toilets|cafe|pharmacy|hospital',
+      'supermarket|convenience',
+      'out center',
       'bus_stop',
       '41.00000,29.00000,41.10000,29.10000',
       'out geom',
@@ -261,7 +271,7 @@ describe('tam geometri sorgusu ve veritabanı dönüşümleri', () => {
       geom: 'SRID=4326;LINESTRING(29 41,29.1 41.1)',
     });
     expect(
-      featureToRow({ coords: [[1, 2]], area: false, bounds: [0, 0, 0, 0], poiType: 'bench' }),
+      featureToRow({ coords: [[1, 2]], area: false, bounds: [0, 0, 0, 0], poiType: 'cafe' }),
     ).toBeNull();
   });
 
@@ -282,5 +292,101 @@ describe('tam geometri sorgusu ve veritabanı dönüşümleri', () => {
     expect(line.coords).toHaveLength(2);
     expect(line.category).toBe('coast');
     expect(line.bounds[0]).toBeLessThan(29);
+  });
+});
+
+describe('parseOverpass: alan nesneleri ve tekrarlar (POI merkez noktası)', () => {
+  it('bina olarak çizilmiş hastane/kafe merkez noktasıyla POI olur', () => {
+    const features = parseOverpass({
+      elements: [
+        {
+          type: 'way',
+          id: 100,
+          tags: { amenity: 'hospital', name: 'Şehir Hastanesi' },
+          center: { lat: 41.01, lon: 29.02 },
+        },
+        {
+          type: 'relation',
+          id: 200,
+          tags: { amenity: 'cafe' },
+          center: { lat: 41.02, lon: 29.03 },
+        },
+      ],
+    });
+    expect(features).toHaveLength(2);
+    expect(features[0]).toMatchObject({
+      poiType: 'hospital',
+      name: 'Şehir Hastanesi',
+      coords: [[29.02, 41.01]],
+      osmType: 'way',
+      osmId: 100,
+      part: POI_CENTER_PART,
+    });
+    expect(features[1]).toMatchObject({
+      poiType: 'cafe',
+      osmType: 'relation',
+      part: POI_CENTER_PART,
+    });
+    expect(featureToRow(features[0]!)).toMatchObject({
+      poi_type: 'hospital',
+      part: POI_CENTER_PART,
+      geom: 'SRID=4326;POINT(29.02 41.01)',
+    });
+  });
+
+  it('hem kategori hem POI olan alan: geometri satırı yalnızca kategori, merkez satırı POI taşır', () => {
+    const features = parseOverpass({
+      elements: [
+        {
+          type: 'way',
+          id: 7,
+          tags: { leisure: 'park', amenity: 'cafe' },
+          geometry: [
+            { lat: 41, lon: 29 },
+            { lat: 41, lon: 29.01 },
+            { lat: 41.01, lon: 29.01 },
+            { lat: 41, lon: 29 },
+          ],
+          center: { lat: 41.003, lon: 29.004 },
+        },
+      ],
+    });
+    const geometry = features.find((f) => f.part === 0)!;
+    const poi = features.find((f) => f.part === POI_CENTER_PART)!;
+    expect(geometry.category).toBe('green');
+    expect(geometry.poiType).toBeUndefined();
+    expect(poi.poiType).toBe('cafe');
+    expect(poi.category).toBeUndefined();
+  });
+
+  it('aynı düğüm iki sorgu parçasında gelirse tek satırda birleşir', () => {
+    const features = parseOverpass({
+      elements: [
+        { type: 'node', id: 5, lat: 41, lon: 29, tags: { historic: 'monument' } },
+        { type: 'node', id: 5, lat: 41, lon: 29, tags: { historic: 'monument', amenity: 'cafe' } },
+      ],
+    });
+    expect(features).toHaveLength(1);
+    expect(features[0]).toMatchObject({ category: 'historic', poiType: 'cafe' });
+  });
+
+  it('market (bakkal/süpermarket) düğümü POI olur', () => {
+    const [f] = parseOverpass({
+      elements: [{ type: 'node', id: 9, lat: 41, lon: 29, tags: { shop: 'convenience' } }],
+    });
+    expect(f).toMatchObject({ poiType: 'market', coords: [[29, 41]] });
+  });
+});
+
+describe('buildOverpassQuery: poiOnly', () => {
+  it('yalnızca POI etiketlerini içerir, manzara kategorilerini atlar', () => {
+    const q = buildOverpassQuery(
+      { south: 41, west: 29, north: 41.1, east: 29.1 },
+      { poiOnly: true },
+    );
+    expect(q).toContain('pharmacy');
+    expect(q).toContain('out center');
+    expect(q).not.toContain('coastline');
+    expect(q).not.toContain('out geom');
   });
 });
