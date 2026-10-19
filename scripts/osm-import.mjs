@@ -5,6 +5,7 @@
 //   node scripts/osm-import.mjs --dry          # yalnızca 1 karoyu çeker, sayıları gösterir (yazmaz)
 //   node scripts/osm-import.mjs                # tüm İstanbul (≈10–20 dk; kesilirse kaldığı yerden devam eder)
 //   node scripts/osm-import.mjs --reset        # ilerleme dosyasını silip baştan başla
+//   node scripts/osm-import.mjs --poi-only     # yalnızca mola/POI etiketlerini çeker (eczane, hastane, market…; ayrı ilerleme dosyası)
 //   node scripts/osm-import.mjs --bbox 28.9,41.0,29.1,41.15   # özel alan (west,south,east,north)
 //
 // .env içinde: EXPO_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY (gizli anahtar; .env git'e girmez).
@@ -14,7 +15,10 @@ import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { fetchOsmFeatures, featureToRow } from '../supabase/functions/_shared/osm.ts';
 import { tileId, tilesCovering } from '../supabase/functions/_shared/tiles.ts';
 
-const PROGRESS_FILE = '.osm-import-progress.json';
+const args = process.argv.slice(2);
+const poiOnly = args.includes('--poi-only');
+// POI-only aktarım tam aktarımdan bağımsız ilerler (ikisi de kaldığı yerden devam eder).
+const PROGRESS_FILE = poiOnly ? '.osm-import-poi-progress.json' : '.osm-import-progress.json';
 /** İstanbul çekirdeği (Avrupa + Anadolu yakası, Boğaz). */
 const DEFAULT_AREA = { west: 28.6, south: 40.85, east: 29.35, north: 41.25 };
 const TILE_DEG = 0.05; // ≈ 4,2 × 5,6 km
@@ -24,7 +28,6 @@ const UPLOAD_ATTEMPTS = 5;
 const MAX_TILE_ATTEMPTS = 2;
 const MAX_SPLIT_DEPTH = 2; // başarısız karo 4 parçaya, o da gerekirse yine 4'e bölünür
 
-const args = process.argv.slice(2);
 const dry = args.includes('--dry');
 if (args.includes('--reset') && existsSync(PROGRESS_FILE)) unlinkSync(PROGRESS_FILE);
 
@@ -102,7 +105,7 @@ async function upload(rows) {
 const tiles = tilesCovering(area, TILE_DEG);
 const todo = tiles.filter((t) => !done.has(tileId(t)));
 console.log(
-  `${tiles.length} karo, ${tiles.length - todo.length} tamamlanmış, ${todo.length} yapılacak${dry ? ' (dry-run: sadece ilk karo)' : ''}.`,
+  `${poiOnly ? '[yalnızca POI] ' : ''}${tiles.length} karo, ${tiles.length - todo.length} tamamlanmış, ${todo.length} yapılacak${dry ? ' (dry-run: sadece ilk karo)' : ''}.`,
 );
 
 let total = 0;
@@ -115,6 +118,7 @@ async function fetchTileRows(tile) {
     try {
       const features = await fetchOsmFeatures(tile, fetch, 40_000, undefined, {
         fullGeometry: true,
+        poiOnly,
         timeoutSec: 50,
         overallTimeoutMs: 90_000,
       });

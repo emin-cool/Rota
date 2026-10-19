@@ -282,7 +282,7 @@ export type ReviewListItem = {
   mine: boolean;
 };
 
-export type PoiType = 'water' | 'toilet' | 'cafe' | 'bench' | 'transit';
+export type PoiType = 'water' | 'toilet' | 'cafe' | 'pharmacy' | 'market' | 'hospital' | 'transit';
 export type PoiSummary = { poi_type: PoiType; n: number; sample_name: string | null };
 
 export type ExploreArgs = {

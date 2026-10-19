@@ -28,7 +28,9 @@ const POI_ICON: Record<PoiType, IconName> = {
   water: 'water-drop',
   toilet: 'wc',
   cafe: 'local-cafe',
-  bench: 'event-seat',
+  pharmacy: 'local-pharmacy',
+  market: 'local-grocery-store',
+  hospital: 'local-hospital',
   transit: 'directions-transit',
 };
 

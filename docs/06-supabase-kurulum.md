@@ -57,6 +57,7 @@ npm run db:types
    `SUPABASE_SERVICE_ROLE_KEY=...` (Dashboard → Project Settings → API Keys → *Secret keys*) ekle:
    - `node scripts/osm-import.mjs --dry` → 1 karo çeker, hiçbir şey yazmaz
    - `node scripts/osm-import.mjs` → tamamını yükler (`--reset` baştan başlatır)
+   - `node scripts/osm-import.mjs --poi-only` → yalnızca mola/POI etiketlerini (çeşme, WC, kafe, eczane, hastane, market, durak) çeker; yeni bir POI türü eklendiğinde tam aktarımı tekrarlamadan çalıştırılır (ayrı ilerleme dosyası: `.osm-import-poi-progress.json`)
 4. **Fonksiyonu yayınla** (Docker gerekmez): `npx supabase functions deploy generate-routes --use-api`
 5. **Dene:** `.env`'e `TEST_EMAIL` / `TEST_PASSWORD` yaz → `node scripts/test-generate-routes.mjs`
 

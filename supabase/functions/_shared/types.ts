@@ -42,7 +42,7 @@ export type GenerateRoutesInput = {
   debug?: boolean;
 };
 
-export type PoiType = 'water' | 'toilet' | 'cafe' | 'bench' | 'transit';
+export type PoiType = 'water' | 'toilet' | 'cafe' | 'pharmacy' | 'market' | 'hospital' | 'transit';
 
 export type RoutePoi = { type: PoiType; coord: LngLat; name?: string };
 

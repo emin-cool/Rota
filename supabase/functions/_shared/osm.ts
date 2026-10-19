@@ -26,6 +26,8 @@ type OverpassElement = {
   lon?: number;
   tags?: Record<string, string>;
   geometry?: { lat: number; lon: number }[];
+  /** `out center`: yol/ilişki gibi alan nesnelerinin tek temsil noktası. */
+  center?: { lat: number; lon: number };
   members?: { type: string; role?: string; geometry?: { lat: number; lon: number }[] }[];
 };
 
@@ -44,12 +46,17 @@ export type OverpassQueryOptions = {
   fullGeometry?: boolean;
   /** Sunucu tarafı zaman aşımı (sn). */
   timeoutSec?: number;
+  /** true: yalnızca mola/POI etiketleri (manzara kategorileri atlanır). Yeni POI türleri için hafif yeniden aktarım. */
+  poiOnly?: boolean;
 };
+
+/** POI olarak alınan `amenity` / `shop` değerleri (classify ile aynı olmalı). */
+const POI_AMENITIES = 'drinking_water|toilets|cafe|pharmacy|hospital';
+const POI_SHOPS = 'supermarket|convenience';
 
 export function buildOverpassQuery(b: BBox, opts: OverpassQueryOptions = {}): string {
   const box = `${b.south.toFixed(5)},${b.west.toFixed(5)},${b.north.toFixed(5)},${b.east.toFixed(5)}`;
-  return `[out:json][timeout:${opts.timeoutSec ?? 15}];
-(
+  const categories = `(
   way["natural"="coastline"](${box});
   way["natural"="water"](${box});
   relation["natural"="water"](${box});
@@ -61,13 +68,31 @@ export function buildOverpassQuery(b: BBox, opts: OverpassQueryOptions = {}): st
   relation["natural"="wood"](${box});
   node["historic"](${box});
   way["highway"~"^(primary|trunk|motorway)$"](${box});
-  node["amenity"~"^(drinking_water|toilets|cafe|bench)$"](${box});
+);
+${opts.fullGeometry ? 'out geom qt;' : `out geom(${box}) qt;`}
+`;
+  // POI'ler `out center` ile alınır: bina/alan olarak çizilmiş kafe, eczane, hastane de tek noktaya iner.
+  const pois = `(
+  node["amenity"~"^(${POI_AMENITIES})$"](${box});
+  way["amenity"~"^(${POI_AMENITIES})$"](${box});
+  relation["amenity"~"^(${POI_AMENITIES})$"](${box});
+  node["shop"~"^(${POI_SHOPS})$"](${box});
+  way["shop"~"^(${POI_SHOPS})$"](${box});
+  relation["shop"~"^(${POI_SHOPS})$"](${box});
   node["highway"="bus_stop"](${box});
   node["railway"~"^(station|tram_stop|halt)$"](${box});
   node["public_transport"~"^(platform|station)$"](${box});
 );
-${opts.fullGeometry ? 'out geom qt;' : `out geom(${box}) qt;`}`;
+out center qt;`;
+  return `[out:json][timeout:${opts.timeoutSec ?? 15}];
+${opts.poiOnly ? '' : categories}${pois}`;
 }
+
+/**
+ * Alan nesnesinin (bina/ilişki) temsil noktası için `part` değeri: aynı yolun geometri satırıyla
+ * (part 0) birincil anahtarda çakışmasın.
+ */
+export const POI_CENTER_PART = 9999;
 
 type Classified = { category?: Category; poiType?: PoiType; areaCapable: boolean };
 
@@ -92,7 +117,9 @@ export function classify(tags: Record<string, string> = {}): Classified {
   if (tags.amenity === 'drinking_water') out.poiType = 'water';
   else if (tags.amenity === 'toilets') out.poiType = 'toilet';
   else if (tags.amenity === 'cafe') out.poiType = 'cafe';
-  else if (tags.amenity === 'bench') out.poiType = 'bench';
+  else if (tags.amenity === 'pharmacy') out.poiType = 'pharmacy';
+  else if (tags.amenity === 'hospital') out.poiType = 'hospital';
+  else if (tags.shop === 'supermarket' || tags.shop === 'convenience') out.poiType = 'market';
   else if (
     tags.highway === 'bus_stop' ||
     /^(station|tram_stop|halt)$/.test(tags.railway ?? '') ||
@@ -155,8 +182,17 @@ export function parseOverpass(json: OverpassResponse): OsmFeature[] {
   };
 
   for (const el of json.elements ?? []) {
-    const c = classify(el.tags);
+    let c = classify(el.tags);
     const name = el.tags?.name;
+    // Alan nesnesi (bina) POI ise: merkez noktası POI satırı olur; geometri satırı yalnızca kategori taşır.
+    if (el.type !== 'node' && el.center && c.poiType) {
+      push({ poiType: c.poiType, areaCapable: false }, [[el.center.lon, el.center.lat]], name, {
+        osmType: el.type,
+        osmId: el.id,
+        part: POI_CENTER_PART,
+      });
+      c = { ...c, poiType: undefined };
+    }
     if (el.type === 'node' && el.lat !== undefined && el.lon !== undefined) {
       push(c, [[el.lon, el.lat]], name, { osmType: 'node', osmId: el.id, part: 0 });
     } else if (el.type === 'way' && el.geometry) {
@@ -170,7 +206,30 @@ export function parseOverpass(json: OverpassResponse): OsmFeature[] {
       }
     }
   }
-  return features;
+  return mergeDuplicates(features);
+}
+
+/** Aynı OSM nesnesi iki sorgu parçasında gelebilir (ör. hem tarihî hem kafe düğümü): tek satırda birleştir. */
+function mergeDuplicates(features: OsmFeature[]): OsmFeature[] {
+  const byKey = new Map<string, OsmFeature>();
+  const out: OsmFeature[] = [];
+  for (const f of features) {
+    if (f.osmType === undefined || f.osmId === undefined) {
+      out.push(f);
+      continue;
+    }
+    const key = `${f.osmType}:${f.osmId}:${f.part ?? 0}`;
+    const existing = byKey.get(key);
+    if (!existing) {
+      byKey.set(key, f);
+      out.push(f);
+      continue;
+    }
+    existing.category ??= f.category;
+    existing.poiType ??= f.poiType;
+    existing.name ??= f.name;
+  }
+  return out;
 }
 
 function inBounds(p: LngLat, b: OsmFeature['bounds']): boolean {

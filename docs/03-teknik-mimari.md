@@ -63,7 +63,7 @@ type RouteOption = {
   elevationGainM: number;
   elevationProfile: { d: number; z: number }[];   // d: metre, z: rakım
   scenicScore: number;                             // 0–100
-  pois: { type: 'water' | 'toilet' | 'cafe' | 'bench' | 'transit'; coord: [number, number]; name?: string }[];
+  pois: { type: 'water' | 'toilet' | 'cafe' | 'pharmacy' | 'market' | 'hospital' | 'transit'; coord: [number, number]; name?: string }[];
 };
 ```
 

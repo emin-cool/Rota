@@ -44,7 +44,9 @@ const POI_ICON: Record<PoiType, keyof typeof MaterialIcons.glyphMap> = {
   water: 'water-drop',
   toilet: 'wc',
   cafe: 'local-cafe',
-  bench: 'chair',
+  pharmacy: 'local-pharmacy',
+  market: 'local-grocery-store',
+  hospital: 'local-hospital',
   transit: 'directions-bus',
 };
 
