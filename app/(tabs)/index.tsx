@@ -10,9 +10,12 @@ import type { HomeMapHandle } from '@/components/map/homeMapTypes';
 import { MapControls } from '@/components/map/MapControls';
 import { NearbyRoutesSheet } from '@/components/map/NearbyRoutesSheet';
 import { SearchBar } from '@/components/map/SearchBar';
+import { WeatherChip } from '@/components/weather/WeatherChip';
+import { WeatherSheet } from '@/components/weather/WeatherSheet';
 import { BottomSheet, Button, Text } from '@/components/ui';
 import { useNearbyRoutes } from '@/hooks/useNearbyRoutes';
 import { useUserLocation } from '@/hooks/useUserLocation';
+import { useWeather } from '@/hooks/useWeather';
 import { tr } from '@/i18n/tr';
 import { DEFAULT_CENTER, FALLBACK_RADIUS_M, NEARBY_RADIUS_M } from '@/lib/mapConfig';
 import { useCourseSessionStore } from '@/stores/courseSessionStore';
@@ -36,6 +39,8 @@ export default function MapScreen() {
 
   const location = useUserLocation();
   const center = location.coords ?? DEFAULT_CENTER;
+  const weather = useWeather(location.coords, location.status !== 'loading');
+  const [weatherOpen, setWeatherOpen] = useState(false);
   const routesQuery = useNearbyRoutes({
     center,
     radiusM: location.coords ? NEARBY_RADIUS_M : FALLBACK_RADIUS_M,
@@ -124,6 +129,12 @@ export default function MapScreen() {
         <View pointerEvents="box-none" className="mt-space-sm gap-space-sm">
           <SearchBar />
           <ActivityFilterChips value={activity} onChange={setActivity} />
+          {weather.data ? (
+            <WeatherChip
+              current={weather.data.weather.current}
+              onPress={() => setWeatherOpen(true)}
+            />
+          ) : null}
         </View>
       </View>
 
@@ -149,6 +160,17 @@ export default function MapScreen() {
           onPress={startWizard}
         />
       </Animated.View>
+
+      <WeatherSheet
+        visible={weatherOpen}
+        onClose={() => setWeatherOpen(false)}
+        data={weather.data}
+        loading={weather.isPending}
+        error={weather.isError}
+        onRetry={() => void weather.refetch()}
+        usingDefaultLocation={weather.usingDefaultLocation}
+        initialActivity={profile?.activity_prefs?.[0]}
+      />
 
       <BottomSheet snapPoints={SNAP_POINTS} initialIndex={1} animatedPosition={sheetTop}>
         <NearbyRoutesSheet

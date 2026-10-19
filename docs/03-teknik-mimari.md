@@ -15,7 +15,7 @@
 | Yerel kayıt | `expo-sqlite` | Uygulama kapanırsa veri kaybolmaz |
 | Ses | `expo-speech` | Türkçe bildirim |
 | State | Zustand + TanStack Query | Basit global state + sunucu önbelleği |
-| Hava | Open-Meteo | Ücretsiz, anahtarsız |
+| Hava | Open-Meteo (Edge Function `weather` üzerinden, 30 dk önbellek) | Ücretsiz katman yalnızca ticari olmayan kullanım içindir: **herkese açık yayından önce ticari plan ya da MET Norway gibi başka sağlayıcıya karar verilmeli** (sağlayıcı yalnızca `_shared/weather.ts` ve `weather/index.ts`'te) |
 | Bildirim | Expo Notifications | Kurs hatırlatıcı |
 | İzleme | Sentry + PostHog | Hata + kullanım |
 
