@@ -4,6 +4,9 @@ import type { ParsedInput } from './schema.ts';
 const round3 = (n: number) => Math.round(n * 1000) / 1000;
 const roundPair = (p: [number, number]): [number, number] => [round3(p[0]), round3(p[1])];
 
+/** 2: etiketler gerçek ölçüte göre verilir ve birleşik olabilir (P2.2 sonrası rota etiketleme düzeltmesi). */
+export const CACHE_VERSION = 2;
+
 /** Sonucu etkileyen tüm girdileri sıralı, yuvarlanmış tek bir nesneye çevirir. */
 export function canonicalInput(input: ParsedInput) {
   const extras = Object.fromEntries(
@@ -12,6 +15,8 @@ export function canonicalInput(input: ParsedInput) {
       .sort(([a], [b]) => a.localeCompare(b)),
   );
   return {
+    // Sonuç biçimi/etiketleme değişince artırılır: eski önbellek kayıtları (24 sa) kullanılmasın.
+    v: CACHE_VERSION,
     a: input.activityType,
     r: input.routeType,
     s: roundPair(input.start),

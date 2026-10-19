@@ -82,6 +82,8 @@ type Scored = {
   total: number;
   ascentM: number;
   distanceM: number;
+  /** Kartta gösterilen tahmini süre (dk); "En kısa" etiketi buna göre verilir. */
+  durationMin: number;
   samples: ReturnType<typeof resample>;
   pois: RouteOption['pois'];
 };
@@ -108,10 +110,25 @@ function scoreCandidate(
     surface: surfacePenalty(input.extras.surface, c.unpavedShare),
     bonus: breakBonus(input.extras.amenities, amenityCount),
   });
-  return { candidate: c, scenic, total, ascentM, distanceM: c.distanceM, samples, pois };
+  const durationMin = estimateDurationMin(
+    input.activityType,
+    c.distanceM,
+    ascentM,
+    input.paceSecPerKm,
+  );
+  return {
+    candidate: c,
+    scenic,
+    total,
+    ascentM,
+    distanceM: c.distanceM,
+    durationMin,
+    samples,
+    pois,
+  };
 }
 
-function toRouteOption(label: string, s: Scored, input: ParsedInput): RouteOption {
+function toRouteOption(label: string, s: Scored): RouteOption {
   const stride = Math.max(1, Math.ceil(s.samples.length / MAX_PROFILE_POINTS));
   const profile = s.samples
     .filter((_, i) => i % stride === 0 || i === s.samples.length - 1)
@@ -125,12 +142,7 @@ function toRouteOption(label: string, s: Scored, input: ParsedInput): RouteOptio
       coordinates: s.candidate.coords.map((c): LngLat => [round5(c[0]), round5(c[1])]),
     },
     distanceM: s.distanceM,
-    estDurationMin: estimateDurationMin(
-      input.activityType,
-      s.distanceM,
-      s.ascentM,
-      input.paceSecPerKm,
-    ),
+    estDurationMin: s.durationMin,
     elevationGainM: s.ascentM,
     elevationProfile: profile,
     scenicScore: s.scenic,
@@ -199,7 +211,7 @@ export async function generate(
   const scored = candidates.map((c) => scoreCandidate(c, input, targetM, features));
   const labeled = pickAndLabel(scored);
   return {
-    routes: labeled.map(({ label, item }) => toRouteOption(label, item, input)),
+    routes: labeled.map(({ label, item }) => toRouteOption(label, item)),
     warnings,
   };
 }

@@ -275,6 +275,23 @@ describe('generate (uçtan uca, sahte ORS/Overpass)', () => {
     expect(routes[0]!.geojson.coordinates[1]![0]).toBeCloseTo(EMIRGAN[0], 3);
   });
 
+  it('etiketler gösterilen kartlar arasında doğrudur (en kısa/en düz/en manzaralı gerçekten en iyi)', async () => {
+    const deps: Deps = {
+      fetchCandidates: async () => candidates,
+      fetchFeatures: async () => parseOverpass({ elements: [coastLine] }),
+    };
+    const { routes } = await generate(loopInput(), deps);
+    for (const r of routes) {
+      const parts = r.label.split(' + ');
+      if (r.label === 'Her açıdan en iyi' || parts.includes('En manzaralı'))
+        expect(routes.every((o) => o.scenicScore <= r.scenicScore)).toBe(true);
+      if (r.label === 'Her açıdan en iyi' || parts.includes('En düz'))
+        expect(routes.every((o) => o.elevationGainM >= r.elevationGainM)).toBe(true);
+      if (r.label === 'Her açıdan en iyi' || parts.includes('En kısa'))
+        expect(routes.every((o) => o.estDurationMin >= r.estDurationMin)).toBe(true);
+    }
+  });
+
   it('Overpass hata verirse rotalar yine döner, uyarı eklenir, skor nötr', async () => {
     const deps: Deps = {
       fetchCandidates: async () => candidates,

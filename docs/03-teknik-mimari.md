@@ -83,7 +83,7 @@ skor = scenicScore
      − mesafeSapması     (hedeften % sapma × 1)
      + molaBonusu        (amenities: her çeşme/tuvalet +2, max +10)
 ```
-Etiketleme: en yüksek scenicScore → "En manzaralı", en düşük tırmanış → "En düz", en kısa → "En kısa" (çakışırsa sonraki adaya geç).
+Etiketleme (`_shared/labeling.ts`): etiket, **gösterilen kartlar arasında** o ölçütte gerçekten en iyi olana verilir. Havuz: skoru en iyiden en çok 20 geride kalan en iyi 6 aday. Ölçütler: en yüksek scenicScore → "En manzaralı", en düşük tırmanış → "En düz", en kısa **tahmini süre** (kartta görünen) → "En kısa". Bir rota birden çok ölçütü kazanırsa birleşik etiket ("En manzaralı + En düz"; üçü birden: "Her açıdan en iyi"); hiçbirini kazanmayan kart "Alternatif" olur. Önbellek anahtarı `CACHE_VERSION` taşır; etiketleme değişince artırılır.
 
 ## Canlı takip
 - `Location.startLocationUpdatesAsync` (arka plan task), `accuracy: High`, `distanceInterval: 5`. (İlk taslakta `Balanced` yazıyordu; Balanced iOS'ta ~100 m, Android'de ağ tabanlı konum verir ve 25 m'lik doğruluk filtresi neredeyse tüm noktaları atardı. Pil, 5 m aralık + duraklatınca durdurma + toplu SQLite yazımıyla korunur.)

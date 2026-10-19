@@ -17,7 +17,12 @@ const LABEL_ICON: Record<string, IconName> = {
   'En manzaralı': 'landscape',
   'En düz': 'trending-flat',
   'En kısa': 'bolt',
+  'Her açıdan en iyi': 'star',
+  Önerilen: 'star',
 };
+
+/** Sunucu birleşik etiket verebilir ("En manzaralı + En düz"); ikon ilk etiketten seçilir. */
+const labelIcon = (label: string): IconName => LABEL_ICON[label.split(' + ')[0]!] ?? 'route';
 
 const POI_ICON: Record<PoiType, IconName> = {
   water: 'water-drop',
@@ -85,7 +90,7 @@ export function RouteResultCard({
           className="flex-row items-center gap-1 rounded-full px-3 py-1.5"
           style={{ backgroundColor: color }}
         >
-          <MaterialIcons name={LABEL_ICON[route.label] ?? 'route'} size={16} color={colors.white} />
+          <MaterialIcons name={labelIcon(route.label)} size={16} color={colors.white} />
           <Text variant="label-sm" className="font-bold text-white">
             {route.label}
           </Text>
